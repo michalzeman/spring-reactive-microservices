@@ -47,4 +47,18 @@ public class StatisticHandler implements ErrorHandler {
         ).onErrorResume(this::onError);
   }
 
+  @Configuration
+  static public class StatisticRouter {
+
+    @Bean
+    public RouterFunction<ServerResponse> statisticRoute(StatisticHandler handler) {
+      System.out.println("StatisticRouter");
+      return RouterFunctions
+          .route(GET("/statistics").and(accept(MediaType.APPLICATION_JSON)), handler::getAll)
+          .andRoute(GET("/statistics/shorteners/{key}")
+              .and(accept(MediaType.APPLICATION_JSON)), handler::numberOfView);
+
+    }
+  }
+
 }

@@ -90,7 +90,7 @@ public class ShortenerHandler implements ErrorHandler {
 
   Mono<ServerResponse> getError(ServerRequest request) {
     log.info("getError() -> ");
-    return Mono.just(new RuntimeException("Error")).flatMap(r -> ServerResponse.ok()
+    return Mono.error(new RuntimeException("Error")).flatMap(r -> ServerResponse.ok()
         .contentType(MediaType
             .APPLICATION_JSON_UTF8).body(fromObject(r)))
         .onErrorResume(this::onError);
