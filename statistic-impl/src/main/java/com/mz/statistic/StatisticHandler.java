@@ -47,6 +47,13 @@ public class StatisticHandler implements ErrorHandler {
         ).onErrorResume(this::onError);
   }
 
+  Mono<ServerResponse> eventsCount(ServerRequest request) {
+    return Mono.just(EventType.valueOf(request.pathVariable("type")))
+        .flatMap(t -> ok().contentType(MediaType.APPLICATION_JSON_UTF8)
+            .body(service.eventsCount(t), Long.class))
+        .onErrorResume(this::onError);
+  }
+
   @Configuration
   static public class StatisticRouter {
 
@@ -55,9 +62,9 @@ public class StatisticHandler implements ErrorHandler {
       System.out.println("StatisticRouter");
       return RouterFunctions
           .route(GET("/statistics").and(accept(MediaType.APPLICATION_JSON)), handler::getAll)
-          .andRoute(GET("/statistics/shorteners/{key}")
-              .and(accept(MediaType.APPLICATION_JSON)), handler::numberOfView);
-
+          .andRoute(GET("/statistics/shorteners/{key}").and(accept(MediaType.APPLICATION_JSON)), handler::numberOfView)
+          .andRoute(GET("/statistics/shorteners/events/{type}/counts").and(accept(MediaType.APPLICATION_JSON_UTF8)),
+              handler::eventsCount);
     }
   }
 

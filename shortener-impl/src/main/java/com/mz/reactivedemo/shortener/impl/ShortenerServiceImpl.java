@@ -52,9 +52,8 @@ public class ShortenerServiceImpl implements ShortenerService {
     this.repository = repository;
   }
 
-  private ShortenerDTO doOnSuccess(Set<Event> events, ShortenerDocument doc) {
-    events.forEach(e -> map(e, doc).ifPresent(eventSink::next));
-    return map(doc);
+  private void publishEvents(Set<Event> events, ShortenerDocument doc) {
+    events.forEach(e -> mapEvent(e, doc).ifPresent(eventSink::next));
   }
 
   private String mapShortenerToValue(@NotNull ShortenerDocument shortenerDocument) {
@@ -62,7 +61,7 @@ public class ShortenerServiceImpl implements ShortenerService {
     return "http://" + shortenerDocument.getUrl();
   }
 
-  private ShortenerDTO map(ShortenerDocument document) {
+  private ShortenerDTO mapToDTO(ShortenerDocument document) {
     return ImmutableShortenerDTO.builder()
         .id(document.getId())
         .key(document.getKey())
@@ -78,15 +77,15 @@ public class ShortenerServiceImpl implements ShortenerService {
         .flatMap(t -> Optional.ofNullable(obj).map(o -> t.isInstance(o))).orElse(false);
   }
 
-  private Optional<ShortenerChangedEvent> map(Event event, ShortenerDocument document) {
+  private Optional<ShortenerChangedEvent> mapEvent(Event event, ShortenerDocument document) {
     if (casePattern(event, ShortenerCreated.class)) {
       return Optional.of(ImmutableShortenerChangedEvent.builder()
-          .payload(map(document))
+          .payload(mapToDTO(document))
           .type(ShortenerEventType.CREATED)
           .build());
     } else if (casePattern(event, ShortenerUpdated.class)) {
       return Optional.of(ImmutableShortenerChangedEvent.builder()
-          .payload(map(document))
+          .payload(mapToDTO(document))
           .type(ShortenerEventType.UPDATED)
           .build());
     }
@@ -104,7 +103,9 @@ public class ShortenerServiceImpl implements ShortenerService {
     return Mono.just(createShortener)
         .map(cmd -> Shortener.of().apply(cmd))
         .flatMap(r ->
-            repository.save(r.result()).map(d -> doOnSuccess(r.events(), d))
+            repository.save(r.result())
+                .doOnSuccess(d -> publishEvents(r.events(), d))
+                .map(this::mapToDTO)
         ).doOnSuccess(this::publishDocument);
   }
 
@@ -114,26 +115,28 @@ public class ShortenerServiceImpl implements ShortenerService {
     return repository.findById(shortener.id())
         .map(d -> Shortener.of(d).apply(shortener))
         .flatMap(r ->
-            repository.save(r.result()).map(d -> doOnSuccess(r.events(), d))
+            repository.save(r.result())
+                .doOnSuccess(d -> publishEvents(r.events(), d))
+                .map(this::mapToDTO)
         ).doOnSuccess(this::publishDocument);
   }
 
   @Override
   public Flux<ShortenerDTO> getAll() {
     log.debug("getAll() ->");
-    return repository.findAll().map(this::map);
+    return repository.findAll().map(this::mapToDTO);
   }
 
   @Override
   public Mono<ShortenerDTO> get(String id) {
     log.debug("get() ->");
     return repository.findById(id)
-        .map(this::map);
+        .map(this::mapToDTO);
   }
 
   @Override
   public Mono<String> map(String key) {
-    log.debug("map() -> key: " + key);
+    log.debug("mapEvent() -> key: " + key);
     return repository.findByKey(key)
         .doOnSuccess(shortener -> Optional.ofNullable(shortener)
             .ifPresent(s -> eventSink.next(ImmutableShortenerViewed.builder()

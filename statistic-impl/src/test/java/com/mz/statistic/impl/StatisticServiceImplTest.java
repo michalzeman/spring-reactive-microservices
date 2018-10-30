@@ -87,10 +87,18 @@ public class StatisticServiceImplTest {
   public void processEvent() {
     String keyUrl1 = "keyUrl1";
     String eventId = "EventId";
-    ShortenerViewed event1 = ImmutableShortenerViewed.builder().number(1L).createdAt(Instant.now()).key(keyUrl1).id
-        (eventId).build();
-    ShortenerViewed event2 = ImmutableShortenerViewed.builder().number(1L).createdAt(Instant.now()).key(keyUrl1).id
-        (eventId).build();
+    ShortenerViewed event1 = ImmutableShortenerViewed.builder()
+        .number(1L)
+        .createdAt(Instant.now())
+        .key(keyUrl1)
+        .id(eventId)
+        .build();
+    ShortenerViewed event2 = ImmutableShortenerViewed.builder()
+        .number(1L)
+        .createdAt(Instant.now())
+        .key(keyUrl1)
+        .id(eventId)
+        .build();
 
     StatisticDocument statisticDocument = new StatisticDocument();
     statisticDocument.setNumber(event1.number());
@@ -101,9 +109,8 @@ public class StatisticServiceImplTest {
     eventSink.next(event1);
     eventSink.next(event2);
 
-//    Mockito.when(repository.findByEventId(eventId)).thenReturn(Flux.empty());
-//    Mockito.verify(repository).findByEventId(eventId);
-    Mockito.verify(repository, Mockito.atMost(2)).save(statisticDocument);
+    Mockito.when(repository.findByEventId(eventId)).thenReturn(Flux.just(statisticDocument));
+    Mockito.verify(repository, Mockito.atMost(1)).save(any(StatisticDocument.class));
   }
 
   static class ShortenerSubscriberMockImpl implements ShortenerSubscriber {

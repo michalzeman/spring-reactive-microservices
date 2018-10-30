@@ -71,28 +71,28 @@ public class StatisticHandlerTest {
     Assertions.assertEquals(result.longValue(), 2L);
   }
 
-//  @Test
-//  public void countsTest() {
-//    ShortenerEventType eventType = ShortenerEventType.UPDATED;
-//    StatisticDocument statisticDocument1 = new StatisticDocument(UUID.randomUUID().toString(), "", 1L, UUID
-//        .randomUUID().toString(), Instant.now(), EventType.UPDATED);
-//    repository.save(statisticDocument1).subscribe();
-//    StatisticDocument statisticDocument2 = new StatisticDocument(UUID.randomUUID().toString(), "", 1L, UUID
-//        .randomUUID().toString(), Instant.now(), EventType.UPDATED);
-//    repository.save(statisticDocument2).subscribe();
-//
-//    StatisticDocument statisticDocument3 = new StatisticDocument(UUID.randomUUID().toString(), "", 1L, UUID
-//        .randomUUID().toString(), Instant.now(), EventType.CREATED);
-//    repository.save(statisticDocument3).subscribe();
-//
-//    Long result =
-//        webTestClient.get().uri("/statistics/shorteners/events/{eventType}/counts", eventType).accept(MediaType
-//            .APPLICATION_JSON_UTF8).exchange()
-//            .expectStatus().isOk()
-//            .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
-//            .expectBody(Long.class).returnResult().getResponseBody();
-//    Assertions.assertEquals(result.longValue(), 2L);
-//  }
+  @Test
+  public void countsTest() {
+    ShortenerEventType eventType = ShortenerEventType.UPDATED;
+    StatisticDocument statisticDocument1 = new StatisticDocument(UUID.randomUUID().toString(), "", 1L, UUID
+        .randomUUID().toString(), Instant.now(), EventType.UPDATED);
+    repository.save(statisticDocument1).subscribe();
+    StatisticDocument statisticDocument2 = new StatisticDocument(UUID.randomUUID().toString(), "", 1L, UUID
+        .randomUUID().toString(), Instant.now(), EventType.UPDATED);
+    repository.save(statisticDocument2).subscribe();
+
+    StatisticDocument statisticDocument3 = new StatisticDocument(UUID.randomUUID().toString(), "", 1L, UUID
+        .randomUUID().toString(), Instant.now(), EventType.CREATED);
+    repository.save(statisticDocument3).subscribe();
+
+    Long result =
+        webTestClient.get().uri("/statistics/shorteners/events/{eventType}/counts", eventType).accept(MediaType
+            .APPLICATION_JSON_UTF8).exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+            .expectBody(Long.class).returnResult().getResponseBody();
+    Assertions.assertEquals(result.longValue(), 2L);
+  }
 
 
 }

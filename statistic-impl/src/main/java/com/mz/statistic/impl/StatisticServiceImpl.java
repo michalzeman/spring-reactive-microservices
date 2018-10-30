@@ -45,13 +45,17 @@ public class StatisticServiceImpl implements StatisticService {
   }
 
   private Mono<StatisticDocument> processViewedEvent(ShortenerViewed event) {
-    StatisticDocument statisticDocument = new StatisticDocument();
-    statisticDocument.setNumber(event.number());
-    statisticDocument.setUrl(event.key());
-    statisticDocument.setCreatedAt(event.createdAt());
-    statisticDocument.setEventId(event.id());
-    statisticDocument.setEventType(EventType.VIEWED);
-    return repository.save(statisticDocument);
+    return repository.findByEventId(event.id())
+        .next()
+        .switchIfEmpty(Mono.defer(() -> {
+          StatisticDocument statisticDocument = new StatisticDocument();
+          statisticDocument.setNumber(event.number());
+          statisticDocument.setUrl(event.key());
+          statisticDocument.setCreatedAt(event.createdAt());
+          statisticDocument.setEventId(event.id());
+          statisticDocument.setEventType(EventType.VIEWED);
+          return  repository.save(statisticDocument);
+        }));
   }
 
   private Mono<StatisticDocument> processShortenerChangedEvent(ShortenerChangedEvent event) {
@@ -85,6 +89,11 @@ public class StatisticServiceImpl implements StatisticService {
     return repository.findByUrlAndEventType(key, EventType.VIEWED)
         .map(StatisticDocument::getNumber)
         .reduce(0L,(num1, num2) -> num1 + num2);
+  }
+
+  @Override
+  public Mono<Long> eventsCount(EventType type) {
+    return repository.findByEventType(type).map(r -> 1).reduce(0L, (n1, n2) -> n1+n2);
   }
 
 }
