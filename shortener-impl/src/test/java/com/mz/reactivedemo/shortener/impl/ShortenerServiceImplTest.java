@@ -41,7 +41,7 @@ public class ShortenerServiceImplTest {
     String id = UUID.randomUUID().toString();
 
     String url = "http://testlong.test";
-    CreateShortener createShortener = ImmutableCreateShortener.builder()
+    CreateShortener createShortener = CreateShortener.builder()
         .url(url)
         .build();
 

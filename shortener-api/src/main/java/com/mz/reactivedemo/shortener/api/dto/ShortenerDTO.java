@@ -13,18 +13,22 @@ import java.util.Optional;
 @Value.Immutable
 @JsonSerialize(as = ImmutableShortenerDTO.class)
 @JsonDeserialize(as = ImmutableShortenerDTO.class)
-public abstract class ShortenerDTO {
+public interface ShortenerDTO {
 
-  public abstract Optional<String> id();
+  Optional<String> id();
 
-  public abstract String key();
+  String key();
 
-  public abstract String url();
+  String url();
 
-  public abstract String shortUrl();
+  String shortUrl();
 
-  public abstract Instant createdAt();
+  Instant createdAt();
 
-  public abstract Optional<Long> version();
+  Optional<Long> version();
+
+  static ImmutableShortenerDTO.Builder builder() {
+    return ImmutableShortenerDTO.builder();
+  }
 
 }

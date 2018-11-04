@@ -52,7 +52,7 @@ public class ShortenerHandlerTest {
   @Test
   public void get() {
 
-    String key = service.create(ImmutableCreateShortener.builder()
+    String key = service.create(CreateShortener.builder()
         .url("www.tes.com")
         .build())
         .block().key();
@@ -66,7 +66,7 @@ public class ShortenerHandlerTest {
   @Test
   public void getAll() {
 
-    service.create(ImmutableCreateShortener.builder()
+    service.create(CreateShortener.builder()
         .url("www.tes.com")
         .build())
         .block().key();
@@ -80,7 +80,7 @@ public class ShortenerHandlerTest {
   @Test
   public void create() {
     String url = "www.testLong.org";
-    CreateShortener request = ImmutableCreateShortener.builder()
+    CreateShortener request = CreateShortener.builder()
         .url(url)
         .build();
 
@@ -99,12 +99,12 @@ public class ShortenerHandlerTest {
   @Test
   public void update() {
 
-    String id = service.create(ImmutableCreateShortener.builder()
+    String id = service.create(CreateShortener.builder()
         .url("www.tes.com").build())
         .block().id().get();
 
     String url = "www.testLongUpdate.org";
-    UpdateShortener request = ImmutableUpdateShortener.builder()
+    UpdateShortener request = UpdateShortener.builder()
         .id(id)
         .url(url).build();
 

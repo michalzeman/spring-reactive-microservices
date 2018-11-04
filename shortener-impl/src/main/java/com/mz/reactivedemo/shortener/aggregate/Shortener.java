@@ -80,7 +80,7 @@ public class Shortener {
   }
 
   public ShortenerDTO toDto() {
-    ImmutableShortenerDTO.Builder builder = ImmutableShortenerDTO.builder()
+    ImmutableShortenerDTO.Builder builder = ShortenerDTO.builder()
         .key(this.key.value)
         .url(this.url.value)
         .shortUrl(this.shortUrl.value)

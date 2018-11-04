@@ -16,4 +16,8 @@ public interface ShortenerViewed extends ShortenerEvent {
   String key();
 
   Long number();
+
+  static ImmutableShortenerViewed.Builder builder() {
+    return ImmutableShortenerViewed.builder();
+  }
 }

@@ -1,7 +1,5 @@
 package com.mz.reactivedemo.shortener.api.events;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.mz.reactivedemo.common.events.Event;
 import org.immutables.value.Value;
 

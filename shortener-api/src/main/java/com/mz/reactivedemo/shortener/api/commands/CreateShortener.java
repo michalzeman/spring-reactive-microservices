@@ -14,4 +14,7 @@ import org.immutables.value.Value;
 public interface CreateShortener extends Command {
   String url();
 
+  static ImmutableCreateShortener.Builder builder() {
+    return ImmutableCreateShortener.builder();
+  }
 }

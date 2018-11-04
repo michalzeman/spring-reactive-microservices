@@ -1,6 +1,5 @@
 package com.mz.statistic.impl;
 
-import com.mz.reactivedemo.shortener.api.events.ImmutableShortenerViewed;
 import com.mz.reactivedemo.shortener.api.events.ShortenerChangedEvent;
 import com.mz.reactivedemo.shortener.api.events.ShortenerViewed;
 import com.mz.statistic.ShortenerSubscriber;
@@ -41,7 +40,7 @@ public class StatisticServiceImplTest {
   @InjectMocks
   StatisticServiceImpl stub = new StatisticServiceImpl(repository, shortenerSubscriber);
 
-//  @BeforeAll
+  //  @BeforeAll
   public void beforeAll() {
     stub.subscribeToEvents();
   }
@@ -75,7 +74,7 @@ public class StatisticServiceImplTest {
 
     Mockito.when(repository.findByUrlAndEventType(any(String.class), any(EventType.class))).thenReturn(Flux.just
         (statisticDocument1,
-        statisticDocument2));
+            statisticDocument2));
 
     Mono<Long> source = stub.numberOfViews("qwwergr");
     StepVerifier.create(source)
@@ -87,13 +86,13 @@ public class StatisticServiceImplTest {
   public void processEvent() {
     String keyUrl1 = "keyUrl1";
     String eventId = "EventId";
-    ShortenerViewed event1 = ImmutableShortenerViewed.builder()
+    ShortenerViewed event1 = ShortenerViewed.builder()
         .number(1L)
         .createdAt(Instant.now())
         .key(keyUrl1)
         .id(eventId)
         .build();
-    ShortenerViewed event2 = ImmutableShortenerViewed.builder()
+    ShortenerViewed event2 = ShortenerViewed.builder()
         .number(1L)
         .createdAt(Instant.now())
         .key(keyUrl1)

@@ -16,4 +16,8 @@ public interface UpdateShortener extends Command {
   String id();
 
   String url();
+
+  static ImmutableUpdateShortener.Builder builder() {
+    return ImmutableUpdateShortener.builder();
+  }
 }

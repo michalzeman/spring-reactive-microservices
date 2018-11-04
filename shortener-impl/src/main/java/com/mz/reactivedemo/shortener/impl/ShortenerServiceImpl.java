@@ -6,7 +6,6 @@ import com.mz.reactivedemo.shortener.ShortenerService;
 import com.mz.reactivedemo.shortener.aggregate.Shortener;
 import com.mz.reactivedemo.shortener.api.commands.CreateShortener;
 import com.mz.reactivedemo.shortener.api.commands.UpdateShortener;
-import com.mz.reactivedemo.shortener.api.dto.ImmutableShortenerDTO;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDTO;
 import com.mz.reactivedemo.shortener.api.events.*;
 import com.mz.reactivedemo.shortener.events.ShortenerCreated;
@@ -62,7 +61,7 @@ public class ShortenerServiceImpl implements ShortenerService {
   }
 
   private ShortenerDTO mapToDTO(ShortenerDocument document) {
-    return ImmutableShortenerDTO.builder()
+    return ShortenerDTO.builder()
         .id(document.getId())
         .key(document.getKey())
         .url(document.getUrl())
@@ -79,12 +78,12 @@ public class ShortenerServiceImpl implements ShortenerService {
 
   private Optional<ShortenerChangedEvent> mapEvent(Event event, ShortenerDocument document) {
     if (casePattern(event, ShortenerCreated.class)) {
-      return Optional.of(ImmutableShortenerChangedEvent.builder()
+      return Optional.of(ShortenerChangedEvent.builder()
           .payload(mapToDTO(document))
           .type(ShortenerEventType.CREATED)
           .build());
     } else if (casePattern(event, ShortenerUpdated.class)) {
-      return Optional.of(ImmutableShortenerChangedEvent.builder()
+      return Optional.of(ShortenerChangedEvent.builder()
           .payload(mapToDTO(document))
           .type(ShortenerEventType.UPDATED)
           .build());
@@ -139,7 +138,7 @@ public class ShortenerServiceImpl implements ShortenerService {
     log.debug("mapEvent() -> key: " + key);
     return repository.findByKey(key)
         .doOnSuccess(shortener -> Optional.ofNullable(shortener)
-            .ifPresent(s -> eventSink.next(ImmutableShortenerViewed.builder()
+            .ifPresent(s -> eventSink.next(ShortenerViewed.builder()
                 .key(s.getKey())
                 .number(1L)
                 .createdAt(Instant.now())

@@ -16,4 +16,8 @@ public interface ShortenerChangedEvent extends ShortenerEvent {
   ShortenerEventType type();
 
   ShortenerDTO payload();
+
+  static ImmutableShortenerChangedEvent.Builder builder() {
+    return ImmutableShortenerChangedEvent.builder();
+  }
 }
