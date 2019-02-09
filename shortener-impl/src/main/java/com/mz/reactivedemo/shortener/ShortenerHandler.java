@@ -3,7 +3,7 @@ package com.mz.reactivedemo.shortener;
 import com.mz.reactivedemo.common.errors.ErrorHandler;
 import com.mz.reactivedemo.shortener.api.commands.CreateShortener;
 import com.mz.reactivedemo.shortener.api.commands.UpdateShortener;
-import com.mz.reactivedemo.shortener.api.dto.ShortenerDTO;
+import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +30,11 @@ public class ShortenerHandler implements ErrorHandler {
 
   private final ShortenerService shortenerService;
 
-  public ShortenerHandler(ShortenerService shortenerService) {
+  private final ShortenerQuery shortenerQuery;
+
+  public ShortenerHandler(ShortenerService shortenerService, ShortenerQuery shortenerQuery) {
     this.shortenerService = shortenerService;
+    this.shortenerQuery = shortenerQuery;
   }
 
   Mono<ServerResponse> tick(ServerRequest req) {
@@ -44,7 +47,7 @@ public class ShortenerHandler implements ErrorHandler {
 
   Mono<ServerResponse> map(ServerRequest request) {
     log.info("map() -> key:" + request.pathVariable("key"));
-    return shortenerService.map(request.pathVariable("key"))
+    return shortenerQuery.map(request.pathVariable("key"))
         .flatMap(url -> ServerResponse.status(HttpStatus.SEE_OTHER)
             .headers(headers -> headers.setLocation(URI
                 .create(url))).build())
@@ -53,7 +56,7 @@ public class ShortenerHandler implements ErrorHandler {
 
   Mono<ServerResponse> getById(ServerRequest request) {
     log.info("getById() -> ");
-    return shortenerService.get(request.pathVariable("id"))
+    return shortenerQuery.get(request.pathVariable("id"))
         .flatMap(r -> ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON_UTF8).body(fromObject(r)))
         .onErrorResume(this::onError);
@@ -63,7 +66,7 @@ public class ShortenerHandler implements ErrorHandler {
     log.info("getAll() -> ");
     return ServerResponse.ok()
         .contentType(MediaType.APPLICATION_JSON_UTF8)
-        .body(shortenerService.getAll(), ShortenerDTO.class)
+        .body(shortenerQuery.getAll(), ShortenerDto.class)
         .onErrorResume(this::onError);
   }
 

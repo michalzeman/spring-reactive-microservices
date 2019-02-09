@@ -1,6 +1,6 @@
 package com.mz.statistic.shortener;
 
-import com.mz.reactivedemo.shortener.api.dto.ShortenerDTO;
+import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import com.mz.reactivedemo.shortener.api.events.ShortenerChangedEvent;
 import com.mz.reactivedemo.shortener.api.events.ShortenerViewed;
 import com.mz.reactivedemo.shortener.api.topics.ShortenerTopics;
@@ -32,7 +32,7 @@ public class ShortenerSubscriberImpl implements ShortenerSubscriber {
 
   @StreamListener
   public void process(@Input(ShortenerTopics.SHORTENER_VIEWED) KStream<String, ShortenerViewed> shortenerViewed,
-                      @Input(ShortenerTopics.SHORTENER_DOCUMENT) KStream<String, ShortenerDTO> shortenerDoc,
+                      @Input(ShortenerTopics.SHORTENER_DOCUMENT) KStream<String, ShortenerDto> shortenerDoc,
                       @Input(ShortenerTopics.SHORTENER_CHANGED) KStream<String, ShortenerChangedEvent> shortenerChanged) {
     shortenerViewed.foreach((k, v) -> eventSink.next(v));
     shortenerDoc.foreach((k, v) -> System.out.println(v));

@@ -1,12 +1,9 @@
 package com.mz.reactivedemo.common;
 
-import com.mz.reactivedemo.common.events.Event;
+import com.mz.reactivedemo.common.api.events.Event;
+import org.eclipse.collections.api.set.ImmutableSet;
+import org.eclipse.collections.impl.factory.Sets;
 import org.immutables.value.Value;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by zemi on 29/09/2018.
@@ -15,8 +12,8 @@ import java.util.Set;
 public interface ApplyResult<R> {
 
   @Value.Default
-  default Set<Event> events() {
-    return new HashSet<Event>();
+  default ImmutableSet<Event> events() {
+    return Sets.immutable.empty();
   }
 
   R result();

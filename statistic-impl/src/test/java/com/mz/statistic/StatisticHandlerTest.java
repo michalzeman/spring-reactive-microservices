@@ -3,6 +3,8 @@ package com.mz.statistic;
 import com.mz.reactivedemo.shortener.api.events.ShortenerEventType;
 import com.mz.statistic.model.EventType;
 import com.mz.statistic.model.StatisticDocument;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,11 +12,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.test.rule.KafkaEmbedded;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Instant;
 import java.util.UUID;
+
+import static com.mz.reactivedemo.shortener.api.topics.ShortenerTopics.*;
 
 /**
  * Created by zemi on 22/10/2018.
@@ -36,6 +41,16 @@ public class StatisticHandlerTest {
   void afterEach() {
     repository.deleteAll().block();
   }
+
+//  @ClassRule
+//  public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SHORTENER_CHANGED,
+//      SHORTENER_DOCUMENT, SHORTENER_VIEWED);
+//
+//  @BeforeClass
+//  public static void setup() {
+//    System.setProperty("spring.cloud.stream.kafka.binder.brokers", embeddedKafka.getBrokersAsString());
+//    System.setProperty("spring.cloud.stream.kafka.binder.zkNodes", embeddedKafka.getZookeeperConnectionString());
+//  }
 
   @Test
   public void getAllTest() {

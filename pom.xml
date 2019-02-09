@@ -13,6 +13,9 @@
         <module>statistic-impl</module>
         <module>common</module>
         <module>shortener-api</module>
+        <module>user-impl</module>
+        <module>user-api</module>
+        <module>common-api</module>
     </modules>
 
 
@@ -45,6 +48,19 @@
         <dependencies>
 
             <dependency>
+                <groupId>org.eclipse.collections</groupId>
+                <artifactId>eclipse-collections-api</artifactId>
+                <version>9.2.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.collections</groupId>
+                <artifactId>eclipse-collections</artifactId>
+                <version>9.2.0</version>
+            </dependency>
+
+
+            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
@@ -67,8 +83,20 @@
             </dependency>
 
             <dependency>
+                <artifactId>common-api</artifactId>
+                <groupId>com.mz</groupId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
                 <artifactId>shortener-api</artifactId>
                 <groupId>com.mz</groupId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.mz</groupId>
+                <artifactId>user-api</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
 
@@ -80,6 +108,19 @@
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.9.5</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>2.23.0</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

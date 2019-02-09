@@ -2,17 +2,15 @@ package com.mz.reactivedemo.shortener.impl;
 
 import com.mz.reactivedemo.shortener.ShortenerRepository;
 import com.mz.reactivedemo.shortener.api.commands.CreateShortener;
-import com.mz.reactivedemo.shortener.api.commands.ImmutableCreateShortener;
-import com.mz.reactivedemo.shortener.api.dto.ImmutableShortenerDTO;
-import com.mz.reactivedemo.shortener.api.dto.ShortenerDTO;
+import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import com.mz.reactivedemo.shortener.model.ShortenerDocument;
+import com.mz.reactivedemo.shortener.streams.ApplicationMessageBus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -26,14 +24,17 @@ import static org.mockito.ArgumentMatchers.any;
  * Created by zemi on 29/05/2018.
  */
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class ShortenerServiceImplTest {
 
   @Mock
   ShortenerRepository repository;
 
+  @Mock
+  ApplicationMessageBus messageBus;
+
   @InjectMocks
-  ShortenerServiceImpl stub;
+  ShortenerApplicationServiceImpl stub;
 
   @Test
   public void create() {
@@ -54,27 +55,10 @@ public class ShortenerServiceImplTest {
     shortenerDocument.setVersion(1L);
 
     Mockito.when(repository.save(any(ShortenerDocument.class))).thenReturn(Mono.just(shortenerDocument));
-    Mono<ShortenerDTO> source = stub.create(createShortener);
+    Mono<ShortenerDto> source = stub.create(createShortener);
 
     StepVerifier.create(source)
         .expectNextMatches(nextValue -> url.equals(nextValue.url()))
-        .expectComplete().verify();
-  }
-
-  @Test
-  public void map() {
-    final String key = "14e9c9c8-e23d-406a-bab6-5566358300a9";
-
-    ShortenerDocument shortenerDocument = new ShortenerDocument();
-    shortenerDocument.setKey(key);
-    shortenerDocument.setUrl("www.url.tst");
-    shortenerDocument.setShortUrl("www.url.tst");
-    shortenerDocument.setId(UUID.randomUUID().toString());
-
-    Mockito.when(repository.findByKey(key)).thenReturn(Mono.just(shortenerDocument));
-    Mono<String> source = stub.map(key);
-    StepVerifier.create(source)
-        .expectNext("http://www.url.tst")
         .expectComplete().verify();
   }
 }

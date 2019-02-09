@@ -12,9 +12,14 @@
     <artifactId>shortener-api</artifactId>
     <dependencies>
 
+        <!--<dependency>-->
+            <!--<artifactId>common</artifactId>-->
+            <!--<groupId>com.mz</groupId>-->
+        <!--</dependency>-->
+
         <dependency>
-            <artifactId>common</artifactId>
             <groupId>com.mz</groupId>
+            <artifactId>common-api</artifactId>
         </dependency>
 
         <dependency>
@@ -37,7 +42,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.5</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

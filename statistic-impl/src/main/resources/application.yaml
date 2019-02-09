@@ -1,21 +1,21 @@
 server:
-  port : 8081
+  port: 8081
 
-spring.cloud.stream.bindings.output.contentType: application/json
-spring.cloud.stream.kafka.streams.binder.configuration.commit.interval.ms: 1000
-spring.cloud.stream.kafka.streams:
-  binder.configuration:
-    default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-    default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-  bindings.input.consumer.application-id: url-statisti
-#spring.cloud.stream.bindings.shortener-viewed:
-#  destination: shortener-viewed
-#  consumer:
-#    headerMode: raw
-#spring.cloud.stream.bindings.shortener-document:
-#  destination: shortener-document
-#  consumer:
-#    headerMode: raw
+spring.cloud.stream:
+  bindings:
+    input.consumer.application-id: url-statisti
+    output.contentType: application/json
+    shortener-viewed.destination: shortener-viewed
+    shortener-document.destination: shortener-document
+    shortener-changed.destination: shortener-changed
+
+  kafka.streams:
+    binder:
+      brokers: localhost #192.168.99.100
+      configuration:
+        commit.interval.ms: 1000
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
 
 
-
+#spring.cloud.stream.bindings.input1.binder: kafka

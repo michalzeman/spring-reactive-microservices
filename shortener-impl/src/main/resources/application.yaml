@@ -1,22 +1,22 @@
 server:
   port : 8082
 
-spring.cloud.stream.bindings.output.contentType: application/json
-spring.cloud.stream.kafka.streams:
-  binder.configuration.commit.interval.ms: 1000
-  binder.configuration:
-    default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-    default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-  bindings.input.consumer.application-id: url-shortener
-#spring.cloud.stream.bindings.shortener-viewed:
-#  destination: shortener-viewed
-#  producer:
-#    headerMode: raw
-#    #useNativeEncoding: true
-spring.cloud.stream.kafka.streams.binder:
-  brokers: localhost #192.168.99.100
-#For testing
-spring.cloud.stream.bindings.input1.destination: counts
-spring.cloud.stream.bindings.output1.destination: shortener-viewed
-spring.cloud.stream.bindings.input1.binder: kafka
-spring.cloud.stream.bindings.output1.binder: kafka
+spring.cloud.stream:
+  bindings:
+    input.consumer.application-id: url-shortener
+    output.contentType: application/json
+    shortener-viewed.destination: shortener-viewed
+    #  destination: shortener-viewed
+    #  producer:
+    #    headerMode: raw
+    #    #useNativeEncoding: true
+    shortener-document.destination: shortener-document
+    shortener-changed.destination: shortener-changed
+
+  kafka.streams:
+    binder:
+      brokers: localhost #192.168.99.100
+      configuration:
+        commit.interval.ms: 1000
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerd

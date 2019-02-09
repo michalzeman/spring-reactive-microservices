@@ -6,11 +6,15 @@ import com.mz.statistic.ShortenerSubscriber;
 import com.mz.statistic.StatisticRepository;
 import com.mz.statistic.model.EventType;
 import com.mz.statistic.model.StatisticDocument;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.kafka.test.rule.KafkaEmbedded;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
@@ -22,12 +26,14 @@ import reactor.test.StepVerifier;
 import java.time.Instant;
 import java.util.function.Consumer;
 
+import static com.mz.reactivedemo.shortener.api.topics.ShortenerTopics.*;
 import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Created by zemi on 29/05/2018.
  */
 @ExtendWith(SpringExtension.class)
+//@DataMongoTest
 public class StatisticServiceImplTest {
 
   @Mock
@@ -39,6 +45,15 @@ public class StatisticServiceImplTest {
 
   @InjectMocks
   StatisticServiceImpl stub = new StatisticServiceImpl(repository, shortenerSubscriber);
+
+//  @ClassRule
+//  public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SHORTENER_CHANGED,
+//      SHORTENER_DOCUMENT, SHORTENER_VIEWED);
+//
+//  @BeforeClass
+//  public static void setup() {
+//    System.setProperty("spring.cloud.stream.kafka.binder.brokers", embeddedKafka.getBrokersAsString());
+//  }
 
   //  @BeforeAll
   public void beforeAll() {

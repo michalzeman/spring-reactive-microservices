@@ -1,23 +1,26 @@
 package com.mz.reactivedemo.shortener;
 
-import com.mz.reactivedemo.common.model.ErrorMessage;
+import com.mz.reactivedemo.common.errors.ErrorMessage;
 import com.mz.reactivedemo.shortener.api.commands.CreateShortener;
-import com.mz.reactivedemo.shortener.api.commands.ImmutableCreateShortener;
-import com.mz.reactivedemo.shortener.api.commands.ImmutableUpdateShortener;
 import com.mz.reactivedemo.shortener.api.commands.UpdateShortener;
-import com.mz.reactivedemo.shortener.api.dto.ShortenerDTO;
+import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.test.rule.KafkaEmbedded;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.mz.reactivedemo.shortener.api.topics.ShortenerTopics.*;
 
 /**
  * Created by zemi on 29/05/2018.
@@ -38,6 +41,15 @@ public class ShortenerHandlerTest {
   @AfterEach
   void afterEach() {
     repository.deleteAll().block();
+  }
+
+  @ClassRule
+  public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SHORTENER_CHANGED,
+      SHORTENER_DOCUMENT, SHORTENER_VIEWED);
+
+  @BeforeClass
+  public static void setup() {
+    System.setProperty("spring.cloud.stream.kafka.binder.brokers", embeddedKafka.getBrokersAsString());
   }
 
 
@@ -84,12 +96,12 @@ public class ShortenerHandlerTest {
         .url(url)
         .build();
 
-    ShortenerDTO result = webTestClient.post().uri("/shorteners")
+    ShortenerDto result = webTestClient.post().uri("/shorteners")
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromObject(request))
         .exchange()
         .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
-        .expectBody(ShortenerDTO.class).returnResult().getResponseBody();
+        .expectBody(ShortenerDto.class).returnResult().getResponseBody();
 
     assertTrue(result.url().equals(url));
     assertFalse(result.key().isEmpty());
@@ -108,20 +120,20 @@ public class ShortenerHandlerTest {
         .id(id)
         .url(url).build();
 
-    ShortenerDTO result = webTestClient.put().uri("/shorteners/{id}", id).accept(MediaType.APPLICATION_JSON_UTF8)
+    ShortenerDto result = webTestClient.put().uri("/shorteners/{id}", id).accept(MediaType.APPLICATION_JSON_UTF8)
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromObject(request))
         .exchange()
         .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
-        .expectBody(ShortenerDTO.class).returnResult().getResponseBody();
+        .expectBody(ShortenerDto.class).returnResult().getResponseBody();
 
-    ShortenerDTO validateResult = webTestClient.get().uri("/shorteners/{id}", result.id().get()).accept(MediaType
+    ShortenerDto validateResult = webTestClient.get().uri("/shorteners/{id}", result.id().get()).accept(MediaType
         .APPLICATION_JSON_UTF8)
         .exchange()
         .expectStatus()
         .isOk()
         .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
-        .expectBody(ShortenerDTO.class).returnResult().getResponseBody();
+        .expectBody(ShortenerDto.class).returnResult().getResponseBody();
 
     assertTrue(validateResult.url().equals(url));
   }
@@ -134,6 +146,6 @@ public class ShortenerHandlerTest {
         .expectStatus()
         .is4xxClientError()
         .expectBody(ErrorMessage.class).returnResult().getResponseBody();
-    System.out.println("Error Zemo: -> "+errorResult.getError());
+    System.out.println("Error Zemo: -> "+errorResult.error());
   }
 }

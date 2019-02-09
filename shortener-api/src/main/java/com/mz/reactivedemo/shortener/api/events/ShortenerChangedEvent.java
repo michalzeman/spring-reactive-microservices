@@ -2,7 +2,7 @@ package com.mz.reactivedemo.shortener.api.events;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.mz.reactivedemo.shortener.api.dto.ShortenerDTO;
+import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import org.immutables.value.Value;
 
 /**
@@ -15,7 +15,7 @@ public interface ShortenerChangedEvent extends ShortenerEvent {
 
   ShortenerEventType type();
 
-  ShortenerDTO payload();
+  ShortenerDto payload();
 
   static ImmutableShortenerChangedEvent.Builder builder() {
     return ImmutableShortenerChangedEvent.builder();

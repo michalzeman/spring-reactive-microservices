@@ -1,8 +1,9 @@
 package com.mz.reactivedemo.shortener;
 
+import com.mz.reactivedemo.common.api.events.Event;
 import com.mz.reactivedemo.shortener.api.commands.CreateShortener;
 import com.mz.reactivedemo.shortener.api.commands.UpdateShortener;
-import com.mz.reactivedemo.shortener.api.dto.ShortenerDTO;
+import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import com.mz.reactivedemo.shortener.api.events.ShortenerEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,17 +13,17 @@ import reactor.core.publisher.Mono;
  */
 public interface ShortenerService {
 
-  Mono<ShortenerDTO> create(CreateShortener shortener);
+  Mono<ShortenerDto> create(CreateShortener shortener);
 
-  Mono<ShortenerDTO> update(UpdateShortener shortener);
+  Mono<ShortenerDto> update(UpdateShortener shortener);
 
-  Flux<ShortenerDTO> getAll();
-
-  Flux<ShortenerEvent> events();
-
-  Flux<ShortenerDTO> documents();
-
-  Mono<ShortenerDTO> get(String id);
-
-  Mono<String> map(String key);
+//  Flux<ShortenerDto> getAll();
+//
+//  Flux<Event> events();
+//
+//  Flux<ShortenerDto> documents();
+//
+//  Mono<ShortenerDto> get(String id);
+//
+//  Mono<String> map(String key);
 }
