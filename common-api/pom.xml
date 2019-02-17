@@ -19,5 +19,18 @@
             <artifactId>value</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Provide JUnit 5 API -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- and the engine for surefire and failsafe -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

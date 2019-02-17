@@ -9,8 +9,6 @@ import com.mz.user.domain.events.UserCreated;
 import com.mz.user.dto.UserDto;
 import com.mz.user.messages.CreateContactInfo;
 import com.mz.user.messages.CreateUser;
-import org.eclipse.collections.api.set.ImmutableSet;
-import org.eclipse.collections.impl.factory.Sets;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -52,24 +50,38 @@ public class UserRootEntity extends AbstractRootAggregate<UserDto> {
                 .build());
   }
 
-  private ImmutableSet<Event> createUser(CreateUser cmd) {
+  private Optional<Event> createUser(CreateUser cmd) {
     this.firstName = new FirstName(cmd.firstName());
     this.lastName = new LastName(cmd.lastName());
     this.createdAt = Instant.now();
-    ImmutableSet<Event> events = Sets.immutable.of(UserCreated.builder().user(toDto()).build());
-    return events.union(cmd.contactInformation().map(c -> createContactInformation(c)).orElse(Sets.immutable.empty()));
+    this.contactInformation = cmd.contactInformation()
+        .map(c -> ContactInfo.builder()
+            .email(c.email().map(Email::new))
+            .phoneNumber(c.phoneNumber().map(PhoneNumber::new))
+            .build());
+    return Optional.of(UserCreated.builder()
+        .firstName(firstName.value)
+        .lastName(lastName.value)
+        .version(version)
+        .email(this.contactInformation.flatMap(ci -> ci.email().map(em -> em.value)))
+        .phoneNumber(this.contactInformation.flatMap(ci -> ci.phoneNumber().map(n -> n.value)))
+        .build());
   }
 
-  private ImmutableSet<Event> createContactInformation(CreateContactInfo cmd) {
+  private Optional<ContactInfoCreated> createContactInformation(CreateContactInfo cmd) {
     this.contactInformation = Optional.ofNullable(cmd)
         .map(c -> ContactInfo.builder()
             .email(c.email().map(Email::new))
             .phoneNumber(c.phoneNumber().map(PhoneNumber::new))
             .build());
     return this.contactInformation
-        .map(c -> Sets.immutable.<Event>of(ContactInfoCreated.builder()
-            .contactInformation(c.toDto())
-            .build())).orElse(Sets.immutable.empty());
+        .map(c -> ContactInfoCreated.builder()
+            .userId(id.get().value)
+            .createdAt(Instant.now())
+            .email(c.email().map(e -> e.value))
+            .phoneNumber(c.phoneNumber().map(p -> p.value))
+            .userVersion(version)
+            .build());
   }
 
   public UserDto toDto() {
@@ -92,13 +104,13 @@ public class UserRootEntity extends AbstractRootAggregate<UserDto> {
   }
 
   @Override
-  protected ImmutableSet<Event> behavior(Command cmd) {
+  protected Optional<Event> behavior(Command cmd) {
     if (cmd instanceof CreateUser) {
       return createUser((CreateUser) cmd);
     } else if (cmd instanceof CreateContactInfo) {
-      return createContactInformation(((CreateContactInfo) cmd));
+      return createContactInformation((CreateContactInfo) cmd).map(e -> e);
     }
-    return Sets.immutable.empty();
+    return Optional.empty();
   }
 
   @Override

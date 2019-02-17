@@ -1,4 +1,4 @@
-package com.mz.reactivedemo.shortener.streams;
+package com.mz.reactivedemo.shortener.ports.kafka;
 
 import org.springframework.cloud.stream.annotation.Output;
 import org.springframework.messaging.MessageChannel;

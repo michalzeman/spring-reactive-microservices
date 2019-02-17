@@ -1,4 +1,4 @@
-package com.mz.reactivedemo.shortener.streams;
+package com.mz.reactivedemo.shortener.ports.kafka;
 
 import com.mz.reactivedemo.common.api.events.Event;
 import com.mz.reactivedemo.common.utils.Logger;
@@ -6,6 +6,7 @@ import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import com.mz.reactivedemo.shortener.api.events.ShortenerChangedEvent;
 import com.mz.reactivedemo.shortener.api.events.ShortenerViewed;
 import com.mz.reactivedemo.shortener.impl.ShortenerApplicationServiceImpl;
+import com.mz.reactivedemo.shortener.streams.ApplicationMessageBus;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.kafka.support.KafkaHeaders;

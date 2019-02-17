@@ -1,6 +1,9 @@
 package com.mz.user.impl;
 
+import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.user.UserApplicationMessageBus;
 import com.mz.user.UserRepository;
+import com.mz.user.domain.events.UserCreated;
 import com.mz.user.dto.UserDto;
 import com.mz.user.messages.CreateUser;
 import com.mz.user.model.UserDocument;
@@ -8,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -15,8 +19,8 @@ import reactor.test.StepVerifier;
 import java.time.Instant;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +28,9 @@ class UserApplicationServiceImplTest {
 
   @Mock
   UserRepository userRepository;
+
+  @Mock
+  UserApplicationMessageBus messageBus;
 
   @InjectMocks
   UserApplicationServiceImpl stub;
@@ -58,5 +65,7 @@ class UserApplicationServiceImplTest {
                 && nextValue.createdAt().equals(createdAt)
                 && nextValue.version().get().equals(1L))
         .expectComplete().verify();
+
+    Mockito.verify(messageBus).publishEvent(any(Event.class));
   }
 }

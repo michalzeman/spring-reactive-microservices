@@ -1,4 +1,4 @@
-package com.mz.statistic.shortener;
+package com.mz.statistic.adapters.shortener;
 
 import com.mz.reactivedemo.shortener.api.topics.ShortenerTopics;
 import org.apache.kafka.streams.kstream.KStream;

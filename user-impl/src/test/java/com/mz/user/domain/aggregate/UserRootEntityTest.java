@@ -35,28 +35,25 @@ class UserRootEntityTest {
         .firstName("FirstName")
         .lastName("LastName")
         .build();
-    createUserTest(cmd1, 1);
+    createUserTest(cmd1);
 
     CreateUser cmd2 = CreateUser
         .builder()
         .firstName("FirstName")
         .lastName("LastName")
-        .contactInformation(CreateContactInfo
+        .contactInformation(CreateUser.ContactInfo
             .builder()
             .email("test@test")
             .phoneNumber("+421 901 000 000")
             .build())
         .build();
-    createUserTest(cmd2, 2);
-    createUserTest(null, 0);
+    createUserTest(cmd2);
   }
 
-  private void createUserTest(Command cmd, int numberOfEvents) {
+  private void createUserTest(Command cmd) {
     UserRootEntity subject = UserRootEntity.of();
     Optional<ApplyResult<UserDto>> result = subject.apply(cmd);
-    Assertions.assertTrue(result
-        .map(r -> r.events())
-        .orElse(Sets.immutable.empty()).size() == numberOfEvents);
+    Assertions.assertTrue(result.map(ApplyResult::event).isPresent());
   }
 
   @Test
@@ -72,7 +69,7 @@ class UserRootEntityTest {
 
     Assertions.assertTrue(result.equals(userDto));
     Assertions.assertTrue(userDto.id().get().equals(userDocument.getId()));
-    Assertions.assertTrue(userDto.version().get().equals(userDocument.getVersion()));
+    Assertions.assertTrue(userDto.version().get().equals(userDocument.getVersion().get()));
     Assertions.assertTrue(userDto.firstName().get().equals(userDocument.getFirstName()));
     Assertions.assertTrue(userDto.lastName().get().equals(userDocument.getLastName()));
     Assertions.assertTrue(userDto.createdAt().equals(userDocument.getCreatedAt()));

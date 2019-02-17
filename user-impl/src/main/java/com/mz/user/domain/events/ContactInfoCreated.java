@@ -2,6 +2,8 @@ package com.mz.user.domain.events;
 
 import com.mz.reactivedemo.common.api.events.Event;
 import com.mz.user.dto.ContactInfoDto;
+import java.time.Instant;
+import java.util.Optional;
 import org.immutables.value.Value;
 
 /**
@@ -10,7 +12,15 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface ContactInfoCreated extends Event {
 
-  ContactInfoDto contactInformation();
+  String userId();
+
+  Instant createdAt();
+
+  Optional<String> email();
+
+  Optional<String> phoneNumber();
+
+  Optional<Long> userVersion();
 
   static ImmutableContactInfoCreated.Builder builder() {
     return ImmutableContactInfoCreated.builder();

@@ -13,15 +13,12 @@ import java.util.Optional;
  */
 public abstract class AbstractRootAggregate<R> {
 
-  protected abstract ImmutableSet<Event> behavior(Command cmd);
+  protected abstract Optional<Event> behavior(Command cmd);
 
   protected abstract R toResult();
 
   public Optional<ApplyResult<R>> apply(Command cmd) {
     return Optional.ofNullable(cmd)
-        .map(c -> {
-          ImmutableSet<Event> events = behavior(c);
-          return ImmutableApplyResult.<R>builder().events(events).result(toResult()).build();
-        });
+        .map(c -> ImmutableApplyResult.<R>builder().event(behavior(c)).result(toResult()).build());
   }
 }

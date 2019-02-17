@@ -12,6 +12,7 @@ import reactor.test.StepVerifier;
 
 import java.time.Instant;
 import java.util.Objects;
+import reactor.test.StepVerifier.Step;
 
 @ExtendWith(SpringExtension.class)
 @DataMongoTest
@@ -41,8 +42,16 @@ class UserRepositoryTest {
             nextValue.getLastName().equals("LastName")
                 && nextValue.getFirstName().equals("FirstName")
                 && Objects.nonNull(nextValue.getId())
-                && Objects.nonNull(nextValue.getVersion())
+                && Objects.nonNull(nextValue.getVersion().get())
                 && Objects.nonNull(nextValue.getContactInformationDocument()))
         .expectComplete().verify();
+
+    Mono<UserDocument> resultUpdate = userRepository.findAll().next().flatMap(d -> {
+      d.setFirstName("test2");
+      return userRepository.save(d);
+    });
+
+    StepVerifier.create(resultUpdate)
+        .expectNextMatches(nextVal -> nextVal.getVersion().get().equals(1L));
   }
 }

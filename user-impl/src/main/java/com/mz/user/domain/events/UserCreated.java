@@ -2,6 +2,9 @@ package com.mz.user.domain.events;
 
 import com.mz.reactivedemo.common.api.events.Event;
 import com.mz.user.dto.UserDto;
+import java.util.Optional;
+
+import com.mz.user.messages.CreateUser;
 import org.immutables.value.Value;
 
 /**
@@ -10,7 +13,17 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface UserCreated extends Event {
 
-  UserDto user();
+  Optional<String> lastName();
+
+  Optional<String> firstName();
+
+  Optional<Long> version();
+
+//  Optional<CreateUser.ContactInfo> contactInfoCreated();
+
+  Optional<String> email();
+
+  Optional<String> phoneNumber();
 
   static ImmutableUserCreated.Builder builder() {
     return ImmutableUserCreated.builder();

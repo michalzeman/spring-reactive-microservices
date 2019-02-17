@@ -2,6 +2,7 @@ package com.mz.reactivedemo.shortener.impl;
 
 import com.mz.reactivedemo.common.ApplyResult;
 import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.utils.PatternMatching;
 import com.mz.reactivedemo.common.services.AbstractApplicationService;
 import com.mz.reactivedemo.shortener.ShortenerRepository;
 import com.mz.reactivedemo.shortener.ShortenerService;
@@ -43,18 +44,16 @@ public class ShortenerApplicationServiceImpl extends AbstractApplicationService<
 
   @Override
   protected Optional<ShortenerChangedEvent> mapToChangedEvent(Event event, ShortenerDto shortenerDto) {
-    if (casePattern(event, ShortenerCreated.class)) {
-      return Optional.of(ShortenerChangedEvent.builder()
-          .payload(shortenerDto)
-          .type(ShortenerEventType.CREATED)
-          .build());
-    } else if (casePattern(event, ShortenerUpdated.class)) {
-      return Optional.of(ShortenerChangedEvent.builder()
-          .payload(shortenerDto)
-          .type(ShortenerEventType.UPDATED)
-          .build());
-    }
-    return Optional.empty();
+    return PatternMatching.<ShortenerChangedEvent>match(event)
+        .when(ShortenerCreated.class, e -> ShortenerChangedEvent.builder()
+            .payload(shortenerDto)
+            .type(ShortenerEventType.CREATED)
+            .build())
+        .when(ShortenerUpdated.class, e -> ShortenerChangedEvent.builder()
+            .payload(shortenerDto)
+            .type(ShortenerEventType.CREATED)
+            .build())
+        .result();
   }
 
   @Override

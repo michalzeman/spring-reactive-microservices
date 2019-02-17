@@ -61,15 +61,15 @@ public class ShortenerEntity extends AbstractRootAggregate<ShortenerDto> {
   }
 
   @Override
-  protected ImmutableSet<Event> behavior(Command cmd) {
+  protected Optional<Event> behavior(Command cmd) {
     if (cmd instanceof CreateShortener) {
       create((CreateShortener) cmd);
-      return Sets.immutable.of(ImmutableShortenerCreated.builder().shortener(toResult()).build());
+      return Optional.of(ImmutableShortenerCreated.builder().shortener(toResult()).build());
     } else if (cmd instanceof UpdateShortener) {
       update((UpdateShortener) cmd);
-      return Sets.immutable.of(ImmutableShortenerUpdated.builder().shortener(toResult()).build());
+      return Optional.of(ImmutableShortenerUpdated.builder().shortener(toResult()).build());
     }
-    return Sets.immutable.empty();
+    return Optional.empty();
   }
 
   @Override

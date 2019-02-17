@@ -1,8 +1,8 @@
 package com.mz.reactivedemo.common;
 
 import com.mz.reactivedemo.common.api.events.Event;
-import org.eclipse.collections.api.set.ImmutableSet;
-import org.eclipse.collections.impl.factory.Sets;
+import java.util.Optional;
+
 import org.immutables.value.Value;
 
 /**
@@ -11,10 +11,9 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface ApplyResult<R> {
 
-  @Value.Default
-  default ImmutableSet<Event> events() {
-    return Sets.immutable.empty();
-  }
+  Optional<String> rootEntityId();
+
+  Optional<Event> event();
 
   R result();
 

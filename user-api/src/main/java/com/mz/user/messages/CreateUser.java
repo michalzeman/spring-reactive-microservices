@@ -3,6 +3,7 @@ package com.mz.user.messages;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.mz.reactivedemo.common.api.events.Command;
+import com.sun.corba.se.pept.transport.ContactInfo;
 import org.immutables.value.Value;
 
 import java.util.Optional;
@@ -19,9 +20,23 @@ public interface CreateUser extends Command {
 
   String lastName();
 
-  Optional<CreateContactInfo> contactInformation();
+  Optional<ContactInfo> contactInformation();
 
   static ImmutableCreateUser.Builder builder() {
     return ImmutableCreateUser.builder();
+  }
+
+  @Value.Immutable
+  @JsonSerialize(as = ImmutableContactInfo.class)
+  @JsonDeserialize(as = ImmutableContactInfo.class)
+  interface ContactInfo {
+
+    Optional<String> email();
+
+    Optional<String> phoneNumber();
+
+    static ImmutableContactInfo.Builder builder() {
+      return ImmutableContactInfo.builder();
+    }
   }
 }
