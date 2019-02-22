@@ -2,29 +2,30 @@ package com.mz.user.impl;
 
 import com.mz.reactivedemo.common.ApplyResult;
 import com.mz.reactivedemo.common.api.events.Event;
-import com.mz.reactivedemo.common.api.utils.PatternMatching;
+import com.mz.reactivedemo.common.api.utils.Match;
 import com.mz.reactivedemo.common.services.AbstractApplicationService;
 import com.mz.user.UserApplicationMessageBus;
 import com.mz.user.UserApplicationService;
 import com.mz.user.UserFunctions;
 import com.mz.user.UserRepository;
-import com.mz.user.domain.aggregate.UserRootEntity;
+import com.mz.user.domain.aggregate.UserAggregate;
+import com.mz.user.domain.aggregate.UserState;
 import com.mz.user.domain.events.ContactInfoCreated;
-import com.mz.user.domain.events.UserChangedEvent;
 import com.mz.user.domain.events.UserCreated;
-import com.mz.user.domain.events.UserEventType;
 import com.mz.user.dto.UserDto;
-import com.mz.user.messages.CreateUser;
-import com.mz.user.model.ContactInfoDocument;
+import com.mz.user.messages.UserPayload;
+import com.mz.user.messages.commands.CreateContactInfo;
+import com.mz.user.messages.commands.CreateUser;
+import com.mz.user.messages.events.UserChangedEvent;
+import com.mz.user.messages.events.UserEventType;
 import com.mz.user.model.UserDocument;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.time.Instant;
 import java.util.Optional;
 
 @Component
-public class UserApplicationServiceImpl extends AbstractApplicationService<UserDto, UserChangedEvent>
+public class UserApplicationServiceImpl extends AbstractApplicationService<UserDto, UserState, UserChangedEvent>
     implements UserApplicationService, UserFunctions {
 
   private final UserRepository repository;
@@ -38,16 +39,21 @@ public class UserApplicationServiceImpl extends AbstractApplicationService<UserD
 
   @Override
   protected Optional<UserChangedEvent> mapToChangedEvent(Event event, UserDto dto) {
-    return PatternMatching.<UserChangedEvent>match(event)
+    return Match.<UserChangedEvent>match(event)
         .when(UserCreated.class, e -> UserChangedEvent.builder()
-            .payload(dto)
+            .payload(mapCreatedToPayload.apply(e, dto))
             .type(UserEventType.USER_CREATED)
             .build())
-        .when(ContactInfoCreated.class, e -> UserChangedEvent.builder()
+        .when(ContactInfoCreated.class, e -> UserChangedEvent.builder() //TODO: this is wrong
             .type(UserEventType.CONTACT_INFO_CREATED)
-            .payload(dto)
+            .payload(UserPayload.builder()
+                .id(dto.id())
+                .version(dto.version())
+                .createdAt(dto.createdAt())
+                .contactInfo(mapContactCreatedToPlayload.apply(e))
+                .build())
             .build())
-        .result();
+        .get();
   }
 
   @Override
@@ -61,41 +67,31 @@ public class UserApplicationServiceImpl extends AbstractApplicationService<UserD
   }
 
   @Override
-  protected Mono<UserDto> applyToStorage(ApplyResult<UserDto> result) {
+  protected Mono<UserDto> applyToStorage(ApplyResult<UserState> result) {
     Optional<Mono<UserDocument>> dd = result.event().flatMap(event ->
-        PatternMatching.<Mono<UserDocument>>match(event)
-            .when(UserCreated.class, e -> {
-              UserDocument document = new UserDocument();
-              e.firstName().ifPresent(document::setFirstName);
-              e.lastName().ifPresent(document::setLastName);
-              mapContactInfoDoc(document, e.createdAt(), e.email(), e.phoneNumber());
-              document.setVersion(e.version());
-              document.setCreatedAt(e.createdAt());
-              return repository.save(document);
-            })
-            .when(ContactInfoCreated.class, e ->
-                repository.findById(e.userId())
-                    .flatMap(d -> {
-                      mapContactInfoDoc(d, e.createdAt(), e.email(), e.phoneNumber());
-                      d.setVersion(e.userVersion());
-                      return repository.save(d);
-                    })
-            ).result());
+        Match.<Mono<UserDocument>>match(event)
+            .when(UserCreated.class, e -> repository.save(mapCreatedToDocument.apply(e)))
+            .when(ContactInfoCreated.class, e -> repository.findById(e.userId())
+                .flatMap(d -> {
+                  d.setContactInformationDocument(mapContInfoCreatedToDoc.apply(e));
+                  d.setVersion(e.userVersion().orElse(null));
+                  return repository.save(d);
+                })
+            ).get());
 
     return dd.isPresent() ? dd.get().map(mapToDto) : Mono.empty();
-  }
-
-  private void mapContactInfoDoc(UserDocument document, Instant instant, Optional<String> email, Optional<String> s) {
-    ContactInfoDocument contactInfoDocument = new ContactInfoDocument();
-    contactInfoDocument.setCreatedAt(instant);
-    email.ifPresent(contactInfoDocument::setEmail);
-    s.ifPresent(contactInfoDocument::setPhoneNumber);
-    document.setContactInformationDocument(contactInfoDocument);
   }
 
   @Override
   public Mono<UserDto> createUser(CreateUser command) {
     return processChanges(Mono.just(command)
-        .map(cmd -> UserRootEntity.of().apply(cmd)));
+        .map(cmd -> UserAggregate.of().apply(cmd)));
+  }
+
+  @Override
+  public Mono<UserDto> createContactInfo(String userId, CreateContactInfo command) {
+    return processChanges(repository.findById(userId)
+        .map(mapToDto)
+        .map(dto -> UserAggregate.of(dto).apply(command)));
   }
 }

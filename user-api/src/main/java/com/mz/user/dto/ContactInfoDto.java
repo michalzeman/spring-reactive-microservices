@@ -15,7 +15,7 @@ import java.util.Optional;
 @JsonDeserialize(as = ImmutableContactInfoDto.class)
 public interface ContactInfoDto {
 
-  Optional<String> userId();
+  String userId();
 
   Instant createdAt();
 

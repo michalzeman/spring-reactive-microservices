@@ -7,12 +7,9 @@ import com.mz.reactivedemo.common.api.events.Command;
 import com.mz.reactivedemo.common.api.events.Event;
 import com.mz.reactivedemo.shortener.api.commands.CreateShortener;
 import com.mz.reactivedemo.shortener.api.commands.UpdateShortener;
-import com.mz.reactivedemo.shortener.api.dto.ImmutableShortenerDto;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import com.mz.reactivedemo.shortener.domain.events.ImmutableShortenerCreated;
 import com.mz.reactivedemo.shortener.domain.events.ImmutableShortenerUpdated;
-import org.eclipse.collections.api.set.ImmutableSet;
-import org.eclipse.collections.impl.factory.Sets;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -21,7 +18,7 @@ import java.util.UUID;
 /**
  * Created by zemi on 29/09/2018.
  */
-public class ShortenerEntity extends AbstractRootAggregate<ShortenerDto> {
+public class ShortenerAggregate extends AbstractRootAggregate<ShortenerState> {
 
   private Optional<Id> id = Optional.empty();
 
@@ -35,17 +32,17 @@ public class ShortenerEntity extends AbstractRootAggregate<ShortenerDto> {
 
   private Optional<Long> version = Optional.empty();
 
-  private ShortenerEntity() {
+  private ShortenerAggregate() {
 
   }
 
-  private ShortenerEntity(ShortenerDto shortenerDto) {
-    this.id = Optional.of(new Id(shortenerDto.id().get()));
+  private ShortenerAggregate(ShortenerDto shortenerDto) {
+    this.id = Optional.of(new Id(shortenerDto.id()));
     this.shortUrl = new ShortUrl(shortenerDto.shortUrl());
     this.url = new Url(shortenerDto.url());
     this.key = new StringValue(shortenerDto.key());
     this.createdAt = shortenerDto.createdAt();
-    this.version = shortenerDto.version();
+    this.version = Optional.of(shortenerDto.version());
   }
 
   private void create(CreateShortener cmd) {
@@ -67,29 +64,27 @@ public class ShortenerEntity extends AbstractRootAggregate<ShortenerDto> {
       return Optional.of(ImmutableShortenerCreated.builder().shortener(toResult()).build());
     } else if (cmd instanceof UpdateShortener) {
       update((UpdateShortener) cmd);
-      return Optional.of(ImmutableShortenerUpdated.builder().shortener(toResult()).build());
+      return Optional.of(ImmutableShortenerUpdated.builder().shortenerId(this.id.get().value).url(this.url.value).build());
     }
     return Optional.empty();
   }
 
   @Override
-  protected ShortenerDto toResult() {
-    ImmutableShortenerDto.Builder builder = com.mz.reactivedemo.shortener.api.dto.ShortenerDto.builder()
+  protected ShortenerState toResult() {
+    return ShortenerState.builder()
+        .id(id.map(i -> i.value))
         .key(this.key.value)
         .url(this.url.value)
         .shortUrl(this.shortUrl.value)
         .version(this.version)
-        .createdAt(this.createdAt);
-    this.id.ifPresent(id -> builder.id(id.value));
-
-    return builder.build();
+        .createdAt(this.createdAt).build();
   }
 
-  public static ShortenerEntity of(ShortenerDto shortenerDto) {
-    return new ShortenerEntity(shortenerDto);
+  public static ShortenerAggregate of(ShortenerDto shortenerDto) {
+    return new ShortenerAggregate(shortenerDto);
   }
 
-  public static ShortenerEntity of() {
-    return new ShortenerEntity();
+  public static ShortenerAggregate of() {
+    return new ShortenerAggregate();
   }
 }

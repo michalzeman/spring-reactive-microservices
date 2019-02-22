@@ -52,14 +52,14 @@ public class ShortenerProcessor {
       MessageChannel messageChannel = shortenerDinding.shortenerViewed();
       messageChannel.send(MessageBuilder
           .withPayload(payload)
-          .setHeader(KafkaHeaders.MESSAGE_KEY, payload.id().getBytes())
+          .setHeader(KafkaHeaders.MESSAGE_KEY, payload.eventId().getBytes())
           .build());
     } else if (event instanceof ShortenerChangedEvent) {
       ShortenerChangedEvent payload = (ShortenerChangedEvent)event;
       shortenerDinding.shortenerChangedOut()
           .send(MessageBuilder
               .withPayload(payload)
-              .setHeader(KafkaHeaders.MESSAGE_KEY, event.id().getBytes())
+              .setHeader(KafkaHeaders.MESSAGE_KEY, event.eventId().getBytes())
               .build());
     }
   }
@@ -68,7 +68,7 @@ public class ShortenerProcessor {
     shortenerDinding.shortenerDocumentOut()
         .send(MessageBuilder
             .withPayload(doc)
-            .setHeader(KafkaHeaders.MESSAGE_KEY, doc.id().get().getBytes())
+            .setHeader(KafkaHeaders.MESSAGE_KEY, doc.id().getBytes())
             .build());
   }
 

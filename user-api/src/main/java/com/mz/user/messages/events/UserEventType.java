@@ -1,4 +1,4 @@
-package com.mz.user.domain.events;
+package com.mz.user.messages.events;
 
 public enum UserEventType {
   USER_CREATED,

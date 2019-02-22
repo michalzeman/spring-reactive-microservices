@@ -8,10 +8,10 @@ import java.util.Optional;
  */
 public interface BasicDto {
 
-  Optional<String> id();
+  String id();
 
   Instant createdAt();
 
-  Optional<Long> version();
+  Long version();
 
 }

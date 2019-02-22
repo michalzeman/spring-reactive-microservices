@@ -56,7 +56,7 @@ public class ShortenerHandler implements ErrorHandler {
 
   Mono<ServerResponse> getById(ServerRequest request) {
     log.info("getById() -> ");
-    return shortenerQuery.get(request.pathVariable("id"))
+    return shortenerQuery.get(request.pathVariable("eventId"))
         .flatMap(r -> ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON_UTF8).body(fromObject(r)))
         .onErrorResume(this::onError);
@@ -73,7 +73,7 @@ public class ShortenerHandler implements ErrorHandler {
   Mono<ServerResponse> create(ServerRequest request) {
     log.info("create() -> ");
     return request.bodyToMono(CreateShortener.class)
-        .flatMap(createShortener -> shortenerService.create(createShortener))
+        .flatMap(shortenerService::create)
         .flatMap(r -> ServerResponse.ok()
             .contentType(MediaType.APPLICATION_JSON_UTF8).body(fromObject(r)))
         .onErrorResume(this::onError);
@@ -81,7 +81,7 @@ public class ShortenerHandler implements ErrorHandler {
 
   Mono<ServerResponse> update(ServerRequest request) {
     log.info("update() -> ");
-    return Mono.just(request.pathVariable("id"))
+    return Mono.just(request.pathVariable("eventId"))
         .publishOn(Schedulers.parallel())
         .flatMap(id -> request.bodyToMono(UpdateShortener.class)
             .flatMap(shortenerService::update)
@@ -110,8 +110,8 @@ public class ShortenerHandler implements ErrorHandler {
               .route(GET("/").and(accept(MediaType.APPLICATION_JSON_UTF8)), handler::getAll)
               .andRoute(GET("/errors").and(accept(MediaType.APPLICATION_JSON_UTF8)), handler::getError)
               .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON_UTF8)), handler::create)
-              .andRoute(PUT("/{id}").and(accept(MediaType.APPLICATION_JSON_UTF8)), handler::update)
-              .andRoute(GET("/{id}").and(accept(MediaType.APPLICATION_JSON_UTF8)), handler::getById)
+              .andRoute(PUT("/{eventId}").and(accept(MediaType.APPLICATION_JSON_UTF8)), handler::update)
+              .andRoute(GET("/{eventId}").and(accept(MediaType.APPLICATION_JSON_UTF8)), handler::getById)
               .andRoute(GET("/map/{key}")
                   .and(accept(MediaType.APPLICATION_JSON_UTF8)), handler::map)
               .andRoute(GET("/health/ticks")

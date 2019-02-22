@@ -23,7 +23,7 @@ public interface ShortenerService {
 //
 //  Flux<ShortenerDto> documents();
 //
-//  Mono<ShortenerDto> get(String id);
+//  Mono<ShortenerDto> get(String eventId);
 //
 //  Mono<String> map(String key);
 }

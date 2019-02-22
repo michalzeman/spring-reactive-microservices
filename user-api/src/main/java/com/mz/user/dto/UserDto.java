@@ -14,9 +14,9 @@ import java.util.Optional;
 @JsonDeserialize(as = ImmutableUserDto.class)
 public interface UserDto extends BasicDto {
 
-  Optional<String> lastName();
+  String lastName();
 
-  Optional<String> firstName();
+  String firstName();
 
   Optional<ContactInfoDto> contactInformation();
 

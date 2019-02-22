@@ -7,4 +7,12 @@ import org.immutables.value.Value;
  */
 @Value.Immutable
 public interface ShortenerUpdated extends ShortenerChanged {
+
+  String shortenerId();
+
+  String url();
+
+  static ImmutableShortenerUpdated.Builder builder() {
+    return ImmutableShortenerUpdated.builder();
+  }
 }

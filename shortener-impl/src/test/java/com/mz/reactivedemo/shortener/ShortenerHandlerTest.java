@@ -105,7 +105,7 @@ public class ShortenerHandlerTest {
 
     assertTrue(result.url().equals(url));
     assertFalse(result.key().isEmpty());
-    assertTrue(result.id().isPresent());
+    assertTrue(!result.id().isEmpty());
   }
 
   @Test
@@ -113,21 +113,21 @@ public class ShortenerHandlerTest {
 
     String id = service.create(CreateShortener.builder()
         .url("www.tes.com").build())
-        .block().id().get();
+        .block().id();
 
     String url = "www.testLongUpdate.org";
     UpdateShortener request = UpdateShortener.builder()
         .id(id)
         .url(url).build();
 
-    ShortenerDto result = webTestClient.put().uri("/shorteners/{id}", id).accept(MediaType.APPLICATION_JSON_UTF8)
+    ShortenerDto result = webTestClient.put().uri("/shorteners/{eventId}", id).accept(MediaType.APPLICATION_JSON_UTF8)
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromObject(request))
         .exchange()
         .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
         .expectBody(ShortenerDto.class).returnResult().getResponseBody();
 
-    ShortenerDto validateResult = webTestClient.get().uri("/shorteners/{id}", result.id().get()).accept(MediaType
+    ShortenerDto validateResult = webTestClient.get().uri("/shorteners/{eventId}", result.id()).accept(MediaType
         .APPLICATION_JSON_UTF8)
         .exchange()
         .expectStatus()

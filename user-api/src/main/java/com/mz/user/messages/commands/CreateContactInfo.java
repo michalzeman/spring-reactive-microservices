@@ -1,7 +1,8 @@
-package com.mz.user.messages;
+package com.mz.user.messages.commands;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.mz.reactivedemo.common.api.events.Command;
 import org.immutables.value.Value;
 
 import java.util.Optional;
@@ -12,7 +13,7 @@ import java.util.Optional;
 @Value.Immutable
 @JsonSerialize(as = ImmutableCreateContactInfo.class)
 @JsonDeserialize(as = ImmutableCreateContactInfo.class)
-public interface CreateContactInfo {
+public interface CreateContactInfo extends Command {
 
   Optional<String> email();
 

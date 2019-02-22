@@ -1,12 +1,12 @@
 package com.mz.user.model;
 
-import java.util.Optional;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.OptionalLong;
 
 /**
  * Created by zemi on 02/01/2019.
@@ -18,7 +18,7 @@ public class UserDocument {
   private String id;
 
   @Version
-  private Optional<Long> version = Optional.empty();
+  private Long version;
 
   private String firstName;
 
@@ -35,7 +35,7 @@ public class UserDocument {
   public UserDocument(String id, String firstName, String lastName, Long version, Instant createdAt,
                       ContactInfoDocument contactInformationDocument) {
     this.id = id;
-    this.version = Optional.ofNullable(version);
+    this.version = version;
     this.firstName = firstName;
     this.lastName = lastName;
     this.createdAt = createdAt;
@@ -74,11 +74,11 @@ public class UserDocument {
     this.id = id;
   }
 
-  public Optional<Long> getVersion() {
+  public Long getVersion() {
     return version;
   }
 
-  public void setVersion(Optional<Long> version) {
+  public void setVersion(Long version) {
     this.version = version;
   }
 

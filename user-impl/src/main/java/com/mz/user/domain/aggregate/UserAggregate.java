@@ -7,8 +7,8 @@ import com.mz.reactivedemo.common.api.events.Event;
 import com.mz.user.domain.events.ContactInfoCreated;
 import com.mz.user.domain.events.UserCreated;
 import com.mz.user.dto.UserDto;
-import com.mz.user.messages.CreateContactInfo;
-import com.mz.user.messages.CreateUser;
+import com.mz.user.messages.commands.CreateContactInfo;
+import com.mz.user.messages.commands.CreateUser;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -16,7 +16,7 @@ import java.util.Optional;
 /**
  * Created by zemi on 02/01/2019.
  */
-public class UserRootEntity extends AbstractRootAggregate<UserDto> {
+public class UserAggregate extends AbstractRootAggregate<UserState> {
 
   private Optional<Id> id = Optional.empty();
 
@@ -30,14 +30,14 @@ public class UserRootEntity extends AbstractRootAggregate<UserDto> {
 
   private Instant createdAt;
 
-  private UserRootEntity() {
+  private UserAggregate() {
   }
 
-  private UserRootEntity(UserDto userDto) {
-    id = Optional.of(new Id(userDto.id().get()));
-    userDto.firstName().ifPresent(f -> firstName = new FirstName(f));
-    userDto.lastName().ifPresent(l -> lastName = new LastName(l));
-    version = userDto.version();
+  private UserAggregate(UserDto userDto) {
+    id = Optional.of(new Id(userDto.id()));
+    firstName = new FirstName(userDto.firstName());
+    lastName = new LastName(userDto.lastName());
+    version = Optional.of(userDto.version());
     createdAt = userDto.createdAt();
 
     contactInformation = userDto.contactInformation()
@@ -86,21 +86,21 @@ public class UserRootEntity extends AbstractRootAggregate<UserDto> {
 
   public UserDto toDto() {
     return UserDto.builder()
-        .id(id.map(i -> i.value))
+//        .eventId(eventId.map(i -> i.value))
         .firstName(this.firstName.value)
         .lastName(this.lastName.value)
         .createdAt(this.createdAt)
-        .version(this.version)
+//        .version(this.version)
         .contactInformation(contactInformation.map(ContactInfo::toDto))
         .build();
   }
 
-  public static UserRootEntity of(UserDto userDto) {
-    return new UserRootEntity(userDto);
+  public static UserAggregate of(UserDto userDto) {
+    return new UserAggregate(userDto);
   }
 
-  public static UserRootEntity of() {
-    return new UserRootEntity();
+  public static UserAggregate of() {
+    return new UserAggregate();
   }
 
   @Override
@@ -114,7 +114,20 @@ public class UserRootEntity extends AbstractRootAggregate<UserDto> {
   }
 
   @Override
-  protected UserDto toResult() {
-    return toDto();
+  protected UserState toResult() {
+    return UserState.builder()
+        .firstName(this.firstName.value)
+        .lastName(this.lastName.value)
+        .id(this.id.map(i -> i.value))
+        .version(this.version)
+        .createdAt(this.createdAt)
+        .contactInformation(this.contactInformation.map(c ->
+          UserState.ContactInfoState.builder()
+              .email(c.email().map(e -> e.value))
+              .phoneNumber(c.phoneNumber().map(p -> p.value))
+              .createdAt(this.createdAt)
+              .build()
+        ))
+        .build();
   }
 }

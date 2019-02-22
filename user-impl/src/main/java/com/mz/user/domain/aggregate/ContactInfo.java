@@ -30,7 +30,7 @@ public interface ContactInfo {
         .createdAt(createdAt())
         .email(email().map(m -> m.value))
         .phoneNumber(phoneNumber().map(n -> n.value))
-        .userId(userId().map(id -> id.value))
+//        .userId(userId().map(eventId -> eventId.value))
         .build();
   }
 

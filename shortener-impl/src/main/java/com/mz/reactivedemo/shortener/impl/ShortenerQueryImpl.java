@@ -57,7 +57,7 @@ public class ShortenerQueryImpl implements ShortenerQuery {
             .ifPresent(s -> this.shortenerMessageBus.publishEvent(ShortenerViewed.builder()
                 .key(s.getKey())
                 .number(1L)
-                .id(UUID.randomUUID().toString())
+                .eventId(UUID.randomUUID().toString())
                 .build())))
         .map(this::mapShortenerToValue);
   }

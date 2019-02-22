@@ -6,15 +6,11 @@ import com.mz.statistic.ShortenerSubscriber;
 import com.mz.statistic.StatisticRepository;
 import com.mz.statistic.model.EventType;
 import com.mz.statistic.model.StatisticDocument;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.kafka.test.rule.KafkaEmbedded;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
@@ -26,7 +22,6 @@ import reactor.test.StepVerifier;
 import java.time.Instant;
 import java.util.function.Consumer;
 
-import static com.mz.reactivedemo.shortener.api.topics.ShortenerTopics.*;
 import static org.mockito.ArgumentMatchers.any;
 
 /**
@@ -103,22 +98,20 @@ public class StatisticServiceImplTest {
     String eventId = "EventId";
     ShortenerViewed event1 = ShortenerViewed.builder()
         .number(1L)
-        .createdAt(Instant.now())
         .key(keyUrl1)
-        .id(eventId)
+        .eventId(eventId)
         .build();
     ShortenerViewed event2 = ShortenerViewed.builder()
         .number(1L)
-        .createdAt(Instant.now())
         .key(keyUrl1)
-        .id(eventId)
+        .eventId(eventId)
         .build();
 
     StatisticDocument statisticDocument = new StatisticDocument();
     statisticDocument.setNumber(event1.number());
     statisticDocument.setUrl(event1.key());
-    statisticDocument.setCreatedAt(event1.createdAt());
-    statisticDocument.setEventId(event1.id());
+    statisticDocument.setCreatedAt(event1.eventCreatedAt());
+    statisticDocument.setEventId(event1.eventId());
 
     eventSink.next(event1);
     eventSink.next(event2);

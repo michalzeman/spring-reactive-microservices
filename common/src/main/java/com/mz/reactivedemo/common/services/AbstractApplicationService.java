@@ -15,9 +15,9 @@ import java.util.function.Supplier;
  * M - changed event massage type published to out
  * R - repository type
  */
-public abstract class AbstractApplicationService<D, M extends Event> {
+public abstract class AbstractApplicationService<D, S, M extends Event> {
 
-  protected final Supplier<Predicate<Optional<ApplyResult<D>>>> isApplyResultPresent = () -> Optional::isPresent;
+  protected final Supplier<Predicate<Optional<ApplyResult<S>>>> isApplyResultPresent = () -> Optional::isPresent;
 
   abstract protected Optional<M> mapToChangedEvent(Event event, D dto);
 
@@ -25,12 +25,12 @@ public abstract class AbstractApplicationService<D, M extends Event> {
 
   abstract protected void publishDocumentMessage(D doc);
 
-  abstract protected Mono<D> applyToStorage(ApplyResult<D> result);
+  abstract protected Mono<D> applyToStorage(ApplyResult<S> result);
 
-  protected Mono<D> processChanges(Mono<Optional<ApplyResult<D>>> result) {
+  protected Mono<D> processChanges(Mono<Optional<ApplyResult<S>>> result) {
     return result
         .filter(isApplyResultPresent.get())
-        .map(or -> or.get())
+        .map(Optional::get)
         .flatMap(r -> applyToStorage(r)
             .doOnSuccess(d -> r.event().ifPresent(e -> mapToChangedEvent(e, d).ifPresent(this::publishChangedEvent))))
         .doOnSuccess(this::publishDocumentMessage);

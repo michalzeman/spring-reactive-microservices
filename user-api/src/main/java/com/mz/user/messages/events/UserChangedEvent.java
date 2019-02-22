@@ -1,13 +1,13 @@
-package com.mz.user.domain.events;
+package com.mz.user.messages.events;
 
 import com.mz.reactivedemo.common.api.events.Event;
-import com.mz.user.dto.UserDto;
+import com.mz.user.messages.UserPayload;
 import org.immutables.value.Value;
 
 @Value.Immutable
 public interface UserChangedEvent extends Event {
 
-  UserDto payload();
+  UserPayload payload();
 
   UserEventType type();
 

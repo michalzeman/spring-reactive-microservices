@@ -42,7 +42,7 @@ class UserRepositoryTest {
             nextValue.getLastName().equals("LastName")
                 && nextValue.getFirstName().equals("FirstName")
                 && Objects.nonNull(nextValue.getId())
-                && Objects.nonNull(nextValue.getVersion().get())
+                && Objects.nonNull(nextValue.getVersion())
                 && Objects.nonNull(nextValue.getContactInformationDocument()))
         .expectComplete().verify();
 
@@ -52,6 +52,6 @@ class UserRepositoryTest {
     });
 
     StepVerifier.create(resultUpdate)
-        .expectNextMatches(nextVal -> nextVal.getVersion().get().equals(1L));
+        .expectNextMatches(nextVal -> nextVal.getVersion().equals(1L)).expectComplete().verify();
   }
 }

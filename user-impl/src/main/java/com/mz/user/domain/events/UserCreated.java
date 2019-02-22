@@ -1,10 +1,11 @@
 package com.mz.user.domain.events;
 
 import com.mz.reactivedemo.common.api.events.Event;
-import com.mz.user.dto.UserDto;
+
 import java.util.Optional;
 
-import com.mz.user.messages.CreateUser;
+import com.mz.user.messages.ContactInfoPayload;
+import com.mz.user.messages.UserPayload;
 import org.immutables.value.Value;
 
 /**
@@ -19,7 +20,7 @@ public interface UserCreated extends Event {
 
   Optional<Long> version();
 
-//  Optional<CreateUser.ContactInfo> contactInfoCreated();
+  Optional<ContactInfoPayload> contactInfoCreated();
 
   Optional<String> email();
 

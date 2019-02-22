@@ -45,14 +45,14 @@ public class StatisticServiceImpl implements StatisticService {
   }
 
   private Mono<StatisticDocument> processViewedEvent(ShortenerViewed event) {
-    return repository.findByEventId(event.id())
+    return repository.findByEventId(event.eventId())
         .next()
         .switchIfEmpty(Mono.defer(() -> {
           StatisticDocument statisticDocument = new StatisticDocument();
           statisticDocument.setNumber(event.number());
           statisticDocument.setUrl(event.key());
-          statisticDocument.setCreatedAt(event.createdAt());
-          statisticDocument.setEventId(event.id());
+          statisticDocument.setCreatedAt(event.eventCreatedAt());
+          statisticDocument.setEventId(event.eventId());
           statisticDocument.setEventType(EventType.VIEWED);
           return  repository.save(statisticDocument);
         }));
@@ -61,9 +61,9 @@ public class StatisticServiceImpl implements StatisticService {
   private Mono<StatisticDocument> processShortenerChangedEvent(ShortenerChangedEvent event) {
     StatisticDocument statisticDocument = new StatisticDocument();
     statisticDocument.setNumber(1L);
-    statisticDocument.setUrl(event.payload().key());
-    statisticDocument.setCreatedAt(event.createdAt());
-    statisticDocument.setEventId(event.id());
+    statisticDocument.setUrl(event.payload().key().get());
+    statisticDocument.setCreatedAt(event.eventCreatedAt());
+    statisticDocument.setEventId(event.eventId());
     switch (event.type()) {
       case CREATED:
         statisticDocument.setEventType(EventType.CREATED);

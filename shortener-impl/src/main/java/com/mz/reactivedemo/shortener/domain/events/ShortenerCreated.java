@@ -1,5 +1,6 @@
 package com.mz.reactivedemo.shortener.domain.events;
 
+import com.mz.reactivedemo.shortener.domain.aggregate.ShortenerState;
 import org.immutables.value.Value;
 
 /**
@@ -7,4 +8,10 @@ import org.immutables.value.Value;
  */
 @Value.Immutable
 public interface ShortenerCreated extends ShortenerChanged {
+
+  ShortenerState shortener();
+
+  static ImmutableShortenerCreated.Builder builder() {
+    return ImmutableShortenerCreated.builder();
+  }
 }

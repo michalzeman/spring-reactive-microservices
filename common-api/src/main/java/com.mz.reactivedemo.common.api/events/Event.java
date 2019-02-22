@@ -12,12 +12,12 @@ import java.util.UUID;
 public interface Event {
 
   @Value.Default
-  default String id() {
+  default String eventId() {
     return UUID.randomUUID().toString();
   }
 
   @Value.Default
-  default Instant createdAt() {
+  default Instant eventCreatedAt() {
     return Instant.now();
   }
 }

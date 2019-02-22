@@ -15,7 +15,7 @@ import java.util.Optional;
 @JsonDeserialize(as = ImmutableShortenerDto.class)
 public interface ShortenerDto {
 
-  Optional<String> id();
+  String id();
 
   String key();
 
@@ -25,7 +25,7 @@ public interface ShortenerDto {
 
   Instant createdAt();
 
-  Optional<Long> version();
+  Long version();
 
   static ImmutableShortenerDto.Builder builder() {
     return ImmutableShortenerDto.builder();
