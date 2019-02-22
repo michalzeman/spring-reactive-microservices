@@ -16,7 +16,9 @@ There are three services:
 - when user is loading some url based on some key representing shortened url, MS is generaring event ShortenerViewed and publishing it into the Kafka topic "shortener-viewed"
 - this MS is designed or trying to be designed in DDD style and representing Shortener Bounded Context.
 - Changes of Shortener aggregate like it was created, updated ... are captured by ShortenerChangedEvent and published into the Kafka topic "shortener-changed"
-- Result of changes done on aggregate is also publist as a document event into the Kafka topic "shortener-document". This document event representing current state of Shortener arggregate and it could be used for others services for building of local views in order to avoid direct communication between service. This document event is also posiible to use for creating of views e.g. comused by ElaticSearch. Maybe it would be implemented later like CQRS.
+- Result of changes done on aggregate is also published as a document event into the Kafka topic "shortener-document". 
+This document event representing current state of Shortener aggregate and it could be used for others services for 
+building of local views in order to avoid direct communication between service. This document event is also possible to use for creating of views e.g. comused by ElaticSearch. Maybe it would be implemented later like CQRS.
 
 ## Statistic MS
 - this MS is downstream of Shortener MS
