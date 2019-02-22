@@ -5,8 +5,9 @@ This demo is based on:
 - Spring Webflux 
 - Apache Kafka
 
-There are three services:
+There are services:
 
+- Api-gateway
 - Statistic MS
 - Shortener MS
 - User MS
