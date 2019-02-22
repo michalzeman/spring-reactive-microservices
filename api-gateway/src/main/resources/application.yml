@@ -1,0 +1,16 @@
+service:
+  statistic:
+    uri: http://localhost:8081
+  shortener:
+    uri: http://localhost:8082
+  user:
+    uri: http://localhost:8083
+
+spring:
+  cloud:
+    gateway:
+#      routes:
+#        - id: statistic_id
+#          url: http://localhost:8081
+#          predicates:
+#          - Path: /statistics/**
