@@ -1,4 +1,4 @@
-package com.mz.reactivedemo.common.api.utils;
+package com.mz.reactivedemo.common.api.util;
 
 import java.util.Objects;
 

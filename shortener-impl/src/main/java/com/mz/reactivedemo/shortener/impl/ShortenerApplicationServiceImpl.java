@@ -2,7 +2,7 @@ package com.mz.reactivedemo.shortener.impl;
 
 import com.mz.reactivedemo.common.ApplyResult;
 import com.mz.reactivedemo.common.api.events.Event;
-import com.mz.reactivedemo.common.api.utils.Match;
+import com.mz.reactivedemo.common.api.util.Match;
 import com.mz.reactivedemo.common.services.AbstractApplicationService;
 import com.mz.reactivedemo.shortener.ShortenerRepository;
 import com.mz.reactivedemo.shortener.ShortenerService;

@@ -5,11 +5,12 @@ import com.mz.reactivedemo.common.aggregates.Id;
 import com.mz.reactivedemo.common.aggregates.StringValue;
 import com.mz.reactivedemo.common.api.events.Command;
 import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.util.Match;
 import com.mz.reactivedemo.shortener.api.commands.CreateShortener;
 import com.mz.reactivedemo.shortener.api.commands.UpdateShortener;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
-import com.mz.reactivedemo.shortener.domain.events.ImmutableShortenerCreated;
-import com.mz.reactivedemo.shortener.domain.events.ImmutableShortenerUpdated;
+import com.mz.reactivedemo.shortener.domain.events.ShortenerCreated;
+import com.mz.reactivedemo.shortener.domain.events.ShortenerUpdated;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -59,14 +60,15 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerState> {
 
   @Override
   protected Optional<Event> behavior(Command cmd) {
-    if (cmd instanceof CreateShortener) {
-      create((CreateShortener) cmd);
-      return Optional.of(ImmutableShortenerCreated.builder().shortener(toResult()).build());
-    } else if (cmd instanceof UpdateShortener) {
-      update((UpdateShortener) cmd);
-      return Optional.of(ImmutableShortenerUpdated.builder().shortenerId(this.id.get().value).url(this.url.value).build());
-    }
-    return Optional.empty();
+    return Match.<Event>match(cmd)
+        .when(CreateShortener.class, c -> {
+          create(c);
+          return ShortenerCreated.builder().shortener(toResult()).build();
+        })
+        .when(UpdateShortener.class, c -> {
+          update(c);
+          return ShortenerUpdated.builder().shortenerId(this.id.get().value).url(this.url.value).build();
+        }).get();
   }
 
   @Override
