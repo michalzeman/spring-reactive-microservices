@@ -2,7 +2,7 @@ package com.mz.user.impl;
 
 import com.mz.reactivedemo.common.ApplyResult;
 import com.mz.reactivedemo.common.api.events.Event;
-import com.mz.reactivedemo.common.api.utils.Match;
+import com.mz.reactivedemo.common.api.util.Match;
 import com.mz.reactivedemo.common.services.AbstractApplicationService;
 import com.mz.user.UserApplicationMessageBus;
 import com.mz.user.UserApplicationService;

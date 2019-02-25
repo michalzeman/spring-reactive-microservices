@@ -56,6 +56,20 @@ class UserAggregateTest {
   }
 
   @Test
+  void createUser_nullCommand() {
+    Assertions.assertFalse(UserAggregate.of().apply(null).isPresent());
+  }
+
+  @Test
+  void createContactInfo() {
+    UserDocument userDocument = new UserDocument(UUID.randomUUID().toString(), FIST_NAME, LAST_NAME, 1L,
+        CREATED_AT, null);
+    UserDto userDto = UserFunctions.mapToDto.apply(userDocument);
+    UserAggregate subject = UserAggregate.of(userDto);
+    Assertions.assertTrue(subject.apply(CreateContactInfo.builder().email("test@test.com").build()).isPresent());
+  }
+
+  @Test
   void ofTest() {
     UserDocument userDocument = new UserDocument(UUID.randomUUID().toString(), FIST_NAME, LAST_NAME, 1L,
         CREATED_AT, null);
@@ -72,7 +86,6 @@ class UserAggregateTest {
     Assertions.assertTrue(userDto.lastName().equals(userDocument.getLastName()));
     Assertions.assertTrue(userDto.createdAt().equals(userDocument.getCreatedAt()));
 
-//    Assertions.assertTrue(contactInfoState.createdAt().equals(contactInfoDocument.getCreatedAt()));
     Assertions.assertTrue(contactInfoState.email().get().equals("test@test.com"));
   }
 
