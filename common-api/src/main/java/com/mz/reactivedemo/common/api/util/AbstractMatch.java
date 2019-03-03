@@ -2,11 +2,11 @@ package com.mz.reactivedemo.common.api.util;
 
 import java.util.Optional;
 
-abstract class AbstractMatching {
+abstract class AbstractMatch {
 
   protected final Object o;
 
-  protected AbstractMatching(Object o) {
+  protected AbstractMatch(Object o) {
     this.o = o;
   }
 

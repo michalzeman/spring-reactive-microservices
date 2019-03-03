@@ -111,6 +111,11 @@ public class UserAggregate extends AbstractRootAggregate<UserState> {
         .build();
   }
 
+  @Override
+  protected Optional<String> getRootEntityId() {
+    return id.map(i -> i.value);
+  }
+
   public static UserAggregate of(UserDto userDto) {
     return new UserAggregate(userDto);
   }

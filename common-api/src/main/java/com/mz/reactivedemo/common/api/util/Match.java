@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class Match<R> extends AbstractMatching {
+public class Match<R> extends AbstractMatch {
 
   private Optional<R> result = Optional.empty();
 

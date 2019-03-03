@@ -7,11 +7,11 @@ import java.util.function.Supplier;
 
 public abstract class Try<T> {
 
-  abstract boolean isSuccess();
+  abstract public boolean isSuccess();
 
-  abstract boolean isFailure();
+  abstract public boolean isFailure();
 
-  abstract Optional<T> toOptional();
+  abstract public Optional<T> toOptional();
 
   abstract public <R> Try<R> map(FunctionThrowable<T, R> f);
 
@@ -44,17 +44,17 @@ public abstract class Try<T> {
     }
 
     @Override
-    boolean isSuccess() {
+    public boolean isSuccess() {
       return true;
     }
 
     @Override
-    boolean isFailure() {
+    public boolean isFailure() {
       return false;
     }
 
     @Override
-    Optional<T> toOptional() {
+    public Optional<T> toOptional() {
       return Optional.of(result);
     }
 
@@ -99,17 +99,17 @@ public abstract class Try<T> {
     }
 
     @Override
-    boolean isSuccess() {
+    public boolean isSuccess() {
       return false;
     }
 
     @Override
-    boolean isFailure() {
+    public boolean isFailure() {
       return true;
     }
 
     @Override
-    Optional<T> toOptional() {
+    public Optional<T> toOptional() {
       return Optional.empty();
     }
 

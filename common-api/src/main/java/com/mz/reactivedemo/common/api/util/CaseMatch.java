@@ -2,17 +2,17 @@ package com.mz.reactivedemo.common.api.util;
 
 import java.util.Objects;
 
-public class CaseMatching extends AbstractMatching {
+public class CaseMatch extends AbstractMatch {
 
   private boolean executed = false;
 
-  private CaseMatching(Object o) {
+  private CaseMatch(Object o) {
     super(o);
   }
 
 
 
-  public <T> CaseMatching when(Class<T> type, Runnable statement) {
+  public <T> CaseMatch when(Class<T> type, Runnable statement) {
     Objects.requireNonNull(type);
     Objects.requireNonNull(statement);
     if (casePattern(o, type) && !executed) {
@@ -22,12 +22,8 @@ public class CaseMatching extends AbstractMatching {
     return this;
   }
 
-//  public void build() {
-//    statement.ifPresent(s -> s.run());
-//  }
-
-  static public CaseMatching match(Object o) {
-    return new CaseMatching(o);
+  static public CaseMatch match(Object o) {
+    return new CaseMatch(o);
   }
 
 }

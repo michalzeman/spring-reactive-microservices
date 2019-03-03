@@ -7,13 +7,11 @@ import com.mz.user.dto.UserDto;
 import com.mz.user.messages.ContactInfoPayload;
 import com.mz.user.messages.commands.CreateContactInfo;
 import com.mz.user.messages.commands.CreateUser;
-import com.mz.user.model.ContactInfoDocument;
 import com.mz.user.model.UserDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -51,13 +49,13 @@ class UserAggregateTest {
 
   private void createUserTest(Command cmd) {
     UserAggregate subject = UserAggregate.of();
-    Optional<ApplyResult<UserState>> result = subject.apply(cmd);
-    Assertions.assertTrue(result.map(ApplyResult::event).isPresent());
+    ApplyResult<UserState> result = subject.apply(cmd).get();
+    Assertions.assertTrue(result.event().isPresent());
   }
 
   @Test
   void createUser_nullCommand() {
-    Assertions.assertFalse(UserAggregate.of().apply(null).isPresent());
+    Assertions.assertFalse(UserAggregate.of().apply(null).isSuccess());
   }
 
   @Test
@@ -66,7 +64,7 @@ class UserAggregateTest {
         CREATED_AT, null);
     UserDto userDto = UserFunctions.mapToDto.apply(userDocument);
     UserAggregate subject = UserAggregate.of(userDto);
-    Assertions.assertTrue(subject.apply(CreateContactInfo.builder().email("test@test.com").build()).isPresent());
+    Assertions.assertTrue(subject.apply(CreateContactInfo.builder().email("test@test.com").build()).isSuccess());
   }
 
   @Test

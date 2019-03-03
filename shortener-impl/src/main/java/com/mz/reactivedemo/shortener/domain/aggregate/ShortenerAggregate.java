@@ -82,6 +82,11 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerState> {
         .createdAt(this.createdAt).build();
   }
 
+  @Override
+  protected Optional<String> getRootEntityId() {
+    return id.map(i -> i.value);
+  }
+
   public static ShortenerAggregate of(ShortenerDto shortenerDto) {
     return new ShortenerAggregate(shortenerDto);
   }

@@ -16,7 +16,7 @@ class CaseMatchingTest {
     List<Integer> testing = new ArrayList<>();
 
 
-    CaseMatching.match(param)
+    CaseMatch.match(param)
         .when(ArrayList.class, () -> testing.add(1))
         .when(Set.class, () -> testing.add(2))
         .when(List.class, () -> testing.add(3));
