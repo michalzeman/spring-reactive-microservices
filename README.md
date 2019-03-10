@@ -15,7 +15,7 @@ There are services:
 ## Shortener MS
 - responsible by creating of short url
 - when user is loading some url based on some key representing shortened url, MS is generaring event ShortenerViewed and publishing it into the Kafka topic "shortener-viewed"
-- this MS is designed or trying to be designed in DDD style and representing Shortener Bounded Context.
+- this MS is designed or trying to be designed in DDD style and is representing Shortener Bounded Context.
 - Changes of Shortener aggregate like it was created, updated ... are captured by ShortenerChangedEvent and published into the Kafka topic "shortener-changed"
 - Result of changes done on aggregate is also published as a document event into the Kafka topic "shortener-document". 
 This document event representing current state of Shortener aggregate and it could be used for others services for 
@@ -25,7 +25,7 @@ building of local views in order to avoid direct communication between service. 
 - this MS is downstream of Shortener MS
 - responsible by calculation of some static related with Shortener MS
 - consumer of "shortener-viewed" Kafka topic
-- providing of API for VIEWS like how many times was display particular URL
+- providing of API for VIEWS like how many times was displayed particular URL
 
 ## User MS
 - TBD not ready

@@ -1,6 +1,7 @@
 package com.mz.reactivedemo.common.api.util;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class CaseMatch extends AbstractMatch {
 
@@ -16,6 +17,25 @@ public class CaseMatch extends AbstractMatch {
     Objects.requireNonNull(type);
     Objects.requireNonNull(statement);
     if (casePattern(o, type) && !executed) {
+      statement.run();
+      this.executed = true;
+    }
+    return this;
+  }
+
+  public <T> CaseMatch when(Class<T> type, Consumer<T> statement) {
+    Objects.requireNonNull(type);
+    Objects.requireNonNull(statement);
+    if (casePattern(o, type) && !executed) {
+      statement.accept(type.cast(o));
+      this.executed = true;
+    }
+    return this;
+  }
+
+  public <T> CaseMatch orElse(Runnable statement) {
+    Objects.requireNonNull(statement);
+    if (!executed) {
       statement.run();
       this.executed = true;
     }

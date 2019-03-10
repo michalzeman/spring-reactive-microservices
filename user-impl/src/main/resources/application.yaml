@@ -1,2 +1,18 @@
 server:
   port : 8083
+
+spring.cloud.stream:
+  bindings:
+    output:
+      contentType: application/json
+      user-document.destination: user-document
+      user-changed.destination: user-changed
+
+  kafka.streams:
+    binder:
+      application-id: user-ms
+      brokers: localhost #192.168.99.100
+      configuration:
+        commit.interval.ms: 500
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde

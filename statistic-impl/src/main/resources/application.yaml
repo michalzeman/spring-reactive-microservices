@@ -3,17 +3,18 @@ server:
 
 spring.cloud.stream:
   bindings:
-    input.consumer.application-id: url-statisti
-    output.contentType: application/json
-    shortener-viewed.destination: shortener-viewed
-    shortener-document.destination: shortener-document
-    shortener-changed.destination: shortener-changed
+    output:
+      contentType: application/json
+      shortener-viewed.destination: shortener-viewed
+      shortener-document.destination: shortener-document
+      shortener-changed.destination: shortener-changed
 
   kafka.streams:
     binder:
+      application-id: url-statisti
       brokers: localhost #192.168.99.100
       configuration:
-        commit.interval.ms: 1000
+        commit.interval.ms: 500
         default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
         default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
 

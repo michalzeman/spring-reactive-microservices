@@ -5,7 +5,6 @@ import com.mz.reactivedemo.common.utils.Logger;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import com.mz.reactivedemo.shortener.api.events.ShortenerChangedEvent;
 import com.mz.reactivedemo.shortener.api.events.ShortenerViewed;
-import com.mz.reactivedemo.shortener.impl.ShortenerApplicationServiceImpl;
 import com.mz.reactivedemo.shortener.streams.ApplicationMessageBus;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.PostConstruct;
+import java.util.UUID;
 
 /**
  * Created by zemi on 07/10/2018.
@@ -24,15 +24,15 @@ import javax.annotation.PostConstruct;
 @Service
 public class ShortenerProcessor {
 
-  private Logger logger = new Logger(LogFactory.getLog(ShortenerApplicationServiceImpl.class));
+  private Logger logger = new Logger(LogFactory.getLog(ShortenerProcessor.class));
 
   private final ApplicationMessageBus shortenerMessageBus;
 
-  private final ShortenerBinding shortenerDinding;
+  private final ShortenerBinding shortenerBinding;
 
-  public ShortenerProcessor(ApplicationMessageBus shortenerMessageBus, ShortenerBinding shortenerDinding) {
+  public ShortenerProcessor(ApplicationMessageBus shortenerMessageBus, ShortenerBinding shortenerBinding) {
     this.shortenerMessageBus = shortenerMessageBus;
-    this.shortenerDinding = shortenerDinding;
+    this.shortenerBinding = shortenerBinding;
   }
 
   @PostConstruct
@@ -49,14 +49,14 @@ public class ShortenerProcessor {
   private void processEvent(Event event) {
     if (event instanceof ShortenerViewed) {
       ShortenerViewed payload = (ShortenerViewed) event;
-      MessageChannel messageChannel = shortenerDinding.shortenerViewed();
+      MessageChannel messageChannel = shortenerBinding.shortenerViewed();
       messageChannel.send(MessageBuilder
           .withPayload(payload)
           .setHeader(KafkaHeaders.MESSAGE_KEY, payload.eventId().getBytes())
           .build());
     } else if (event instanceof ShortenerChangedEvent) {
       ShortenerChangedEvent payload = (ShortenerChangedEvent)event;
-      shortenerDinding.shortenerChangedOut()
+      shortenerBinding.shortenerChangedOut()
           .send(MessageBuilder
               .withPayload(payload)
               .setHeader(KafkaHeaders.MESSAGE_KEY, event.eventId().getBytes())
@@ -65,10 +65,10 @@ public class ShortenerProcessor {
   }
 
   private void processDocument(ShortenerDto doc) {
-    shortenerDinding.shortenerDocumentOut()
+    shortenerBinding.shortenerDocumentOut()
         .send(MessageBuilder
             .withPayload(doc)
-            .setHeader(KafkaHeaders.MESSAGE_KEY, doc.id().getBytes())
+            .setHeader(KafkaHeaders.MESSAGE_KEY, UUID.randomUUID().toString().getBytes())
             .build());
   }
 
