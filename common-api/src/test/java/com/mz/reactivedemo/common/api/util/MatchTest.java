@@ -1,11 +1,13 @@
 package com.mz.reactivedemo.common.api.util;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.Test;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MatchTest {
 
@@ -22,5 +24,17 @@ class MatchTest {
             .get().get();
 
         assertTrue(result.equals("List"));
+    }
+
+    @Test
+    void orElseGet() {
+        List<String> list = Arrays.asList("list");
+
+        String result = Match.<String>match(list)
+            .when(String.class, type -> "String")
+            .when(Map.class, type -> "List2")
+            .orElseGet(() -> "orElseGet");
+
+        assertTrue(result.equals("orElseGet"));
     }
 }
