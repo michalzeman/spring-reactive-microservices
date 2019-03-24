@@ -27,7 +27,7 @@ public class Match<R> extends AbstractMatch {
   }
 
   public R orElseGet(Supplier<? extends R> other) {
-    return other.get();
+    return result.orElseGet(other::get);
   }
 
   static public <R> Match<R> match(Object o) {
