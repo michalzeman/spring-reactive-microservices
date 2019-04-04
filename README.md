@@ -4,6 +4,7 @@ This demo is based on:
 - Spring boot
 - Spring Webflux 
 - Apache Kafka
+- Akka persistence for event sourcing support
 
 There are services:
 
