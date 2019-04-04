@@ -1,16 +1,15 @@
 package com.mz.user;
 
-import com.mz.user.domain.events.ContactInfoCreated;
-import com.mz.user.domain.events.UserCreated;
+import com.mz.user.domain.event.ContactInfoCreated;
+import com.mz.user.domain.event.UserCreated;
 import com.mz.user.dto.ContactInfoDto;
 import com.mz.user.dto.UserDto;
-import com.mz.user.messages.ContactInfoPayload;
-import com.mz.user.messages.UserPayload;
-import com.mz.user.model.ContactInfoDocument;
-import com.mz.user.model.UserDocument;
+import com.mz.user.message.ContactInfoPayload;
+import com.mz.user.message.UserPayload;
+import com.mz.user.view.ContactInfoDocument;
+import com.mz.user.view.UserDocument;
 
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public interface UserFunctions {
@@ -42,40 +41,39 @@ public interface UserFunctions {
 
   Function<UserCreated, UserDocument> mapCreatedToDocument = e -> {
     UserDocument document = new UserDocument();
-    e.firstName().ifPresent(document::setFirstName);
-    e.lastName().ifPresent(document::setLastName);
-    e.contactInfoCreated().ifPresent(c ->
-        document.setContactInformationDocument(UserFunctions.mapContactInfoPayloadToDoc.apply(c))
-    );
+    document.setFirstName(e.firstName());
+    document.setLastName(e.lastName());
+    ContactInfoDocument contactInfoDocument = new ContactInfoDocument();
+    e.email().ifPresent(contactInfoDocument::setEmail);
+    e.phoneNumber().ifPresent(contactInfoDocument::setPhoneNumber);
+    document.setContactInformationDocument(contactInfoDocument);
     document.setCreatedAt(e.eventCreatedAt());
     return document;
   };
 
-  BiFunction<UserCreated, UserDto, UserPayload> mapCreatedToPayload = (e, dto) ->
-      UserPayload.builder()
-          .id(dto.id())
-          .version(dto.version())
-          .createdAt(dto.createdAt())
-          .firstName(e.firstName())
-          .lastName(e.lastName())
-          .contactInfo(e.contactInfoCreated())
-          .build();
+  Function<UserCreated, UserPayload> mapCreatedToPayload = (e) -> {
+    ContactInfoPayload infoPayload = ContactInfoPayload.builder()
+        .userId(e.id())
+        .email(e.email())
+        .phoneNumber(e.phoneNumber())
+        .build();
+    return UserPayload.builder()
+        .id(e.id())
+        .version(e.version())
+        .createdAt(e.eventCreatedAt())
+        .firstName(e.firstName())
+        .lastName(e.lastName())
+        .contactInfo(infoPayload)
+        .version(e.version())
+        .build();
+  };
 
-  Function<ContactInfoCreated, ContactInfoPayload> mapContactCreatedToPlayload = e ->
+  Function<ContactInfoCreated, ContactInfoPayload> mapContactCreatedToPayload = e ->
       ContactInfoPayload.builder()
           .userId(e.userId())
           .phoneNumber(e.phoneNumber())
           .email(e.email())
           .build();
-
-
-  Function<ContactInfoPayload, ContactInfoDocument> mapContactInfoPayloadToDoc = payload -> {
-    ContactInfoDocument contactInfoDocument = new ContactInfoDocument();
-//    contactInfoDocument.setCreatedAt();
-    payload.email().ifPresent(contactInfoDocument::setEmail);
-    payload.phoneNumber().ifPresent(contactInfoDocument::setPhoneNumber);
-    return contactInfoDocument;
-  };
 
   Function<ContactInfoCreated, ContactInfoDocument> mapContInfoCreatedToDoc = created -> {
     ContactInfoDocument contactInfoDocument = new ContactInfoDocument();

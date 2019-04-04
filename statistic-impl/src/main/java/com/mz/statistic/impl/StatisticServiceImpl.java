@@ -1,9 +1,9 @@
 package com.mz.statistic.impl;
 
 import com.mz.reactivedemo.common.utils.Logger;
-import com.mz.reactivedemo.shortener.api.events.ShortenerChangedEvent;
+import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
+import com.mz.reactivedemo.shortener.api.event.ShortenerViewed;
 import com.mz.statistic.ShortenerSubscriber;
-import com.mz.reactivedemo.shortener.api.events.ShortenerViewed;
 import com.mz.statistic.StatisticRepository;
 import com.mz.statistic.StatisticService;
 import com.mz.statistic.model.EventType;
@@ -38,9 +38,13 @@ public class StatisticServiceImpl implements StatisticService {
   public void subscribeToEvents() {
     shortenerSubscriber.eventsShortenerViewed()
         .flatMap(this::processViewedEvent)
+        .doOnError(exp -> log.log().error("eventsShortenerViewed event stream error", exp))
+        .retry()
         .subscribe();
     shortenerSubscriber.shortenerChanged()
         .flatMap(this::processShortenerChangedEvent)
+        .doOnError(exp -> log.log().error("shortenerChanged event stream error", exp))
+        .retry()
         .subscribe();
   }
 
@@ -61,7 +65,7 @@ public class StatisticServiceImpl implements StatisticService {
   private Mono<StatisticDocument> processShortenerChangedEvent(ShortenerChangedEvent event) {
     StatisticDocument statisticDocument = new StatisticDocument();
     statisticDocument.setNumber(1L);
-    statisticDocument.setUrl(event.payload().key().get());
+    event.payload().key().ifPresent(statisticDocument::setUrl);
     statisticDocument.setCreatedAt(event.eventCreatedAt());
     statisticDocument.setEventId(event.eventId());
     switch (event.type()) {

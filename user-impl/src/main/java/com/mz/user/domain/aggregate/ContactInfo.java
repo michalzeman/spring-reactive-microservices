@@ -1,6 +1,6 @@
 package com.mz.user.domain.aggregate;
 
-import com.mz.reactivedemo.common.aggregates.Id;
+import com.mz.reactivedemo.common.aggregate.Id;
 import com.mz.user.dto.ContactInfoDto;
 import org.immutables.value.Value;
 
@@ -13,7 +13,7 @@ import java.util.Optional;
 @Value.Immutable
 public interface ContactInfo {
 
-  Optional<Id> userId();
+  Id userId();
 
   Optional<Email> email();
 

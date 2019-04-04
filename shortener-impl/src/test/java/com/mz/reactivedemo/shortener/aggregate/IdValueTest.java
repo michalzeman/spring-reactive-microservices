@@ -1,6 +1,6 @@
 package com.mz.reactivedemo.shortener.aggregate;
 
-import com.mz.reactivedemo.common.aggregates.Id;
+import com.mz.reactivedemo.common.aggregate.Id;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

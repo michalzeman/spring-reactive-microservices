@@ -1,6 +1,6 @@
 package com.mz.user.domain.aggregate;
 
-import com.mz.reactivedemo.common.aggregates.StringValue;
+import com.mz.reactivedemo.common.aggregate.StringValue;
 
 /**
  * Created by zemi on 02/01/2019.

@@ -1,8 +1,9 @@
 package com.mz.user;
 
 import com.mz.user.dto.UserDto;
-import com.mz.user.messages.commands.CreateContactInfo;
-import com.mz.user.messages.commands.CreateUser;
+import com.mz.user.message.command.CreateContactInfo;
+import com.mz.user.message.command.CreateUser;
+import com.mz.user.view.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +16,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

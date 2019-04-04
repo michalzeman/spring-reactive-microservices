@@ -1,14 +1,12 @@
 package com.mz.reactivedemo.shortener;
 
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
-import com.mz.reactivedemo.shortener.api.events.ShortenerChangedEvent;
-import com.mz.reactivedemo.shortener.api.events.ShortenerEventType;
-import com.mz.reactivedemo.shortener.api.events.ShortenerPayload;
-import com.mz.reactivedemo.shortener.domain.aggregate.ShortenerState;
-import com.mz.reactivedemo.shortener.domain.events.ShortenerUpdated;
-import com.mz.reactivedemo.shortener.model.ShortenerDocument;
+import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
+import com.mz.reactivedemo.shortener.api.event.ShortenerEventType;
+import com.mz.reactivedemo.shortener.api.event.ShortenerPayload;
+import com.mz.reactivedemo.shortener.domain.event.ShortenerUpdated;
+import com.mz.reactivedemo.shortener.view.ShortenerDocument;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public interface ShortenerFunctions {
@@ -30,20 +28,12 @@ public interface ShortenerFunctions {
     return document;
   };
 
-  Function<ShortenerState, ShortenerDocument> mapStateToDocument = state -> {
-    ShortenerDocument document =
-        new ShortenerDocument(state.key(), state.url(), state.shortUrl(), state
-            .createdAt(), state.version().orElse(null));
-    state.id().ifPresent(document::setId);
-    return document;
-  };
-
-  BiFunction<ShortenerUpdated, ShortenerPayload, ShortenerChangedEvent> mapUpdatedToChangedEvent = (updated, payload) ->
+  Function<ShortenerUpdated, ShortenerChangedEvent> mapUpdatedToChangedEvent = (updated) ->
       ShortenerChangedEvent.builder()
           .payload(ShortenerPayload.builder()
-              .id(payload.id())
+              .id(updated.shortenerId())
               .url(updated.url())
-              .version(payload.version())
+              .version(updated.version())
               .build())
           .type(ShortenerEventType.UPDATED)
           .build();

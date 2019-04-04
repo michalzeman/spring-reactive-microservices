@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 
+import java.io.Serializable;
 import java.time.Instant;
-import java.util.Optional;
 
 /**
  * Created by zemi on 07/10/2018.
@@ -13,7 +13,7 @@ import java.util.Optional;
 @Value.Immutable
 @JsonSerialize(as = ImmutableShortenerDto.class)
 @JsonDeserialize(as = ImmutableShortenerDto.class)
-public interface ShortenerDto {
+public interface ShortenerDto extends Serializable {
 
   String id();
 

@@ -1,6 +1,6 @@
 package com.mz.reactivedemo.shortener;
 
-import com.mz.reactivedemo.shortener.model.ShortenerDocument;
+import com.mz.reactivedemo.shortener.view.ShortenerDocument;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;

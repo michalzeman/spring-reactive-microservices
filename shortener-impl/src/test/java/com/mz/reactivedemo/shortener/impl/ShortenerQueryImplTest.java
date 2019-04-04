@@ -1,8 +1,9 @@
 package com.mz.reactivedemo.shortener.impl;
 
 import com.mz.reactivedemo.shortener.ShortenerRepository;
-import com.mz.reactivedemo.shortener.model.ShortenerDocument;
 import com.mz.reactivedemo.shortener.streams.ApplicationMessageBus;
+import com.mz.reactivedemo.shortener.view.ShortenerDocument;
+import com.mz.reactivedemo.shortener.view.impl.ShortenerQueryImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

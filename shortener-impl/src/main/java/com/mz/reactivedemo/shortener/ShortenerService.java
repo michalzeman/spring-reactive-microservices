@@ -1,11 +1,8 @@
 package com.mz.reactivedemo.shortener;
 
-import com.mz.reactivedemo.common.api.events.Event;
-import com.mz.reactivedemo.shortener.api.commands.CreateShortener;
-import com.mz.reactivedemo.shortener.api.commands.UpdateShortener;
+import com.mz.reactivedemo.shortener.api.command.CreateShortener;
+import com.mz.reactivedemo.shortener.api.command.UpdateShortener;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
-import com.mz.reactivedemo.shortener.api.events.ShortenerEvent;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**

@@ -3,6 +3,7 @@ package com.mz.reactivedemo.common.api.util;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class Try<T> {
@@ -17,6 +18,10 @@ public abstract class Try<T> {
 
   abstract public <R> Try<R> flatMap(FunctionThrowable<T, Try<R>> f);
 
+  abstract public Try<T> onFailure(Consumer<Throwable> f);
+
+  abstract public Try<T> onSuccess(Consumer<T> f);
+
   abstract public T getOrElse(Supplier<T> f);
 
   abstract public T get();
@@ -28,6 +33,10 @@ public abstract class Try<T> {
     } catch (Throwable error) {
       return new Failure<>(error);
     }
+  }
+
+  static public <T> Try<T> error(Throwable error) {
+    return new Failure(error);
   }
 
   static public class Success<T> extends Try<T> {
@@ -81,6 +90,18 @@ public abstract class Try<T> {
     }
 
     @Override
+    public Try<T> onFailure(Consumer<Throwable> f) {
+      return this;
+    }
+
+    @Override
+    public Try<T> onSuccess(Consumer<T> f) {
+      Objects.requireNonNull(f);
+      f.accept(result);
+      return this;
+    }
+
+    @Override
     public T getOrElse(Supplier<T> f) {
       return result;
     }
@@ -121,6 +142,18 @@ public abstract class Try<T> {
     @Override
     public <R> Try<R> flatMap(FunctionThrowable<T, Try<R>> f) {
       return (Try<R>) this;
+    }
+
+    @Override
+    public Try<T> onFailure(Consumer<Throwable> f) {
+      Objects.requireNonNull(f);
+      f.accept(error);
+      return this;
+    }
+
+    @Override
+    public Try<T> onSuccess(Consumer<T> f) {
+      return this;
     }
 
     @Override

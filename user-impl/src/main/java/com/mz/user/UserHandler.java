@@ -2,8 +2,9 @@ package com.mz.user;
 
 import com.mz.reactivedemo.common.errors.ErrorHandler;
 import com.mz.user.dto.UserDto;
-import com.mz.user.messages.commands.CreateContactInfo;
-import com.mz.user.messages.commands.CreateUser;
+import com.mz.user.message.command.CreateContactInfo;
+import com.mz.user.message.command.CreateUser;
+import com.mz.user.view.UserQuery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Bean;

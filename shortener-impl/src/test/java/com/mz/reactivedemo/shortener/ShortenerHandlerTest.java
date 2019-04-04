@@ -1,8 +1,8 @@
 package com.mz.reactivedemo.shortener;
 
 import com.mz.reactivedemo.common.errors.ErrorMessage;
-import com.mz.reactivedemo.shortener.api.commands.CreateShortener;
-import com.mz.reactivedemo.shortener.api.commands.UpdateShortener;
+import com.mz.reactivedemo.shortener.api.command.CreateShortener;
+import com.mz.reactivedemo.shortener.api.command.UpdateShortener;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.test.rule.KafkaEmbedded;
@@ -18,9 +17,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import static com.mz.reactivedemo.shortener.api.topics.ShortenerTopics.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static com.mz.reactivedemo.shortener.api.topics.ShortenerTopics.*;
 
 /**
  * Created by zemi on 29/05/2018.
@@ -111,23 +110,30 @@ public class ShortenerHandlerTest {
   @Test
   public void update() {
 
-    String id = service.create(CreateShortener.builder()
-        .url("www.tes.com").build())
-        .block().id();
+    CreateShortener createRequest = CreateShortener.builder()
+        .url("www.testLong.org")
+        .build();
+
+    String id = webTestClient.post().uri("/shorteners")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromObject(createRequest))
+        .exchange()
+        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectBody(ShortenerDto.class).returnResult().getResponseBody().id();
 
     String url = "www.testLongUpdate.org";
     UpdateShortener request = UpdateShortener.builder()
         .id(id)
         .url(url).build();
 
-    ShortenerDto result = webTestClient.put().uri("/shorteners/{eventId}", id).accept(MediaType.APPLICATION_JSON_UTF8)
+    webTestClient.put().uri("/shorteners/{eventId}", id).accept(MediaType.APPLICATION_JSON_UTF8)
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromObject(request))
         .exchange()
         .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
-        .expectBody(ShortenerDto.class).returnResult().getResponseBody();
+        .expectStatus().is2xxSuccessful();
 
-    ShortenerDto validateResult = webTestClient.get().uri("/shorteners/{eventId}", result.id()).accept(MediaType
+    ShortenerDto validateResult = webTestClient.get().uri("/shorteners/{eventId}", id).accept(MediaType
         .APPLICATION_JSON_UTF8)
         .exchange()
         .expectStatus()

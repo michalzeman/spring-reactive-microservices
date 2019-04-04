@@ -1,14 +1,21 @@
 package com.mz.user.impl;
 
+import com.mz.reactivedemo.adapter.persistance.persistence.AggregateFactory;
+import com.mz.reactivedemo.adapter.persistance.persistence.PersistenceRepository;
+import com.mz.reactivedemo.common.CommandResult;
 import com.mz.user.UserApplicationMessageBus;
-import com.mz.user.UserRepository;
+import com.mz.user.UserFunctions;
+import com.mz.user.domain.event.ContactInfoCreated;
+import com.mz.user.domain.event.UserCreated;
 import com.mz.user.dto.UserDto;
-import com.mz.user.messages.commands.CreateContactInfo;
-import com.mz.user.messages.commands.CreateUser;
-import com.mz.user.messages.events.UserChangedEvent;
-import com.mz.user.messages.events.UserEventType;
-import com.mz.user.model.ContactInfoDocument;
-import com.mz.user.model.UserDocument;
+import com.mz.user.message.command.CreateContactInfo;
+import com.mz.user.message.command.CreateUser;
+import com.mz.user.message.event.UserChangedEvent;
+import com.mz.user.message.event.UserEventType;
+import com.mz.user.view.ContactInfoDocument;
+import com.mz.user.view.UserDocument;
+import com.mz.user.view.UserRepository;
+import org.eclipse.collections.impl.factory.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +42,9 @@ class UserApplicationServiceImplTest {
   @Mock
   UserApplicationMessageBus messageBus;
 
+  @Mock
+  PersistenceRepository persistenceRepository;
+
   @InjectMocks
   UserApplicationServiceImpl stub;
 
@@ -60,6 +70,15 @@ class UserApplicationServiceImplTest {
 
     when(userRepository.save(any(UserDocument.class))).thenReturn(Mono.just(userDocument));
 
+    when(persistenceRepository.create(any(String.class), any(CreateUser.class), any(AggregateFactory.class)))
+        .thenReturn(Mono.just(CommandResult.of(UserFunctions.mapToDto.apply(userDocument),
+            Lists.immutable.of(UserCreated.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .id(id)
+                .version(1L)
+                .build()))));
+
     Mono<UserDto> result = stub.createUser(cmd);
 
     StepVerifier.create(result)
@@ -77,7 +96,6 @@ class UserApplicationServiceImplTest {
     Assertions.assertTrue(argument.getValue().payload().firstName().get().equals(firstName));
     Assertions.assertTrue(argument.getValue().payload().id().equals(id));
     Assertions.assertTrue(argument.getValue().payload().version().equals(1L));
-    Assertions.assertTrue(argument.getValue().payload().createdAt().equals(createdAt));
   }
 
   @Test
@@ -101,8 +119,17 @@ class UserApplicationServiceImplTest {
 
     ArgumentCaptor<UserChangedEvent> argument = ArgumentCaptor.forClass(UserChangedEvent.class);
 
-    when(userRepository.findById(id)).thenReturn(Mono.just(userDocument));
     when(userRepository.save(any(UserDocument.class))).thenReturn(Mono.just(userDocumentUpdated));
+
+    when(persistenceRepository.update(any(String.class), any(CreateContactInfo.class)))
+        .thenReturn(Mono.just(CommandResult.of(UserFunctions.mapToDto.apply(userDocument),
+            Lists.immutable.of(ContactInfoCreated.builder()
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .userId(id)
+                .userVersion(2L)
+                .createdAt(createdAt)
+                .build()))));
 
     Mono<UserDto> result = stub.createContactInfo(id,
         CreateContactInfo.builder().email(email).phoneNumber(phoneNumber).build());

@@ -1,7 +1,7 @@
 package com.mz.statistic;
 
-import com.mz.reactivedemo.shortener.api.events.ShortenerChangedEvent;
-import com.mz.reactivedemo.shortener.api.events.ShortenerViewed;
+import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
+import com.mz.reactivedemo.shortener.api.event.ShortenerViewed;
 import reactor.core.publisher.Flux;
 
 /**

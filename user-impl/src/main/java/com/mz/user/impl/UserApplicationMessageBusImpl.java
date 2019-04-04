@@ -3,12 +3,13 @@ package com.mz.user.impl;
 import com.mz.reactivedemo.common.api.events.Event;
 import com.mz.user.UserApplicationMessageBus;
 import com.mz.user.dto.UserDto;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.ReplayProcessor;
 import reactor.core.scheduler.Schedulers;
+
+import java.util.Optional;
 
 @Service
 public class UserApplicationMessageBusImpl implements UserApplicationMessageBus {

@@ -1,9 +1,10 @@
 package com.mz.reactivedemo.shortener;
 
 import com.mz.reactivedemo.common.errors.ErrorHandler;
-import com.mz.reactivedemo.shortener.api.commands.CreateShortener;
-import com.mz.reactivedemo.shortener.api.commands.UpdateShortener;
+import com.mz.reactivedemo.shortener.api.command.CreateShortener;
+import com.mz.reactivedemo.shortener.api.command.UpdateShortener;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
+import com.mz.reactivedemo.shortener.view.ShortenerQuery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Bean;

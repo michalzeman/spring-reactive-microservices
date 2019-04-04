@@ -1,27 +1,28 @@
 package com.mz.reactivedemo.shortener.impl;
 
-import com.mz.reactivedemo.common.ApplyResult;
+import com.mz.reactivedemo.adapter.persistance.persistence.AggregateFactory;
+import com.mz.reactivedemo.adapter.persistance.persistence.PersistenceRepository;
+import com.mz.reactivedemo.adapter.persistance.persistence.impl.AggregateFactoryImpl;
 import com.mz.reactivedemo.common.api.events.Event;
 import com.mz.reactivedemo.common.api.util.Match;
-import com.mz.reactivedemo.common.services.AbstractApplicationService;
+import com.mz.reactivedemo.common.service.ApplicationService;
 import com.mz.reactivedemo.shortener.ShortenerRepository;
 import com.mz.reactivedemo.shortener.ShortenerService;
-import com.mz.reactivedemo.shortener.api.commands.CreateShortener;
-import com.mz.reactivedemo.shortener.api.commands.UpdateShortener;
+import com.mz.reactivedemo.shortener.api.command.CreateShortener;
+import com.mz.reactivedemo.shortener.api.command.UpdateShortener;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
-import com.mz.reactivedemo.shortener.api.events.ShortenerChangedEvent;
-import com.mz.reactivedemo.shortener.api.events.ShortenerEventType;
+import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
+import com.mz.reactivedemo.shortener.api.event.ShortenerEventType;
 import com.mz.reactivedemo.shortener.domain.aggregate.ShortenerAggregate;
-import com.mz.reactivedemo.shortener.domain.aggregate.ShortenerState;
-import com.mz.reactivedemo.shortener.domain.events.ShortenerCreated;
-import com.mz.reactivedemo.shortener.domain.events.ShortenerUpdated;
+import com.mz.reactivedemo.shortener.domain.event.ShortenerCreated;
+import com.mz.reactivedemo.shortener.domain.event.ShortenerUpdated;
 import com.mz.reactivedemo.shortener.streams.ApplicationMessageBus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.Optional;
+import java.util.UUID;
 
 import static com.mz.reactivedemo.shortener.ShortenerFunctions.*;
 
@@ -29,8 +30,7 @@ import static com.mz.reactivedemo.shortener.ShortenerFunctions.*;
  * Created by zemi on 29/05/2018.
  */
 @Service
-public class ShortenerApplicationServiceImpl extends AbstractApplicationService<ShortenerDto, ShortenerState,
-    ShortenerChangedEvent> implements ShortenerService {
+public class ShortenerApplicationServiceImpl implements ShortenerService {
 
   private static final Log log = LogFactory.getLog(ShortenerApplicationServiceImpl.class);
 
@@ -38,51 +38,69 @@ public class ShortenerApplicationServiceImpl extends AbstractApplicationService<
 
   private final ShortenerRepository repository;
 
-  public ShortenerApplicationServiceImpl(ShortenerRepository repository, ApplicationMessageBus applicationMessageBus) {
+  private final PersistenceRepository persistenceRepository;
+
+  private final AggregateFactory<ShortenerDto> aggregateFactory;
+
+  private final ApplicationService<ShortenerDto> applicationService;
+
+  public ShortenerApplicationServiceImpl(ShortenerRepository repository, ApplicationMessageBus applicationMessageBus,
+                                         PersistenceRepository persistenceRepository) {
     this.applicationMessageBus = applicationMessageBus;
     this.repository = repository;
+    this.persistenceRepository = persistenceRepository;
+    this.aggregateFactory = new AggregateFactoryImpl<>(ShortenerAggregate::of, ShortenerAggregate::of);
+    this.applicationService = ApplicationService.<ShortenerDto>of(this::updateView, this::publishChangedEvent,
+      this::publishDocumentMessage);
   }
 
-  @Override
-  protected Optional<ShortenerChangedEvent> mapToChangedEvent(Event event, ShortenerDto shortenerDto) {
-    return Match.<ShortenerChangedEvent>match(event)
+  protected void publishChangedEvent(Event event) {
+    Match.<ShortenerChangedEvent>match(event)
         .when(ShortenerCreated.class, e -> ShortenerChangedEvent.builder()
-            .payload(mapDtoToPayload.apply(shortenerDto))
+            .payload(mapDtoToPayload.apply(e.shortener()))
             .type(ShortenerEventType.CREATED)
             .build())
-        .when(ShortenerUpdated.class, e -> mapUpdatedToChangedEvent.apply(e, mapDtoToPayload.apply(shortenerDto)))
-        .get();
+        .when(ShortenerUpdated.class, mapUpdatedToChangedEvent)
+        .get().ifPresent(applicationMessageBus::publishEvent);
   }
 
-  @Override
-  protected void publishChangedEvent(Event event) {
-    applicationMessageBus.publishEvent(event);
-  }
-
-  @Override
   protected void publishDocumentMessage(ShortenerDto doc) {
     applicationMessageBus.publishShortenerDto(doc);
   }
 
-  @Override
-  protected Mono<ShortenerDto> applyToStorage(ApplyResult<ShortenerState> result) {
-    return repository.save(mapStateToDocument.apply(result.result()))
-        .map(mapToDTO);
+  private Mono<ShortenerDto> updateView(ShortenerDto dto) {
+    return repository.save(mapToDocument.apply(dto)).map(mapToDTO);
   }
 
   @Override
   public Mono<ShortenerDto> create(CreateShortener createShortener) {
     log.debug("create() ->");
-    return processChanges(Mono.just(createShortener)
-        .map(cmd -> ShortenerAggregate.of().apply(cmd)));
+    return persistenceRepository.create(UUID.randomUUID().toString(), createShortener, aggregateFactory)
+        .flatMap(applicationService::processResult);
   }
 
   @Override
   public Mono<ShortenerDto> update(UpdateShortener shortener) {
     log.debug("update() ->");
-    return processChanges(repository.findById(shortener.id())
-        .map(mapToDTO)
-        .map(d -> ShortenerAggregate.of(d).apply(shortener)));
-
+    return persistenceRepository.<ShortenerDto>update(shortener.id(), shortener)
+        .flatMap(applicationService::processResult);
   }
+
+//  private Mono<ShortenerDto> processResult(CommandResult<ShortenerDto> result) {
+//    switch (result.status()) {
+//      case MODIFIED:
+//        if (result.state().isPresent()) {
+//          return repository.save(mapToDocument.apply(result.state().get()))
+//              .doOnSuccess(s -> result.domainEvents().forEach(e -> publishChangedEvent(e)))
+//              .map(mapToDTO).doOnSuccess(this::publishDocumentMessage);
+//        } else {
+//          return Mono.empty();
+//        }
+//      case ERROR:
+//        return Mono.error(result.error().orElseGet(() -> new RuntimeException("Generic error")));
+//      case NOT_MODIFIED:
+//      default:
+//        return Mono.empty();
+//    }
+//  }
 }

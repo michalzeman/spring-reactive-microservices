@@ -9,14 +9,15 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>shortener-api</module>
         <module>shortener-impl</module>
         <module>statistic-impl</module>
         <module>common</module>
-        <module>shortener-api</module>
         <module>user-impl</module>
         <module>user-api</module>
         <module>common-api</module>
         <module>api-gateway</module>
+        <module>common-persistence</module>
     </modules>
 
 
@@ -38,10 +39,17 @@
         <!-- Use most recent failsafe and surefire plugin versions -->
         <maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
         <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
-        <!-- Maven plugins -->
-        <!--<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>-->
 
         <spring-cloud.version>Finchley.SR1</spring-cloud.version>
+        <reactive-demo.version>0.0.1-SNAPSHOT</reactive-demo.version>
+        <eclipse-collections.version>9.2.0</eclipse-collections.version>
+        <org.immutables.version>2.7.5</org.immutables.version>
+        <jackson-databind.version>2.9.5</jackson-databind.version>
+        <mockito-junit-jupiter.version>2.23.0</mockito-junit-jupiter.version>
+        <akka.version>2.5.21</akka.version>
+        <akka-persistence-cassandra.version>0.23</akka-persistence-cassandra.version>
+        <leveldbjni-all.version>1.8</leveldbjni-all.version>
+        <leveldb.version>0.7</leveldb.version>
     </properties>
 
     <dependencyManagement>
@@ -51,13 +59,13 @@
             <dependency>
                 <groupId>org.eclipse.collections</groupId>
                 <artifactId>eclipse-collections-api</artifactId>
-                <version>9.2.0</version>
+                <version>${eclipse-collections.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.eclipse.collections</groupId>
                 <artifactId>eclipse-collections</artifactId>
-                <version>9.2.0</version>
+                <version>${eclipse-collections.version}</version>
             </dependency>
 
 
@@ -72,47 +80,92 @@
             <dependency>
                 <artifactId>common</artifactId>
                 <groupId>com.mz</groupId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>${reactive-demo.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.mz</groupId>
+                <artifactId>common-persistence</artifactId>
+                <version>${reactive-demo.version}</version>
             </dependency>
 
             <dependency>
                 <artifactId>common-api</artifactId>
                 <groupId>com.mz</groupId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>${reactive-demo.version}</version>
             </dependency>
 
             <dependency>
                 <artifactId>shortener-api</artifactId>
                 <groupId>com.mz</groupId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>${reactive-demo.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.mz</groupId>
                 <artifactId>user-api</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>${reactive-demo.version}</version>
             </dependency>
 
             <!-- Provide immutable -->
             <dependency>
                 <groupId>org.immutables</groupId>
                 <artifactId>value</artifactId>
-                <version>2.7.1</version>
+                <version>${org.immutables.version}</version>
                 <scope>provided</scope>
             </dependency>
 
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.9.5</version>
+                <version>${jackson-databind.version}</version>
                 <scope>compile</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>2.23.0</version>
+                <version>${mockito-junit-jupiter.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- Akka persistence -->
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-persistence-query_2.12</artifactId>
+                <version>${akka.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-persistence_2.12</artifactId>
+                <version>${akka.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-persistence-query_2.12</artifactId>
+                <version>${akka.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-persistence-cassandra_2.12</artifactId>
+                <version>${akka-persistence-cassandra.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-cluster_2.12</artifactId>
+                <version>${akka.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.fusesource.leveldbjni</groupId>
+                <artifactId>leveldbjni-all</artifactId>
+                <version>${leveldbjni-all.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.iq80.leveldb</groupId>
+                <artifactId>leveldb</artifactId>
+                <version>${leveldb.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

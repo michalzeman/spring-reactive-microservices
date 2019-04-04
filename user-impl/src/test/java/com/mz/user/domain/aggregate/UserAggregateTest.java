@@ -1,13 +1,16 @@
 package com.mz.user.domain.aggregate;
 
-import com.mz.reactivedemo.common.ApplyResult;
+import com.mz.reactivedemo.common.ValidateResult;
 import com.mz.reactivedemo.common.api.events.Command;
+import com.mz.reactivedemo.common.api.util.Try;
 import com.mz.user.UserFunctions;
+import com.mz.user.domain.event.UserCreated;
+import com.mz.user.dto.ContactInfoDto;
 import com.mz.user.dto.UserDto;
-import com.mz.user.messages.ContactInfoPayload;
-import com.mz.user.messages.commands.CreateContactInfo;
-import com.mz.user.messages.commands.CreateUser;
-import com.mz.user.model.UserDocument;
+import com.mz.user.message.ContactInfoPayload;
+import com.mz.user.message.command.CreateContactInfo;
+import com.mz.user.message.command.CreateUser;
+import com.mz.user.view.UserDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -48,14 +51,15 @@ class UserAggregateTest {
   }
 
   private void createUserTest(Command cmd) {
-    UserAggregate subject = UserAggregate.of();
-    ApplyResult<UserState> result = subject.apply(cmd).get();
-    Assertions.assertTrue(result.event().isPresent());
+    UserAggregate subject = UserAggregate.of(UUID.randomUUID().toString());
+    Try<ValidateResult> result = subject.validate(cmd);
+    Assertions.assertTrue(result.get().events().size() == 1);
+    Assertions.assertTrue(result.get().events().stream().allMatch(e -> e instanceof UserCreated));
   }
 
   @Test
   void createUser_nullCommand() {
-    Assertions.assertFalse(UserAggregate.of().apply(null).isSuccess());
+    Assertions.assertFalse(UserAggregate.of(UUID.randomUUID().toString()).validate(null).isFailure());
   }
 
   @Test
@@ -64,7 +68,10 @@ class UserAggregateTest {
         CREATED_AT, null);
     UserDto userDto = UserFunctions.mapToDto.apply(userDocument);
     UserAggregate subject = UserAggregate.of(userDto);
-    Assertions.assertTrue(subject.apply(CreateContactInfo.builder().email("test@test.com").build()).isSuccess());
+    Try<ValidateResult> result = subject.validate(CreateContactInfo.builder().email("test@test.com").build());
+    result.get().events().forEach(subject::apply);
+    UserDto userWithInfo = subject.state();
+    Assertions.assertTrue(userWithInfo.contactInformation().get().email().get().equals("test@test.com"));
   }
 
   @Test
@@ -73,9 +80,12 @@ class UserAggregateTest {
         CREATED_AT, null);
     UserDto userDto = UserFunctions.mapToDto.apply(userDocument);
     UserAggregate subject = UserAggregate.of(userDto);
-    subject.apply(CreateContactInfo.builder().email("test@test.com").build());
-    UserState result = subject.toResult();
-    UserState.ContactInfoState contactInfoState = result.contactInformation().get();
+    Try<ValidateResult> contactInforesult =
+        subject.validate(CreateContactInfo.builder().email("test@test.com").build());
+    contactInforesult.toOptional().ifPresent(r -> r.events().forEach(subject::apply));
+
+    UserDto result = subject.state();
+    ContactInfoDto contactInfoState = result.contactInformation().get();
 
 
     Assertions.assertTrue(userDto.id().equals(userDocument.getId()));

@@ -2,17 +2,20 @@ package com.mz.reactivedemo.shortener.streams;
 
 import com.mz.reactivedemo.common.api.events.Event;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.ReplayProcessor;
-import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.Optional;
 
 @Service
 public class ApplicationMessageBusImpl implements ApplicationMessageBus {
+
+  private static final Log log = LogFactory.getLog(ApplicationMessageBusImpl.class);
 
   protected final ReplayProcessor<Event> events = ReplayProcessor.create(1);
 

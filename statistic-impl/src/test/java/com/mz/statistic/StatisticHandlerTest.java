@@ -1,10 +1,8 @@
 package com.mz.statistic;
 
-import com.mz.reactivedemo.shortener.api.events.ShortenerEventType;
+import com.mz.reactivedemo.shortener.api.event.ShortenerEventType;
 import com.mz.statistic.model.EventType;
 import com.mz.statistic.model.StatisticDocument;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,14 +10,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.test.rule.KafkaEmbedded;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Instant;
 import java.util.UUID;
-
-import static com.mz.reactivedemo.shortener.api.topics.ShortenerTopics.*;
 
 /**
  * Created by zemi on 22/10/2018.

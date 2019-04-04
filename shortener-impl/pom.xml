@@ -13,7 +13,6 @@
 
 
     <dependencies>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
@@ -83,6 +82,11 @@
         <dependency>
             <artifactId>shortener-api</artifactId>
             <groupId>com.mz</groupId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mz</groupId>
+            <artifactId>common-persistence</artifactId>
         </dependency>
 
         <!-- Provide immutable -->

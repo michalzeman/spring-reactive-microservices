@@ -1,16 +1,17 @@
 package com.mz.reactivedemo.shortener;
 
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
-import com.mz.reactivedemo.shortener.api.events.ShortenerChangedEvent;
-import com.mz.reactivedemo.shortener.api.events.ShortenerEventType;
-import com.mz.reactivedemo.shortener.api.events.ShortenerPayload;
-import com.mz.reactivedemo.shortener.domain.events.ShortenerUpdated;
+import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
+import com.mz.reactivedemo.shortener.api.event.ShortenerEventType;
+import com.mz.reactivedemo.shortener.api.event.ShortenerPayload;
+import com.mz.reactivedemo.shortener.domain.event.ShortenerUpdated;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShortenerFunctionsTest {
 
@@ -20,6 +21,7 @@ class ShortenerFunctionsTest {
     ShortenerUpdated updated = ShortenerUpdated.builder()
         .shortenerId(shortenerId)
         .url("updatedUrl.com")
+        .version(1L)
         .build();
 
     ShortenerPayload dto = ShortenerPayload.builder()
@@ -28,7 +30,7 @@ class ShortenerFunctionsTest {
         .url(updated.url())
         .build();
 
-    ShortenerChangedEvent changedEvent= ShortenerFunctions.mapUpdatedToChangedEvent.apply(updated, dto);
+    ShortenerChangedEvent changedEvent= ShortenerFunctions.mapUpdatedToChangedEvent.apply(updated);
     assertTrue(changedEvent.type() == ShortenerEventType.UPDATED);
     assertTrue(changedEvent.payload().id().equals(dto.id()));
     assertTrue(changedEvent.payload().version().equals(dto.version()));

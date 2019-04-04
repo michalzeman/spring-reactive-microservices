@@ -1,7 +1,7 @@
 package com.mz.statistic.impl;
 
-import com.mz.reactivedemo.shortener.api.events.ShortenerChangedEvent;
-import com.mz.reactivedemo.shortener.api.events.ShortenerViewed;
+import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
+import com.mz.reactivedemo.shortener.api.event.ShortenerViewed;
 import com.mz.statistic.ShortenerSubscriber;
 import com.mz.statistic.StatisticRepository;
 import com.mz.statistic.model.EventType;
@@ -19,7 +19,6 @@ import reactor.core.publisher.ReplayProcessor;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
-import java.time.Instant;
 import java.util.function.Consumer;
 
 import static org.mockito.ArgumentMatchers.any;
