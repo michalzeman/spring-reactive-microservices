@@ -35,7 +35,7 @@ public class PersistenceRepositoryImpl implements PersistenceRepository {
   @Override
   public <S> Mono<CommandResult<S>> execute(String aggregateId, Command cmd,
                                             AggregateFactory<S> aggregateFactory) {
-    CompletableFuture<Object> future = ask(repositoryActor, new RepositoryActor.CreateCommandMsg(cmd, aggregateId, aggregateFactory),
+    CompletableFuture<Object> future = ask(repositoryActor, new RepositoryActor.CommandMsg(cmd, aggregateId, aggregateFactory),
         Duration.ofMillis(5000)).toCompletableFuture();
     return Mono.fromCompletionStage(future)
         .publishOn(Schedulers.elastic())
