@@ -76,13 +76,14 @@ public class UserApplicationServiceImpl
   @Override
   public Mono<UserDto> createUser(CreateUser command) {
     log.debug("createUser() ->");
-    return persistenceRepository.create(UUID.randomUUID().toString(), command, aggregateFactory)
+    return persistenceRepository.execute(UUID.randomUUID().toString(), command, aggregateFactory)
         .flatMap(applicationService::processResult);
   }
 
   @Override
   public Mono<UserDto> createContactInfo(String userId, CreateContactInfo command) {
     log.debug("createContactInfo() ->");
-    return persistenceRepository.<UserDto>update(userId, command).flatMap(applicationService::processResult);
+    return persistenceRepository.execute(userId, command, aggregateFactory)
+        .flatMap(applicationService::processResult);
   }
 }

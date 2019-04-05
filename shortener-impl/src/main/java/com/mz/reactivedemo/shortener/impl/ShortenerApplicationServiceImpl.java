@@ -74,33 +74,16 @@ public class ShortenerApplicationServiceImpl implements ShortenerService {
 
   @Override
   public Mono<ShortenerDto> create(CreateShortener createShortener) {
-    log.debug("create() ->");
-    return persistenceRepository.create(UUID.randomUUID().toString(), createShortener, aggregateFactory)
+    log.debug("execute() ->");
+    return persistenceRepository.execute(UUID.randomUUID().toString(), createShortener, aggregateFactory)
         .flatMap(applicationService::processResult);
   }
 
   @Override
   public Mono<ShortenerDto> update(UpdateShortener shortener) {
     log.debug("update() ->");
-    return persistenceRepository.<ShortenerDto>update(shortener.id(), shortener)
+    return persistenceRepository.execute(shortener.id(), shortener, aggregateFactory)
         .flatMap(applicationService::processResult);
   }
 
-//  private Mono<ShortenerDto> processResult(CommandResult<ShortenerDto> result) {
-//    switch (result.status()) {
-//      case MODIFIED:
-//        if (result.state().isPresent()) {
-//          return repository.save(mapToDocument.apply(result.state().get()))
-//              .doOnSuccess(s -> result.domainEvents().forEach(e -> publishChangedEvent(e)))
-//              .map(mapToDTO).doOnSuccess(this::publishDocumentMessage);
-//        } else {
-//          return Mono.empty();
-//        }
-//      case ERROR:
-//        return Mono.error(result.error().orElseGet(() -> new RuntimeException("Generic error")));
-//      case NOT_MODIFIED:
-//      default:
-//        return Mono.empty();
-//    }
-//  }
 }

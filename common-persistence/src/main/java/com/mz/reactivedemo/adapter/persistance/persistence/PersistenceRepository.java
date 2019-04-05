@@ -6,8 +6,6 @@ import reactor.core.publisher.Mono;
 
 public interface PersistenceRepository {
 
-  <S> Mono<CommandResult<S>> create(String aggregateId, Command cmd, AggregateFactory<S> aggregateFactory);
-
-  <S> Mono<CommandResult<S>> update(String aggregateId, Command cmd);
+  <S> Mono<CommandResult<S>> execute(String aggregateId, Command cmd, AggregateFactory<S> aggregateFactory);
 
 }

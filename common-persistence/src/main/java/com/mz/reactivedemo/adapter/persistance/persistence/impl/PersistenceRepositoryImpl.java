@@ -19,6 +19,8 @@ import static akka.pattern.Patterns.ask;
 
 public class PersistenceRepositoryImpl implements PersistenceRepository {
 
+  private static String REPOSITORY_NAME = "persistence_repository";
+
   private static final Log log = LogFactory.getLog(PersistenceRepositoryImpl.class);
 
   private final ActorSystem system;
@@ -27,22 +29,13 @@ public class PersistenceRepositoryImpl implements PersistenceRepository {
 
   public PersistenceRepositoryImpl(ActorSystem system) {
     this.system = system;
-    this.repositoryActor = system.actorOf(RepositoryActor.props());
+    this.repositoryActor = system.actorOf(RepositoryActor.props(), String.format("%s_%s",system.name(), REPOSITORY_NAME));
   }
 
   @Override
-  public <S> Mono<CommandResult<S>> create(String aggregateId, Command cmd,
-                                                  AggregateFactory<S> aggregateFactory) {
+  public <S> Mono<CommandResult<S>> execute(String aggregateId, Command cmd,
+                                            AggregateFactory<S> aggregateFactory) {
     CompletableFuture<Object> future = ask(repositoryActor, new RepositoryActor.CreateCommandMsg(cmd, aggregateId, aggregateFactory),
-        Duration.ofMillis(5000)).toCompletableFuture();
-    return Mono.fromCompletionStage(future)
-        .publishOn(Schedulers.elastic())
-        .map(r -> (CommandResult<S>) r);
-  }
-
-  @Override
-  public <S> Mono<CommandResult<S>> update(String aggregateId, Command cmd) {
-    CompletableFuture<Object> future = ask(repositoryActor, new RepositoryActor.UpdateCommandMsg(cmd, aggregateId),
         Duration.ofMillis(5000)).toCompletableFuture();
     return Mono.fromCompletionStage(future)
         .publishOn(Schedulers.elastic())

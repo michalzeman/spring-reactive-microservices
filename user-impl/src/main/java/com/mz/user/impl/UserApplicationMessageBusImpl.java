@@ -34,12 +34,12 @@ public class UserApplicationMessageBusImpl implements UserApplicationMessageBus 
 
     @Override
     public Flux<Event> events() {
-        return events.publishOn(Schedulers.parallel());
+        return events.retry().publishOn(Schedulers.parallel());
     }
 
     @Override
     public Flux<UserDto> documents() {
-        return documents.publishOn(Schedulers.parallel());
+        return documents.retry().publishOn(Schedulers.parallel());
     }
 
 }

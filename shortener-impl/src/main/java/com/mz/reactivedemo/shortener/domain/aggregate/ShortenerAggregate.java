@@ -49,7 +49,7 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
     this.status = AggregateStatus.EXISTING;
   }
 
-  private void create(ShortenerCreated evt) {
+  private void applyShortenerCreated(ShortenerCreated evt) {
     this.url = new Url(evt.shortener().url());
     this.key = new StringValue(evt.shortener().key());
     this.shortUrl = new ShortUrl(this.key.value);
@@ -72,7 +72,7 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
     return ShortenerCreated.builder().shortener(state).build();
   }
 
-  private void update(ShortenerUpdated evt) {
+  private void applyShortenerUpdated(ShortenerUpdated evt) {
     this.url = new Url(evt.url());
     ++ this.version;
   }
@@ -101,8 +101,8 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
   @Override
   public Aggregate<ShortenerDto> apply(Event event) {
     CaseMatch.match(event)
-        .when(ShortenerCreated.class, this::create)
-        .when(ShortenerUpdated.class, this::update);
+        .when(ShortenerCreated.class, this::applyShortenerCreated)
+        .when(ShortenerUpdated.class, this::applyShortenerUpdated);
     return this;
   }
 

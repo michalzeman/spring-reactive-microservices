@@ -37,11 +37,9 @@ public class UserProcessor {
   void onInit() {
     logger.debug(() -> "ShortenerProcessor.onInit() ->");
     messageBus.events()
-        .retry()
         .subscribeOn(Schedulers.parallel())
         .subscribe(this::processEvent, this::processError);
     messageBus.documents()
-        .retry()
         .subscribeOn(Schedulers.parallel())
         .subscribe(this::processDocument, this::processError);
   }

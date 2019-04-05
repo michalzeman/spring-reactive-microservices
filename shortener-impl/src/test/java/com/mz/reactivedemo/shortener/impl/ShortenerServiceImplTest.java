@@ -76,7 +76,7 @@ public class ShortenerServiceImplTest {
     CommandResult<ShortenerDto> commandResult = CommandResult.of(state,
         Lists.immutable.of(ShortenerCreated.builder().shortener(state).build()));
 
-    Mockito.when(persistenceRepository.create(any(String.class), any(CreateShortener.class),
+    Mockito.when(persistenceRepository.execute(any(String.class), any(CreateShortener.class),
         any(AggregateFactory.class))).thenReturn(Mono.just(commandResult));
     Mockito.when(repository.save(any(ShortenerDocument.class))).thenReturn(Mono.just(shortenerDocument));
     Mono<ShortenerDto> source = stub.create(createShortener);

@@ -39,8 +39,11 @@ public class EntityPersistenceActor<S> extends AbstractPersistentActor {
   public Receive createReceiveRecover() {
     return receiveBuilder()
         .match(PersistentRepr.class, m -> log.info(m.toString()))
-        .match(Event.class, event ->
-            this.aggregate = Optional.of(this.aggregate.orElseGet(() -> aggregateFactory.<S>of(this.id)).apply(event)))
+        .match(Event.class, event -> {
+          log.info("Event to apply in recovery -> ", event);
+            this.aggregate = Optional.of
+                (this.aggregate.orElseGet(() -> aggregateFactory.<S>of(this.id)).apply(event));
+        })
         .match(RecoveryCompleted.class, evt -> log.info("Recovery completed. Current sequence: {}", lastSequenceNr()))
         .build();
   }

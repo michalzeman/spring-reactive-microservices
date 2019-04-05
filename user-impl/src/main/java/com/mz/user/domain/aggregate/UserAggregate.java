@@ -80,7 +80,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
         .build();
   }
 
-  private void createUser(UserCreated evt) {
+  private void applyUserCreated(UserCreated evt) {
     this.firstName = new FirstName(evt.firstName());
     this.lastName = new LastName(evt.lastName());
     this.createdAt = Instant.now();
@@ -110,7 +110,6 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
         .email(cmd.email().map(Email::new))
         .phoneNumber(cmd.phoneNumber().map(PhoneNumber::new))
         .build();
-    ++ version;
     return ContactInfoCreated.builder()
         .userId(id.value)
         .createdAt(Instant.now())
@@ -120,13 +119,14 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
         .build();
   }
 
-  private void createContactInformation(ContactInfoCreated evt) {
+  private void applyContactInfoCreated(ContactInfoCreated evt) {
     this.contactInformation = Optional.ofNullable(evt)
         .map(c -> ContactInfo.builder()
             .email(c.email().map(Email::new))
             .phoneNumber(c.phoneNumber().map(PhoneNumber::new))
             .userId(new Id(c.userId()))
             .build());
+    ++ version;
   }
 
   @Override
@@ -145,8 +145,8 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
   @Override
   public Aggregate<UserDto> apply(Event event) {
     CaseMatch.match(event)
-        .when(UserCreated.class, this::createUser)
-        .when(ContactInfoCreated.class, this::createContactInformation);
+        .when(UserCreated.class, this::applyUserCreated)
+        .when(ContactInfoCreated.class, this::applyContactInfoCreated);
     return this;
   }
 

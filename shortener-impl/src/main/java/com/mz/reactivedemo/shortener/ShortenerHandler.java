@@ -72,7 +72,7 @@ public class ShortenerHandler implements ErrorHandler {
   }
 
   Mono<ServerResponse> create(ServerRequest request) {
-    log.info("create() -> ");
+    log.info("execute() -> ");
     return request.bodyToMono(CreateShortener.class)
         .flatMap(shortenerService::create)
         .flatMap(r -> ServerResponse.ok()

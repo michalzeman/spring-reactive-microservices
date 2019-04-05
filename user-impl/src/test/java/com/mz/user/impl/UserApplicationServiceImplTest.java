@@ -70,7 +70,7 @@ class UserApplicationServiceImplTest {
 
     when(userRepository.save(any(UserDocument.class))).thenReturn(Mono.just(userDocument));
 
-    when(persistenceRepository.create(any(String.class), any(CreateUser.class), any(AggregateFactory.class)))
+    when(persistenceRepository.execute(any(String.class), any(CreateUser.class), any(AggregateFactory.class)))
         .thenReturn(Mono.just(CommandResult.of(UserFunctions.mapToDto.apply(userDocument),
             Lists.immutable.of(UserCreated.builder()
                 .firstName(firstName)
@@ -121,7 +121,7 @@ class UserApplicationServiceImplTest {
 
     when(userRepository.save(any(UserDocument.class))).thenReturn(Mono.just(userDocumentUpdated));
 
-    when(persistenceRepository.update(any(String.class), any(CreateContactInfo.class)))
+    when(persistenceRepository.execute(any(String.class), any(CreateContactInfo.class), any(AggregateFactory.class)))
         .thenReturn(Mono.just(CommandResult.of(UserFunctions.mapToDto.apply(userDocument),
             Lists.immutable.of(ContactInfoCreated.builder()
                 .email(email)
