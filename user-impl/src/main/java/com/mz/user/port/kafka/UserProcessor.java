@@ -35,7 +35,7 @@ public class UserProcessor {
 
   @PostConstruct
   void onInit() {
-    logger.debug(() -> "ShortenerProcessor.onInit() ->");
+    logger.debug(() -> "UserProcessor.onInit() ->");
     messageBus.events()
         .subscribeOn(Schedulers.parallel())
         .subscribe(this::processEvent, this::processError);

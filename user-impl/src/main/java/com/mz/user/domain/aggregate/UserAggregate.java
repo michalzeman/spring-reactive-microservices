@@ -8,7 +8,9 @@ import com.mz.reactivedemo.common.api.events.Command;
 import com.mz.reactivedemo.common.api.events.Event;
 import com.mz.reactivedemo.common.api.util.CaseMatch;
 import com.mz.reactivedemo.common.api.util.Match;
+import com.mz.user.domain.command.AddShortener;
 import com.mz.user.domain.event.ContactInfoCreated;
+import com.mz.user.domain.event.ShortenerAdded;
 import com.mz.user.domain.event.UserCreated;
 import com.mz.user.dto.ContactInfoDto;
 import com.mz.user.dto.UserDto;
@@ -35,6 +37,8 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
 
   private Long version;
 
+  private Id shortenerId;
+
   private Instant createdAt;
 
   private UserAggregate(String id) {
@@ -49,7 +53,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
     lastName = new LastName(userDto.lastName());
     version = userDto.version();
     createdAt = userDto.createdAt();
-
+    userDto.shortenerId().ifPresent(shortenerId -> this.shortenerId = new Id(shortenerId));
     contactInformation = userDto.contactInformation()
         .map(c ->
             ContactInfo.builder()
@@ -80,10 +84,41 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
         .build();
   }
 
+  private ContactInfoCreated validateCreateContactInformation(CreateContactInfo cmd) {
+    if (status == AggregateStatus.NEW) {
+      throw new RuntimeException("Wrong state of aggregate");
+    }
+    ContactInfo.builder()
+        .userId(id)
+        .email(cmd.email().map(Email::new))
+        .phoneNumber(cmd.phoneNumber().map(PhoneNumber::new))
+        .build();
+    return ContactInfoCreated.builder()
+        .userId(id.value)
+        .createdAt(Instant.now())
+        .email(cmd.email())
+        .phoneNumber(cmd.phoneNumber())
+        .userVersion(version + 1)
+        .build();
+  }
+
+  private ShortenerAdded validateAddShortener(AddShortener addShortener) {
+    if (status == AggregateStatus.NEW) {
+      throw new RuntimeException("Wrong state of aggregate");
+    }
+    new Id(addShortener.shortenerId());
+    return ShortenerAdded.builder()
+        .userId(this.id.value)
+        .shortenerId(addShortener.shortenerId())
+        .userVersion(this.version + 1)
+        .build();
+  }
+
   private void applyUserCreated(UserCreated evt) {
     this.firstName = new FirstName(evt.firstName());
     this.lastName = new LastName(evt.lastName());
     this.createdAt = Instant.now();
+    this.version = evt.version();
     evt.email().ifPresent(e -> {
       ContactInfo contactInfo = ContactInfo.builder()
           .from(this.contactInformation.orElseGet(() -> ContactInfo.builder().userId(this.id).build()))
@@ -101,32 +136,19 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
     status = AggregateStatus.EXISTING;
   }
 
-  private ContactInfoCreated validateCreateContactInformation(CreateContactInfo cmd) {
-    if (status == AggregateStatus.NEW) {
-      throw new RuntimeException("Wrong state of aggregate");
-    }
-    ContactInfo.builder()
-        .userId(id)
-        .email(cmd.email().map(Email::new))
-        .phoneNumber(cmd.phoneNumber().map(PhoneNumber::new))
-        .build();
-    return ContactInfoCreated.builder()
-        .userId(id.value)
-        .createdAt(Instant.now())
-        .email(cmd.email())
-        .phoneNumber(cmd.phoneNumber())
-        .userVersion(version)
-        .build();
-  }
-
   private void applyContactInfoCreated(ContactInfoCreated evt) {
+    this.version = evt.userVersion();
     this.contactInformation = Optional.ofNullable(evt)
         .map(c -> ContactInfo.builder()
             .email(c.email().map(Email::new))
             .phoneNumber(c.phoneNumber().map(PhoneNumber::new))
             .userId(new Id(c.userId()))
             .build());
-    ++ version;
+  }
+
+  private void applyShortnerAdded(ShortenerAdded shortenerAdded) {
+    this.shortenerId = new Id(shortenerAdded.shortenerId());
+    this.version = shortenerAdded.userVersion();
   }
 
   @Override
@@ -134,6 +156,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
     return (Match.<Event>match(cmd)
         .when(CreateUser.class, this::validateCreateUser)
         .when(CreateContactInfo.class, this::validateCreateContactInformation)
+        .when(AddShortener.class, this::validateAddShortener)
         .get().map(Lists.immutable::of).orElseGet(Lists.immutable::empty));
   }
 
@@ -146,7 +169,8 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
   public Aggregate<UserDto> apply(Event event) {
     CaseMatch.match(event)
         .when(UserCreated.class, this::applyUserCreated)
-        .when(ContactInfoCreated.class, this::applyContactInfoCreated);
+        .when(ContactInfoCreated.class, this::applyContactInfoCreated)
+        .when(ShortenerAdded.class, this::applyShortnerAdded);
     return this;
   }
 
@@ -159,6 +183,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
         .id(this.id.value)
         .version(this.version)
         .createdAt(this.createdAt)
+        .shortenerId(Optional.ofNullable(this.shortenerId).map(i -> i.value))
         .contactInformation(this.contactInformation.map(c ->
             ContactInfoDto.builder()
                 .email(c.email().map(e -> e.value))

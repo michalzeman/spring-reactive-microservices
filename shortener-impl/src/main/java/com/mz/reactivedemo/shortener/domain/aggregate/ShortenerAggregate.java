@@ -23,6 +23,8 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
 
   private Id id;
 
+  private Id userId;
+
   private ShortUrl shortUrl;
 
   private StringValue key;
@@ -46,14 +48,7 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
     this.key = new StringValue(shortenerState.key());
     this.createdAt = shortenerState.createdAt();
     this.version = shortenerState.version();
-    this.status = AggregateStatus.EXISTING;
-  }
-
-  private void applyShortenerCreated(ShortenerCreated evt) {
-    this.url = new Url(evt.shortener().url());
-    this.key = new StringValue(evt.shortener().key());
-    this.shortUrl = new ShortUrl(this.key.value);
-    this.createdAt = evt.eventCreatedAt();
+    shortenerState.userId().ifPresent(userId -> this.userId = new Id(userId));
     this.status = AggregateStatus.EXISTING;
   }
 
@@ -61,6 +56,7 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
     StringValue key = new StringValue(UUID.randomUUID().toString());
     Url url = new Url(cmd.url());
     ShortUrl shortUrl = new ShortUrl(key.value);
+    Id userId = new Id(cmd.userId());
     ShortenerDto state = ShortenerDto.builder()
         .id(this.id.value)
         .version(0L)
@@ -68,13 +64,9 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
         .key(key.value)
         .shortUrl(shortUrl.value)
         .url(url.value)
+        .userId(userId.value)
         .build();
     return ShortenerCreated.builder().shortener(state).build();
-  }
-
-  private void applyShortenerUpdated(ShortenerUpdated evt) {
-    this.url = new Url(evt.url());
-    ++ this.version;
   }
 
   private ShortenerUpdated validateUpdate(UpdateShortener cmd) {
@@ -83,6 +75,20 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
     }
     Url url = new Url(cmd.url());
     return ShortenerUpdated.builder().shortenerId(this.id.value).url(url.value).version(this.version).build();
+  }
+
+  private void applyShortenerUpdated(ShortenerUpdated evt) {
+    this.url = new Url(evt.url());
+    ++ this.version;
+  }
+
+  private void applyShortenerCreated(ShortenerCreated evt) {
+    this.url = new Url(evt.shortener().url());
+    this.key = new StringValue(evt.shortener().key());
+    this.shortUrl = new ShortUrl(this.key.value);
+    this.createdAt = evt.eventCreatedAt();
+    evt.shortener().userId().ifPresent(userId -> this.userId = new Id(userId));
+    this.status = AggregateStatus.EXISTING;
   }
 
   @Override
@@ -114,6 +120,7 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
         .url(this.url.value)
         .shortUrl(this.shortUrl.value)
         .version(this.version)
+        .userId(this.userId.value)
         .createdAt(this.createdAt).build();
   }
 

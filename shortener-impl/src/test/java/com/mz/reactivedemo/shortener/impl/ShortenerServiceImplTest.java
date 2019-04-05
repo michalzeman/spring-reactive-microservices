@@ -47,10 +47,12 @@ public class ShortenerServiceImplTest {
   public void create() {
 
     String id = UUID.randomUUID().toString();
+    String userId = UUID.randomUUID().toString();
 
     String url = "http://testlong.test";
     CreateShortener createShortener = CreateShortener.builder()
         .url(url)
+        .userId(userId)
         .build();
 
     ShortenerDocument shortenerDocument = new ShortenerDocument();

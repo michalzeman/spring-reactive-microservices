@@ -7,6 +7,7 @@ spring.cloud.stream:
       contentType: application/json
       user-document.destination: user-document
       user-changed.destination: user-changed
+      shortener-changed.destination: shortener-changed
 
   kafka.streams:
     binder:

@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface ShortenerPayload {
   String id();
 
+  Optional<String> userId();
+
   Optional<String> key();
 
   Optional<String> url();

@@ -21,9 +21,10 @@ public class ShortenerDocument {
 
   private String shortUrl;
 
+  private String userId;
+
   private Instant createdAt;
 
-//  @Version
   private Long version;
 
   /**
@@ -42,6 +43,14 @@ public class ShortenerDocument {
   }
 
   public ShortenerDocument() {
+  }
+
+  public String getUserId() {
+    return userId;
+  }
+
+  public void setUserId(String userId) {
+    this.userId = userId;
   }
 
   public String getShortUrl() {
@@ -97,17 +106,17 @@ public class ShortenerDocument {
     if (this == o) return true;
     if (!(o instanceof ShortenerDocument)) return false;
     ShortenerDocument that = (ShortenerDocument) o;
-    return Objects.equals(id, that.id) &&
-        Objects.equals(key, that.key) &&
-        Objects.equals(url, that.url) &&
-        Objects.equals(shortUrl, that.shortUrl) &&
-        Objects.equals(createdAt, that.createdAt) &&
-        Objects.equals(version, that.version);
+    return id.equals(that.id) &&
+        key.equals(that.key) &&
+        url.equals(that.url) &&
+        shortUrl.equals(that.shortUrl) &&
+        userId.equals(that.userId) &&
+        createdAt.equals(that.createdAt) &&
+        version.equals(that.version);
   }
 
   @Override
   public int hashCode() {
-
-    return Objects.hash(id, key, url, shortUrl, createdAt, version);
+    return Objects.hash(id, key, url, shortUrl, userId, createdAt, version);
   }
 }

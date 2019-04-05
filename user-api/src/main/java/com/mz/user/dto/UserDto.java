@@ -18,6 +18,8 @@ public interface UserDto extends BasicDto {
 
   String firstName();
 
+  Optional<String> shortenerId();
+
   Optional<ContactInfoDto> contactInformation();
 
   static ImmutableUserDto.Builder builder() {

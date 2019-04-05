@@ -21,6 +21,7 @@ public interface UserFunctions {
           .lastName(doc.getLastName())
           .createdAt(doc.getCreatedAt())
           .version(doc.getVersion())
+          .shortenerId(Optional.ofNullable(doc.getShortenerId()))
           .contactInformation(Optional.ofNullable(doc.getContactInformationDocument())
               .map(c -> ContactInfoDto.builder()
                   .userId(doc.getId())
@@ -30,26 +31,17 @@ public interface UserFunctions {
                   .build()))
           .build();
 
-  Function<UserDto, UserDocument> mapToDocument = dto ->
-      new UserDocument(dto.id(), dto.firstName(),
-          dto.lastName(), dto.version(), dto.createdAt(),
-          dto.contactInformation().map(UserFunctions.mapToContactInfoDocument).orElse(null));
+  Function<UserDto, UserDocument> mapToDocument = dto -> {
+    UserDocument userDocument = new UserDocument(dto.id(), dto.firstName(),
+        dto.lastName(), dto.version(), dto.createdAt(),
+        dto.contactInformation().map(UserFunctions.mapToContactInfoDocument).orElse(null));
+    dto.shortenerId().ifPresent(id -> userDocument.setShortenerId(id));
+    return userDocument;
+  };
 
   Function<ContactInfoDto, ContactInfoDocument> mapToContactInfoDocument = dto ->
       new ContactInfoDocument(dto.email().orElse(null),
           dto.phoneNumber().orElse(null), dto.createdAt());
-
-  Function<UserCreated, UserDocument> mapCreatedToDocument = e -> {
-    UserDocument document = new UserDocument();
-    document.setFirstName(e.firstName());
-    document.setLastName(e.lastName());
-    ContactInfoDocument contactInfoDocument = new ContactInfoDocument();
-    e.email().ifPresent(contactInfoDocument::setEmail);
-    e.phoneNumber().ifPresent(contactInfoDocument::setPhoneNumber);
-    document.setContactInformationDocument(contactInfoDocument);
-    document.setCreatedAt(e.eventCreatedAt());
-    return document;
-  };
 
   Function<UserCreated, UserPayload> mapCreatedToPayload = (e) -> {
     ContactInfoPayload infoPayload = ContactInfoPayload.builder()
@@ -74,13 +66,5 @@ public interface UserFunctions {
           .phoneNumber(e.phoneNumber())
           .email(e.email())
           .build();
-
-  Function<ContactInfoCreated, ContactInfoDocument> mapContInfoCreatedToDoc = created -> {
-    ContactInfoDocument contactInfoDocument = new ContactInfoDocument();
-    contactInfoDocument.setCreatedAt(created.createdAt());
-    created.email().ifPresent(contactInfoDocument::setEmail);
-    created.phoneNumber().ifPresent(contactInfoDocument::setPhoneNumber);
-    return contactInfoDocument;
-  };
 
 }

@@ -6,6 +6,7 @@ import org.immutables.value.Value;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Optional;
 
 /**
  * Created by zemi on 07/10/2018.
@@ -16,6 +17,8 @@ import java.time.Instant;
 public interface ShortenerDto extends Serializable {
 
   String id();
+
+  Optional<String> userId();
 
   String key();
 

@@ -23,6 +23,8 @@ public class UserDocument {
 
   private Instant createdAt;
 
+  private String shortenerId;
+
   private ContactInfoDocument contactInformationDocument;
 
   public UserDocument() {
@@ -37,6 +39,14 @@ public class UserDocument {
     this.lastName = lastName;
     this.createdAt = createdAt;
     this.contactInformationDocument = contactInformationDocument;
+  }
+
+  public String getShortenerId() {
+    return shortenerId;
+  }
+
+  public void setShortenerId(String shortenerId) {
+    this.shortenerId = shortenerId;
   }
 
   public String getFirstName() {
@@ -92,16 +102,17 @@ public class UserDocument {
     if (this == o) return true;
     if (!(o instanceof UserDocument)) return false;
     UserDocument that = (UserDocument) o;
-    return Objects.equals(id, that.id) &&
-        Objects.equals(version, that.version) &&
-        Objects.equals(firstName, that.firstName) &&
-        Objects.equals(lastName, that.lastName) &&
-        Objects.equals(createdAt, that.createdAt) &&
-        Objects.equals(contactInformationDocument, that.contactInformationDocument);
+    return id.equals(that.id) &&
+        version.equals(that.version) &&
+        firstName.equals(that.firstName) &&
+        lastName.equals(that.lastName) &&
+        createdAt.equals(that.createdAt) &&
+        shortenerId.equals(that.shortenerId) &&
+        contactInformationDocument.equals(that.contactInformationDocument);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, version, firstName, lastName, createdAt, contactInformationDocument);
+    return Objects.hash(id, version, firstName, lastName, createdAt, shortenerId, contactInformationDocument);
   }
 }

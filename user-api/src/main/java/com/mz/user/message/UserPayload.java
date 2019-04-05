@@ -19,6 +19,8 @@ public interface UserPayload extends Serializable {
 
   Long version();
 
+  Optional<String> shortenerId();
+
   Optional<String> lastName();
 
   Optional<String> firstName();

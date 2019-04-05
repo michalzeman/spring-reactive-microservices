@@ -17,9 +17,11 @@ class ShortenerAggregateTest {
   @Test
   void create() {
     String id = UUID.randomUUID().toString();
+    String userId = UUID.randomUUID().toString();
     ShortenerAggregate shortenerAggregate = ShortenerAggregate.of(id);
     CreateShortener createShortener = CreateShortener.builder()
         .url("www.test.url")
+        .userId(userId)
         .build();
     Try<ValidateResult> resultTry = shortenerAggregate.validate(createShortener);
     Assertions.assertTrue(resultTry.get().events().size() == 1);
@@ -35,9 +37,11 @@ class ShortenerAggregateTest {
   @Test
   void update() {
     String id = UUID.randomUUID().toString();
+    String userId = UUID.randomUUID().toString();
     ShortenerAggregate shortenerAggregate = ShortenerAggregate.of(id);
     CreateShortener createShortener = CreateShortener.builder()
         .url("www.test.url")
+        .userId(userId)
         .build();
     Try<ValidateResult> resultTry = shortenerAggregate.validate(createShortener);
     resultTry.get().events().forEach(e -> shortenerAggregate.apply(e));

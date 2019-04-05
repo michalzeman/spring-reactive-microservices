@@ -17,6 +17,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import java.util.UUID;
+
 import static com.mz.reactivedemo.shortener.api.topics.ShortenerTopics.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -62,9 +64,10 @@ public class ShortenerHandlerTest {
 
   @Test
   public void get() {
-
+    String userId = UUID.randomUUID().toString();
     String key = service.create(CreateShortener.builder()
         .url("www.tes.com")
+        .userId(userId)
         .build())
         .block().key();
 
@@ -76,9 +79,10 @@ public class ShortenerHandlerTest {
 
   @Test
   public void getAll() {
-
+    String userId = UUID.randomUUID().toString();
     service.create(CreateShortener.builder()
         .url("www.tes.com")
+        .userId(userId)
         .build())
         .block().key();
 
@@ -91,8 +95,11 @@ public class ShortenerHandlerTest {
   @Test
   public void create() {
     String url = "www.testLong.org";
+
+    String userId = UUID.randomUUID().toString();
     CreateShortener request = CreateShortener.builder()
         .url(url)
+        .userId(userId)
         .build();
 
     ShortenerDto result = webTestClient.post().uri("/shorteners")
@@ -109,9 +116,10 @@ public class ShortenerHandlerTest {
 
   @Test
   public void update() {
-
+    String userId = UUID.randomUUID().toString();
     CreateShortener createRequest = CreateShortener.builder()
         .url("www.testLong.org")
+        .userId(userId)
         .build();
 
     String id = webTestClient.post().uri("/shorteners")
