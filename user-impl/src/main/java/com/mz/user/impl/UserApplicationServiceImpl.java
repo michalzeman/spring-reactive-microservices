@@ -3,12 +3,11 @@ package com.mz.user.impl;
 import com.mz.reactivedemo.adapter.persistance.persistence.AggregateFactory;
 import com.mz.reactivedemo.adapter.persistance.persistence.PersistenceRepository;
 import com.mz.reactivedemo.adapter.persistance.persistence.impl.AggregateFactoryImpl;
+import com.mz.reactivedemo.common.api.events.Command;
 import com.mz.reactivedemo.common.api.events.Event;
 import com.mz.reactivedemo.common.api.util.Match;
 import com.mz.reactivedemo.common.service.ApplicationService;
 import com.mz.reactivedemo.common.utils.Logger;
-import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
-import com.mz.reactivedemo.shortener.api.event.ShortenerEventType;
 import com.mz.user.UserApplicationMessageBus;
 import com.mz.user.UserApplicationService;
 import com.mz.user.UserFunctions;
@@ -23,24 +22,18 @@ import com.mz.user.message.command.CreateContactInfo;
 import com.mz.user.message.command.CreateUser;
 import com.mz.user.message.event.UserChangedEvent;
 import com.mz.user.message.event.UserEventType;
-import com.mz.user.port.kafka.UserProcessor;
 import com.mz.user.view.UserRepository;
-import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
-import javax.annotation.PostConstruct;
 import java.util.UUID;
 
 @Component
 public class UserApplicationServiceImpl
     implements UserApplicationService, UserFunctions {
 
-  private static final Log log = LogFactory.getLog(UserApplicationServiceImpl.class);
-  private Logger logger = new Logger(LogFactory.getLog(UserProcessor.class));
+  private Logger logger = new Logger(LogFactory.getLog(UserApplicationServiceImpl.class));
 
   private final UserRepository repository;
 
@@ -52,42 +45,14 @@ public class UserApplicationServiceImpl
 
   private final ApplicationService<UserDto> applicationService;
 
-  public UserApplicationServiceImpl(UserRepository repository, UserApplicationMessageBus messageBus, PersistenceRepository persistenceRepository) {
+  public UserApplicationServiceImpl(UserRepository repository, UserApplicationMessageBus messageBus,
+                                    PersistenceRepository persistenceRepository) {
     this.repository = repository;
     this.messageBus = messageBus;
     this.persistenceRepository = persistenceRepository;
     this.aggregateFactory = new AggregateFactoryImpl<>(UserAggregate::of, UserAggregate::of);
     this.applicationService = ApplicationService.<UserDto>of(r -> repository.save(mapToDocument.apply(r)).map(mapToDto),
         this::publishChangedEvent, this::publishDocumentMessage);
-  }
-
-  @PostConstruct
-  void onInit() {
-    logger.debug(() -> "UserApplicationServiceImpl.onInit() ->");
-    processEventChanged(messageBus.events()
-        .subscribeOn(Schedulers.parallel()));
-  }
-
-  private void processError(Throwable throwable) {
-    logger.log().error(throwable);
-  }
-
-  private void processEventChanged(Flux<Event> eventStream) {
-    eventStream.filter(e -> e instanceof ShortenerChangedEvent)
-        .map(e -> (ShortenerChangedEvent)e)
-        .filter(e -> ShortenerEventType.CREATED == e.type())
-        .filter(e -> e.payload().userId().isPresent())
-        .subscribe(this::shortenerChanged, this::processError);
-  }
-
-  private void shortenerChanged(ShortenerChangedEvent changedEvent) {
-    logger.debug(() -> "shortenerChanged ->");
-    AddShortener addShortener = AddShortener.builder()
-        .shortenerId(changedEvent.payload().id())
-        .userId(changedEvent.payload().userId().get())
-        .build();
-    persistenceRepository.execute(addShortener.userId(), addShortener, aggregateFactory)
-        .flatMap(applicationService::processResult).subscribe();
   }
 
   private void publishChangedEvent(Event event) {
@@ -122,15 +87,27 @@ public class UserApplicationServiceImpl
   }
 
   @Override
+  public Mono<UserDto> execute(Command cmd) {
+    logger.debug(() -> "execute() ->");
+    return Match.<Mono<UserDto>>match(cmd)
+        .when(AddShortener.class, c ->
+            persistenceRepository.execute(c.userId(), c, aggregateFactory)
+                .flatMap(applicationService::processResult)
+        )
+        .when(CreateUser.class, this::createUser)
+        .orElseGet(() -> Mono.empty());
+  }
+
+  @Override
   public Mono<UserDto> createUser(CreateUser command) {
-    log.debug("createUser() ->");
+    logger.debug(() -> "createUser() ->");
     return persistenceRepository.execute(UUID.randomUUID().toString(), command, aggregateFactory)
         .flatMap(applicationService::processResult);
   }
 
   @Override
   public Mono<UserDto> createContactInfo(String userId, CreateContactInfo command) {
-    log.debug("createContactInfo() ->");
+    logger.debug(() -> "createContactInfo() ->");
     return persistenceRepository.execute(userId, command, aggregateFactory)
         .flatMap(applicationService::processResult);
   }

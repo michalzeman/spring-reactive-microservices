@@ -32,6 +32,7 @@ class ShortenerAggregateTest {
     Assertions.assertEquals(state.url(), "www.test.url");
     Assertions.assertEquals(state.id(), id);
     Assertions.assertEquals(state.version().longValue(), 0L);
+    Assertions.assertEquals(state.userId().get(), userId);
   }
 
   @Test
