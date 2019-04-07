@@ -1,5 +1,6 @@
 package com.mz.user.message;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
@@ -19,12 +20,16 @@ public interface UserPayload extends Serializable {
 
   Long version();
 
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   Optional<String> shortenerId();
 
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   Optional<String> lastName();
 
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   Optional<String> firstName();
 
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   Optional<ContactInfoPayload> contactInfo();
 
   static ImmutableUserPayload.Builder builder() {

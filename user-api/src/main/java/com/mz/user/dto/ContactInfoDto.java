@@ -1,5 +1,6 @@
 package com.mz.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
@@ -19,8 +20,10 @@ public interface ContactInfoDto {
 
   Instant createdAt();
 
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   Optional<String> email();
 
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   Optional<String> phoneNumber();
 
   static ImmutableContactInfoDto.Builder builder() {

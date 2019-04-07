@@ -1,5 +1,6 @@
 package com.mz.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
@@ -18,8 +19,10 @@ public interface UserDto extends BasicDto {
 
   String firstName();
 
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   Optional<String> shortenerId();
 
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   Optional<ContactInfoDto> contactInformation();
 
   static ImmutableUserDto.Builder builder() {
