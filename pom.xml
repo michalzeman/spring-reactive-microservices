@@ -50,6 +50,9 @@
         <akka-persistence-cassandra.version>0.23</akka-persistence-cassandra.version>
         <leveldbjni-all.version>1.8</leveldbjni-all.version>
         <leveldb.version>0.7</leveldb.version>
+        <akka-persistence-mongo.version>2.2.4</akka-persistence-mongo.version>
+        <org.mongodb.casbah.version>3.1.1</org.mongodb.casbah.version>
+        <mongodb-scala.version>2.4.2</mongodb-scala.version>
     </properties>
 
     <dependencyManagement>
@@ -67,7 +70,6 @@
                 <artifactId>eclipse-collections</artifactId>
                 <version>${eclipse-collections.version}</version>
             </dependency>
-
 
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -146,27 +148,48 @@
                 <artifactId>akka-persistence-query_2.12</artifactId>
                 <version>${akka.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-persistence-cassandra_2.12</artifactId>
-                <version>${akka-persistence-cassandra.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
                 <artifactId>akka-cluster_2.12</artifactId>
                 <version>${akka.version}</version>
             </dependency>
 
+            <!-- https://mvnrepository.com/artifact/com.github.scullxbones/akka-persistence-mongo-common -->
             <dependency>
-                <groupId>org.fusesource.leveldbjni</groupId>
-                <artifactId>leveldbjni-all</artifactId>
-                <version>${leveldbjni-all.version}</version>
+                <groupId>com.github.scullxbones</groupId>
+                <artifactId>akka-persistence-mongo-common_2.12</artifactId>
+                <version>${akka-persistence-mongo.version}</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.github.scullxbones/akka-persistence-mongo-casbah -->
             <dependency>
-                <groupId>org.iq80.leveldb</groupId>
-                <artifactId>leveldb</artifactId>
-                <version>${leveldb.version}</version>
+                <groupId>com.github.scullxbones</groupId>
+                <artifactId>akka-persistence-mongo-casbah_2.12</artifactId>
+                <version>${akka-persistence-mongo.version}</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.mongodb/casbah -->
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>casbah_2.12</artifactId>
+                <version>${org.mongodb.casbah.version}</version>
+                <type>pom</type>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.mongodb.scala/mongo-scala-driver -->
+            <dependency>
+                <groupId>org.mongodb.scala</groupId>
+                <artifactId>mongo-scala-driver_2.12</artifactId>
+                <version>${mongodb-scala.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.mongodb.scala/mongo-scala-bson -->
+            <dependency>
+                <groupId>org.mongodb.scala</groupId>
+                <artifactId>mongo-scala-bson_2.12</artifactId>
+                <version>${mongodb-scala.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

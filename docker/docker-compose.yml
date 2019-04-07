@@ -1,12 +1,5 @@
 version: '3'
 services:
-  cassandra:
-    image: cassandra:3.11.2
-    ports:
-      - "9042:9042"
-    volumes:
-      - cassandra-data-db:/var/lib/cassandra
-
   kafka:
     image: wurstmeister/kafka:2.11-2.0.0
     container_name: kafka-reactive-demo
@@ -39,4 +32,3 @@ services:
 volumes:
   mongo-data-db:
   mongo-data-configdb:
-  cassandra-data-db:

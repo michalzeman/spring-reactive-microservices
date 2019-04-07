@@ -24,24 +24,37 @@
 
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-persistence-query_2.12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-persistence-cassandra_2.12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-cluster_2.12</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.github.scullxbones/akka-persistence-mongo-common -->
         <dependency>
-            <groupId>org.fusesource.leveldbjni</groupId>
-            <artifactId>leveldbjni-all</artifactId>
+            <groupId>com.github.scullxbones</groupId>
+            <artifactId>akka-persistence-mongo-common_2.12</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.github.scullxbones/akka-persistence-mongo-casbah -->
         <dependency>
-            <groupId>org.iq80.leveldb</groupId>
-            <artifactId>leveldb</artifactId>
+            <groupId>com.github.scullxbones</groupId>
+            <artifactId>akka-persistence-mongo-casbah_2.12</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.mongodb/casbah -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>casbah_2.12</artifactId>
+            <type>pom</type>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.mongodb.scala/mongo-scala-driver -->
+        <dependency>
+            <groupId>org.mongodb.scala</groupId>
+            <artifactId>mongo-scala-driver_2.12</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.mongodb.scala/mongo-scala-bson -->
+        <dependency>
+            <groupId>org.mongodb.scala</groupId>
+            <artifactId>mongo-scala-bson_2.12</artifactId>
         </dependency>
 
         <!--Project dependencies-->
