@@ -10,6 +10,8 @@ services:
       - KAFKA_ADVERTISED_PORT=9092
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       - KAFKA_CREATE_TOPICS="shortener-viewed:1:1"
+    volumes:
+      - kafka-volume:/kafka
     depends_on:
       - zookeeper
   zookeeper:
@@ -32,3 +34,4 @@ services:
 volumes:
   mongo-data-db:
   mongo-data-configdb:
+  kafka-volume:
