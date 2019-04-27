@@ -1,7 +1,7 @@
 package com.mz.reactivedemo.common.service.impl;
 
 import com.mz.reactivedemo.common.CommandResult;
-import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.events.DomainEvent;
 import com.mz.reactivedemo.common.service.ApplicationService;
 import reactor.core.publisher.Mono;
 
@@ -12,11 +12,11 @@ public class ApplicationServiceImpl<D> implements ApplicationService<D> {
 
   protected final Function<D, Mono<D>> updateView;
 
-  protected final Consumer<Event> publishChangedEvent;
+  protected final Consumer<DomainEvent> publishChangedEvent;
 
   protected final Consumer<D> publishDocumentMessage;
 
-  public ApplicationServiceImpl(Function<D, Mono<D>> updateView, Consumer<Event> publishChangedEvent,
+  public ApplicationServiceImpl(Function<D, Mono<D>> updateView, Consumer<DomainEvent> publishChangedEvent,
                                 Consumer<D> publishDocumentMessage) {
     this.updateView = updateView;
     this.publishChangedEvent = publishChangedEvent;

@@ -10,7 +10,7 @@ import com.mz.reactivedemo.common.CommandResult;
 import com.mz.reactivedemo.common.ValidateResult;
 import com.mz.reactivedemo.common.aggregate.Aggregate;
 import com.mz.reactivedemo.common.api.events.Command;
-import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.events.DomainEvent;
 import org.eclipse.collections.api.list.ImmutableList;
 
 import java.util.Optional;
@@ -39,7 +39,7 @@ public class EntityPersistenceActor<S> extends AbstractPersistentActor {
   public Receive createReceiveRecover() {
     return receiveBuilder()
         .match(PersistentRepr.class, m -> log.info(m.toString()))
-        .match(Event.class, event -> {
+        .match(DomainEvent.class, event -> {
           log.info("Event to apply in recovery -> ", event);
             this.aggregate = Optional.of
                 (this.aggregate.orElseGet(() -> aggregateFactory.<S>of(this.id)).apply(event));
@@ -76,7 +76,7 @@ public class EntityPersistenceActor<S> extends AbstractPersistentActor {
     }
   }
 
-  protected void onSuccess(Aggregate<S> aggregate, ImmutableList<Event> events) {
+  protected void onSuccess(Aggregate<S> aggregate, ImmutableList<DomainEvent> events) {
     persistAll(events, (evt) -> {
       log.debug("persistAllAsync for event: {}", evt);
       aggregate.apply(evt);

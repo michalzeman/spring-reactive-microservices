@@ -45,12 +45,12 @@ public interface UserFunctions {
 
   Function<UserCreated, UserPayload> mapCreatedToPayload = (e) -> {
     ContactInfoPayload infoPayload = ContactInfoPayload.builder()
-        .userId(e.id())
+        .userId(e.aggregateId())
         .email(e.email())
         .phoneNumber(e.phoneNumber())
         .build();
     return UserPayload.builder()
-        .id(e.id())
+        .id(e.aggregateId())
         .version(e.version())
         .createdAt(e.eventCreatedAt())
         .firstName(e.firstName())
@@ -62,7 +62,7 @@ public interface UserFunctions {
 
   Function<ContactInfoCreated, ContactInfoPayload> mapContactCreatedToPayload = e ->
       ContactInfoPayload.builder()
-          .userId(e.userId())
+          .userId(e.aggregateId())
           .phoneNumber(e.phoneNumber())
           .email(e.email())
           .build();

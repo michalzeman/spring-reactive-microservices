@@ -33,8 +33,9 @@ public interface ShortenerFunctions {
 
   Function<ShortenerUpdated, ShortenerChangedEvent> mapUpdatedToChangedEvent = (updated) ->
       ShortenerChangedEvent.builder()
+          .aggregateId(updated.aggregateId())
           .payload(ShortenerPayload.builder()
-              .id(updated.shortenerId())
+              .id(updated.aggregateId())
               .url(updated.url())
               .version(updated.version())
               .build())

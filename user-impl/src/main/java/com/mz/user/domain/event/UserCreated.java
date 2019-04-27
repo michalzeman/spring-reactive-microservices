@@ -1,6 +1,6 @@
 package com.mz.user.domain.event;
 
-import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.events.DomainEvent;
 import org.immutables.value.Value;
 
 import java.util.Optional;
@@ -9,9 +9,7 @@ import java.util.Optional;
  * Created by zemi on 16/01/2019.
  */
 @Value.Immutable
-public interface UserCreated extends Event {
-
-  String id();
+public interface UserCreated extends DomainEvent {
 
   String lastName();
 

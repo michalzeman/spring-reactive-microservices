@@ -4,7 +4,7 @@ import com.mz.reactivedemo.adapter.persistance.persistence.AggregateFactory;
 import com.mz.reactivedemo.adapter.persistance.persistence.PersistenceRepository;
 import com.mz.reactivedemo.adapter.persistance.persistence.impl.AggregateFactoryImpl;
 import com.mz.reactivedemo.common.api.events.Command;
-import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.events.DomainEvent;
 import com.mz.reactivedemo.common.api.util.Match;
 import com.mz.reactivedemo.common.service.ApplicationService;
 import com.mz.reactivedemo.common.utils.Logger;
@@ -55,16 +55,18 @@ public class UserApplicationServiceImpl
         this::publishChangedEvent, this::publishDocumentMessage);
   }
 
-  private void publishChangedEvent(Event event) {
+  private void publishChangedEvent(DomainEvent event) {
     Match.<UserChangedEvent>match(event)
         .when(UserCreated.class, e -> UserChangedEvent.builder()
+            .aggregateId(e.aggregateId())
             .payload(mapCreatedToPayload.apply(e))
             .type(UserEventType.USER_CREATED)
             .build())
         .when(ContactInfoCreated.class, e -> UserChangedEvent.builder()
             .type(UserEventType.CONTACT_INFO_CREATED)
+            .aggregateId(e.aggregateId())
             .payload(UserPayload.builder()
-                .id(e.userId())
+                .id(e.aggregateId())
                 .version(e.userVersion())
                 .createdAt(e.createdAt())
                 .contactInfo(mapContactCreatedToPayload.apply(e))
@@ -73,7 +75,7 @@ public class UserApplicationServiceImpl
         .when(ShortenerAdded.class, e -> UserChangedEvent.builder()
             .type(UserEventType.USER_UPDATED)
             .payload(UserPayload.builder()
-                .id(e.userId())
+                .id(e.aggregateId())
                 .shortenerId(e.shortenerId())
                 .version(e.userVersion())
                 .build())

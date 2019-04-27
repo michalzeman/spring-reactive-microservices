@@ -3,7 +3,7 @@ package com.mz.reactivedemo.shortener.impl;
 import com.mz.reactivedemo.adapter.persistance.persistence.AggregateFactory;
 import com.mz.reactivedemo.adapter.persistance.persistence.PersistenceRepository;
 import com.mz.reactivedemo.adapter.persistance.persistence.impl.AggregateFactoryImpl;
-import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.events.DomainEvent;
 import com.mz.reactivedemo.common.api.util.Match;
 import com.mz.reactivedemo.common.service.ApplicationService;
 import com.mz.reactivedemo.shortener.ShortenerRepository;
@@ -54,9 +54,10 @@ public class ShortenerApplicationServiceImpl implements ShortenerService {
       this::publishDocumentMessage);
   }
 
-  protected void publishChangedEvent(Event event) {
+  protected void publishChangedEvent(DomainEvent event) {
     Match.<ShortenerChangedEvent>match(event)
         .when(ShortenerCreated.class, e -> ShortenerChangedEvent.builder()
+            .aggregateId(e.aggregateId())
             .payload(mapDtoToPayload.apply(e.shortener()))
             .type(ShortenerEventType.CREATED)
             .build())

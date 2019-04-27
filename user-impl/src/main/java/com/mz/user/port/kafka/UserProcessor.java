@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.PostConstruct;
-import java.util.UUID;
 
 @EnableBinding(UserBinding.class)
 @Service
@@ -48,7 +47,7 @@ public class UserProcessor {
     userBinding.userDocumentOut()
         .send(MessageBuilder
             .withPayload(doc)
-            .setHeader(KafkaHeaders.MESSAGE_KEY, UUID.randomUUID().toString().getBytes())
+            .setHeader(KafkaHeaders.MESSAGE_KEY, doc.id())
             .build());
   }
 
@@ -62,7 +61,7 @@ public class UserProcessor {
           MessageChannel messageChannel = userBinding.userChangedOut();
           messageChannel.send(MessageBuilder
               .withPayload(e)
-              .setHeader(KafkaHeaders.MESSAGE_KEY, e.eventId().getBytes())
+              .setHeader(KafkaHeaders.MESSAGE_KEY, e.aggregateId().getBytes())
               .build());
         });
   }

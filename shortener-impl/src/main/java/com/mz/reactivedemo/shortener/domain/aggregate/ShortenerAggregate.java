@@ -2,7 +2,7 @@ package com.mz.reactivedemo.shortener.domain.aggregate;
 
 import com.mz.reactivedemo.common.aggregate.*;
 import com.mz.reactivedemo.common.api.events.Command;
-import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.events.DomainEvent;
 import com.mz.reactivedemo.common.api.util.CaseMatch;
 import com.mz.reactivedemo.common.api.util.Match;
 import com.mz.reactivedemo.shortener.api.command.CreateShortener;
@@ -66,7 +66,7 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
         .url(url.value)
         .userId(userId.value)
         .build();
-    return ShortenerCreated.builder().shortener(state).build();
+    return ShortenerCreated.builder().shortener(state).aggregateId(this.id.value).build();
   }
 
   private ShortenerUpdated validateUpdate(UpdateShortener cmd) {
@@ -74,12 +74,12 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
       throw new RuntimeException("Wrong aggregate status");
     }
     Url url = new Url(cmd.url());
-    return ShortenerUpdated.builder().shortenerId(this.id.value).url(url.value).version(this.version).build();
+    return ShortenerUpdated.builder().aggregateId(this.id.value).url(url.value).version(this.version).build();
   }
 
   private void applyShortenerUpdated(ShortenerUpdated evt) {
     this.url = new Url(evt.url());
-    ++ this.version;
+    ++this.version;
   }
 
   private void applyShortenerCreated(ShortenerCreated evt) {
@@ -92,8 +92,8 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
   }
 
   @Override
-  protected ImmutableList<Event> behavior(Command cmd) {
-    return Match.<Event>match(cmd)
+  protected ImmutableList<DomainEvent> behavior(Command cmd) {
+    return Match.<DomainEvent>match(cmd)
         .when(CreateShortener.class, this::validateCreate)
         .when(UpdateShortener.class, this::validateUpdate)
         .get().map(Lists.immutable::of).orElseGet(Lists.immutable::empty);
@@ -105,7 +105,7 @@ public class ShortenerAggregate extends AbstractRootAggregate<ShortenerDto> {
   }
 
   @Override
-  public Aggregate<ShortenerDto> apply(Event event) {
+  public Aggregate<ShortenerDto> apply(DomainEvent event) {
     CaseMatch.match(event)
         .when(ShortenerCreated.class, this::applyShortenerCreated)
         .when(ShortenerUpdated.class, this::applyShortenerUpdated);

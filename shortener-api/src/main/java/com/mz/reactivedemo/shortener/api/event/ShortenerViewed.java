@@ -3,6 +3,7 @@ package com.mz.reactivedemo.shortener.api.event;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.mz.reactivedemo.common.api.events.Event;
 import org.immutables.value.Value;
 
 /**
@@ -11,7 +12,7 @@ import org.immutables.value.Value;
 @Value.Immutable
 @JsonSerialize(as = ImmutableShortenerViewed.class)
 @JsonDeserialize(as = ImmutableShortenerViewed.class)
-public interface ShortenerViewed extends ShortenerEvent {
+public interface ShortenerViewed extends Event {
 
   String key();
 

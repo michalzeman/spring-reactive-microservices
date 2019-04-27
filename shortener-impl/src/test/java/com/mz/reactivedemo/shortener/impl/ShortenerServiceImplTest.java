@@ -76,7 +76,7 @@ public class ShortenerServiceImplTest {
         .build();
 
     CommandResult<ShortenerDto> commandResult = CommandResult.of(state,
-        Lists.immutable.of(ShortenerCreated.builder().shortener(state).build()));
+        Lists.immutable.of(ShortenerCreated.builder().shortener(state).aggregateId(state.id()).build()));
 
     Mockito.when(persistenceRepository.execute(any(String.class), any(CreateShortener.class),
         any(AggregateFactory.class))).thenReturn(Mono.just(commandResult));

@@ -1,11 +1,10 @@
 package com.mz.user.domain.event;
 
-import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.events.DomainEvent;
 import org.immutables.value.Value;
 
 @Value.Immutable
-public interface ShortenerAdded extends Event {
-  String userId();
+public interface ShortenerAdded extends DomainEvent {
 
   String shortenerId();
 

@@ -1,6 +1,6 @@
 package com.mz.reactivedemo.common;
 
-import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.events.DomainEvent;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.impl.factory.Lists;
 import org.immutables.value.Value;
@@ -23,9 +23,9 @@ public interface CommandResult<S> {
 
   Optional<S> state();
 
-  ImmutableList<Event> domainEvents();
+  ImmutableList<DomainEvent> domainEvents();
 
-  static <S> CommandResult<S> of(S state, ImmutableList<Event> domainEvents) {
+  static <S> CommandResult<S> of(S state, ImmutableList<DomainEvent> domainEvents) {
     return ImmutableCommandResult.<S>builder()
         .state(state)
         .status(domainEvents.size() > 0 ? StatusCode.MODIFIED : StatusCode.NOT_MODIFIED)

@@ -1,6 +1,6 @@
 package com.mz.user.domain.event;
 
-import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.events.DomainEvent;
 import org.immutables.value.Value;
 
 import java.time.Instant;
@@ -10,9 +10,7 @@ import java.util.Optional;
  * Created by zemi on 16/01/2019.
  */
 @Value.Immutable
-public interface ContactInfoCreated extends Event {
-
-  String userId();
+public interface ContactInfoCreated extends DomainEvent {
 
   Instant createdAt();
 

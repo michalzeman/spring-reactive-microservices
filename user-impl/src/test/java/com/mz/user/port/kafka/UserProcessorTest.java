@@ -37,13 +37,15 @@ class UserProcessorTest {
   @Test
   void processUserChangedEvent() {
     MessageChannel messageChangedChannel = Mockito.mock(MessageChannel.class);
+    String id = UUID.randomUUID().toString();
     Flux<Event> events = Flux.just(UserChangedEvent.builder()
+        .aggregateId(id)
         .payload(UserPayload.builder()
             .firstName("FirstNameTest")
             .lastName("LastNameTest")
             .version(0L)
             .createdAt(Instant.now())
-            .id(UUID.randomUUID().toString())
+            .id(id)
             .build())
         .type(UserEventType.USER_CREATED)
         .build());

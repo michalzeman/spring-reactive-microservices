@@ -75,7 +75,7 @@ class UserApplicationServiceImplTest {
             Lists.immutable.of(UserCreated.builder()
                 .firstName(firstName)
                 .lastName(lastName)
-                .id(id)
+                .aggregateId(id)
                 .version(1L)
                 .build()))));
 
@@ -126,7 +126,7 @@ class UserApplicationServiceImplTest {
             Lists.immutable.of(ContactInfoCreated.builder()
                 .email(email)
                 .phoneNumber(phoneNumber)
-                .userId(id)
+                .aggregateId(id)
                 .userVersion(2L)
                 .createdAt(createdAt)
                 .build()))));

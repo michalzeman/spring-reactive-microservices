@@ -19,7 +19,7 @@ class ShortenerFunctionsTest {
   void mapUpdateToChangedEvent() {
     String shortenerId = UUID.randomUUID().toString();
     ShortenerUpdated updated = ShortenerUpdated.builder()
-        .shortenerId(shortenerId)
+        .aggregateId(shortenerId)
         .url("updatedUrl.com")
         .version(1L)
         .build();

@@ -5,7 +5,7 @@ import com.mz.reactivedemo.common.aggregate.Aggregate;
 import com.mz.reactivedemo.common.aggregate.AggregateStatus;
 import com.mz.reactivedemo.common.aggregate.Id;
 import com.mz.reactivedemo.common.api.events.Command;
-import com.mz.reactivedemo.common.api.events.Event;
+import com.mz.reactivedemo.common.api.events.DomainEvent;
 import com.mz.reactivedemo.common.api.util.CaseMatch;
 import com.mz.reactivedemo.common.api.util.Match;
 import com.mz.user.domain.command.AddShortener;
@@ -65,7 +65,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
     this.status = AggregateStatus.EXISTING;
   }
 
-  private Event validateCreateUser(CreateUser cmd) {
+  private DomainEvent validateCreateUser(CreateUser cmd) {
     FirstName firstName = new FirstName(cmd.firstName());
     LastName lastName = new LastName(cmd.lastName());
     Optional<ContactInfo> contactInformation = cmd.contactInformation()
@@ -77,7 +77,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
     return UserCreated.builder()
         .firstName(firstName.value)
         .lastName(lastName.value)
-        .id(id.value)
+        .aggregateId(id.value)
         .version(version)
         .email(contactInformation.flatMap(ci -> ci.email().map(em -> em.value)))
         .phoneNumber(contactInformation.flatMap(ci -> ci.phoneNumber().map(n -> n.value)))
@@ -94,7 +94,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
         .phoneNumber(cmd.phoneNumber().map(PhoneNumber::new))
         .build();
     return ContactInfoCreated.builder()
-        .userId(id.value)
+        .aggregateId(id.value)
         .createdAt(Instant.now())
         .email(cmd.email())
         .phoneNumber(cmd.phoneNumber())
@@ -108,7 +108,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
     }
     new Id(addShortener.shortenerId());
     return ShortenerAdded.builder()
-        .userId(this.id.value)
+        .aggregateId(this.id.value)
         .shortenerId(addShortener.shortenerId())
         .userVersion(this.version + 1)
         .build();
@@ -142,7 +142,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
         .map(c -> ContactInfo.builder()
             .email(c.email().map(Email::new))
             .phoneNumber(c.phoneNumber().map(PhoneNumber::new))
-            .userId(new Id(c.userId()))
+            .userId(new Id(c.aggregateId()))
             .build());
   }
 
@@ -152,8 +152,8 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
   }
 
   @Override
-  protected ImmutableList<Event> behavior(Command cmd) {
-    return (Match.<Event>match(cmd)
+  protected ImmutableList<DomainEvent> behavior(Command cmd) {
+    return (Match.<DomainEvent>match(cmd)
         .when(CreateUser.class, this::validateCreateUser)
         .when(CreateContactInfo.class, this::validateCreateContactInformation)
         .when(AddShortener.class, this::validateAddShortener)
@@ -166,7 +166,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
   }
 
   @Override
-  public Aggregate<UserDto> apply(Event event) {
+  public Aggregate<UserDto> apply(DomainEvent event) {
     CaseMatch.match(event)
         .when(UserCreated.class, this::applyUserCreated)
         .when(ContactInfoCreated.class, this::applyContactInfoCreated)
