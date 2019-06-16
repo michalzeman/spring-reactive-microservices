@@ -47,7 +47,7 @@ public class UserProcessor {
     userBinding.userDocumentOut()
         .send(MessageBuilder
             .withPayload(doc)
-            .setHeader(KafkaHeaders.MESSAGE_KEY, doc.id())
+            .setHeader(KafkaHeaders.MESSAGE_KEY, doc.id().getBytes())
             .build());
   }
 

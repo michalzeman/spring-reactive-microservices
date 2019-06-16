@@ -4,22 +4,18 @@ import com.mz.reactivedemo.common.errors.ErrorMessage;
 import com.mz.reactivedemo.shortener.api.command.CreateShortener;
 import com.mz.reactivedemo.shortener.api.command.UpdateShortener;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.test.rule.KafkaEmbedded;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.UUID;
 
-import static com.mz.reactivedemo.shortener.api.topics.ShortenerTopics.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ShortenerHandlerTest {
+class ShortenerHandlerTest {
 
   @Autowired
   WebTestClient webTestClient;
@@ -44,14 +40,14 @@ public class ShortenerHandlerTest {
     repository.deleteAll().block();
   }
 
-  @ClassRule
-  public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SHORTENER_CHANGED,
-      SHORTENER_DOCUMENT, SHORTENER_VIEWED);
-
-  @BeforeClass
-  public static void setup() {
-    System.setProperty("spring.cloud.stream.kafka.binder.brokers", embeddedKafka.getBrokersAsString());
-  }
+//  @ClassRule
+//  public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SHORTENER_CHANGED,
+//      SHORTENER_DOCUMENT, SHORTENER_VIEWED);
+//
+//  @BeforeClass
+//  public static void setup() {
+//    System.setProperty("spring.cloud.stream.kafka.binder.brokers", embeddedKafka.getBrokersAsString());
+//  }
 
 
   @Test
@@ -160,6 +156,6 @@ public class ShortenerHandlerTest {
         .expectStatus()
         .is4xxClientError()
         .expectBody(ErrorMessage.class).returnResult().getResponseBody();
-    System.out.println("Error Zemo: -> "+errorResult.error());
+    System.out.println("Error Zemo: -> " + errorResult.error());
   }
 }

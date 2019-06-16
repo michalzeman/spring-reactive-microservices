@@ -2,7 +2,6 @@ package com.mz.reactivedemo.shortener.impl;
 
 import com.mz.reactivedemo.adapter.persistance.persistence.AggregateFactory;
 import com.mz.reactivedemo.adapter.persistance.persistence.PersistenceRepository;
-import com.mz.reactivedemo.adapter.persistance.persistence.impl.AggregateFactoryImpl;
 import com.mz.reactivedemo.common.api.events.DomainEvent;
 import com.mz.reactivedemo.common.api.util.Match;
 import com.mz.reactivedemo.common.service.ApplicationService;
@@ -49,7 +48,7 @@ public class ShortenerApplicationServiceImpl implements ShortenerService {
     this.applicationMessageBus = applicationMessageBus;
     this.repository = repository;
     this.persistenceRepository = persistenceRepository;
-    this.aggregateFactory = new AggregateFactoryImpl<>(ShortenerAggregate::of, ShortenerAggregate::of);
+    this.aggregateFactory = AggregateFactory.build(ShortenerAggregate::of, ShortenerAggregate::of);
     this.applicationService = ApplicationService.<ShortenerDto>of(this::updateView, this::publishChangedEvent,
       this::publishDocumentMessage);
   }

@@ -71,7 +71,7 @@ public class ShortenerProcessor {
     shortenerBinding.shortenerDocumentOut()
         .send(MessageBuilder
             .withPayload(doc)
-            .setHeader(KafkaHeaders.MESSAGE_KEY, doc.id())
+            .setHeader(KafkaHeaders.MESSAGE_KEY, doc.id().getBytes())
             .build());
   }
 
