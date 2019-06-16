@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM openjdk:11-jdk
 VOLUME /tmp
 #ARG JAR_FILE
 COPY target/*spring-boot.jar app.jar
