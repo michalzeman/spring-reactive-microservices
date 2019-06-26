@@ -5,9 +5,9 @@ import com.mz.reactivedemo.adapter.persistance.persistence.PersistenceRepository
 import com.mz.reactivedemo.adapter.persistance.persistence.impl.AggregateFactoryImpl;
 import com.mz.reactivedemo.common.api.events.Command;
 import com.mz.reactivedemo.common.api.events.DomainEvent;
-import com.mz.reactivedemo.common.api.util.Match;
 import com.mz.reactivedemo.common.service.ApplicationService;
-import com.mz.reactivedemo.common.utils.Logger;
+import com.mz.reactivedemo.common.util.Logger;
+import com.mz.reactivedemo.common.util.Match;
 import com.mz.user.UserApplicationMessageBus;
 import com.mz.user.UserApplicationService;
 import com.mz.user.UserFunctions;

@@ -1,4 +1,4 @@
-package com.mz.reactivedemo.common.api.util;
+package com.mz.reactivedemo.common.util;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

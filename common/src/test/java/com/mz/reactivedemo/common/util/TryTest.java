@@ -1,11 +1,9 @@
-package com.mz.reactivedemo.common.api.util;
+package com.mz.reactivedemo.common.util;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class TryTest {
 
@@ -36,7 +34,7 @@ class TryTest {
 
   @Test
   void flatMap() {
-    Try<Boolean> resultS = Try.of(() -> 2).map(n -> Integer.toString(n)).flatMap((s -> Try.of(() ->!s.isEmpty())));
+    Try<Boolean> resultS = Try.of(() -> 2).map(n -> Integer.toString(n)).flatMap((s -> Try.of(() -> !s.isEmpty())));
     Assertions.assertTrue(resultS.isSuccess());
     Assertions.assertFalse(resultS.isFailure());
     Assertions.assertTrue(resultS.get());

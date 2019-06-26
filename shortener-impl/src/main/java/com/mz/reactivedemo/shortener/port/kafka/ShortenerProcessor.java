@@ -1,7 +1,7 @@
 package com.mz.reactivedemo.shortener.port.kafka;
 
 import com.mz.reactivedemo.common.api.events.Event;
-import com.mz.reactivedemo.common.utils.Logger;
+import com.mz.reactivedemo.common.util.Logger;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
 import com.mz.reactivedemo.shortener.api.event.ShortenerViewed;

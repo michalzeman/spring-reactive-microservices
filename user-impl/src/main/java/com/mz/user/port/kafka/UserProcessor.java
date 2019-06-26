@@ -2,8 +2,8 @@ package com.mz.user.port.kafka;
 
 
 import com.mz.reactivedemo.common.api.events.Event;
-import com.mz.reactivedemo.common.api.util.CaseMatch;
-import com.mz.reactivedemo.common.utils.Logger;
+import com.mz.reactivedemo.common.util.CaseMatch;
+import com.mz.reactivedemo.common.util.Logger;
 import com.mz.user.UserApplicationMessageBus;
 import com.mz.user.dto.UserDto;
 import com.mz.user.message.event.UserChangedEvent;

@@ -1,7 +1,7 @@
 package com.mz.reactivedemo.shortener.domain.aggregate;
 
 import com.mz.reactivedemo.common.ValidateResult;
-import com.mz.reactivedemo.common.api.util.Try;
+import com.mz.reactivedemo.common.util.Try;
 import com.mz.reactivedemo.shortener.api.command.CreateShortener;
 import com.mz.reactivedemo.shortener.api.command.UpdateShortener;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;

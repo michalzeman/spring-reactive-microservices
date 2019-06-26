@@ -1,6 +1,6 @@
 package com.mz.statistic.impl;
 
-import com.mz.reactivedemo.common.utils.Logger;
+import com.mz.reactivedemo.common.util.Logger;
 import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
 import com.mz.reactivedemo.shortener.api.event.ShortenerViewed;
 import com.mz.statistic.ShortenerSubscriber;

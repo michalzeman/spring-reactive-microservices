@@ -1,4 +1,4 @@
-package com.mz.reactivedemo.common.api.util;
+package com.mz.reactivedemo.common.util;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -36,7 +36,7 @@ public abstract class Try<T> {
   }
 
   static public <T> Try<T> error(Throwable error) {
-    return new Failure(error);
+    return new Failure<>(error);
   }
 
   static public class Success<T> extends Try<T> {

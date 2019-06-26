@@ -1,4 +1,4 @@
-package com.mz.reactivedemo.common.utils;
+package com.mz.reactivedemo.common.util;
 
 import org.apache.commons.logging.Log;
 

@@ -2,7 +2,7 @@ package com.mz.user.domain.aggregate;
 
 import com.mz.reactivedemo.common.ValidateResult;
 import com.mz.reactivedemo.common.api.events.Command;
-import com.mz.reactivedemo.common.api.util.Try;
+import com.mz.reactivedemo.common.util.Try;
 import com.mz.user.UserFunctions;
 import com.mz.user.domain.command.AddShortener;
 import com.mz.user.domain.event.ShortenerAdded;
