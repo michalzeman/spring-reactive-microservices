@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.mz.reactivedemo.shortener.ShortenerFunctions.mapToDTO;
+import static com.mz.reactivedemo.shortener.ShortenerMapper.mapToDTO;
 
 @Service
 public class ShortenerQueryImpl implements ShortenerQuery {

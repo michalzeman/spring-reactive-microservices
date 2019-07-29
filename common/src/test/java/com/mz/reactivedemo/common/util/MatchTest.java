@@ -3,7 +3,6 @@ package com.mz.reactivedemo.common.util;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +13,7 @@ class MatchTest {
     @Test
     void build() {
 
-        List<String> list = Arrays.asList("list");
+        var list = List.of("list");
 
         String result = Match.<String>match(list)
             .when(List.class, type -> "List")
@@ -28,9 +27,9 @@ class MatchTest {
 
     @Test
     void orElseGet() {
-        List<String> list = Arrays.asList("list");
+        var list = List.of("list");
 
-        String result = Match.<String>match(list)
+        var result = Match.<String>match(list)
             .when(String.class, type -> "String")
             .when(Map.class, type -> "List2")
             .orElseGet(() -> "orElseGet");

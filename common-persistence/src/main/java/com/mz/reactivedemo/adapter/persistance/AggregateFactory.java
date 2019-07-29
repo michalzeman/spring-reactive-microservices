@@ -1,6 +1,6 @@
-package com.mz.reactivedemo.adapter.persistance.persistence;
+package com.mz.reactivedemo.adapter.persistance;
 
-import com.mz.reactivedemo.adapter.persistance.persistence.impl.AggregateFactoryImpl;
+import com.mz.reactivedemo.adapter.persistance.impl.AggregateFactoryImpl;
 import com.mz.reactivedemo.common.aggregate.Aggregate;
 
 import java.util.function.Function;

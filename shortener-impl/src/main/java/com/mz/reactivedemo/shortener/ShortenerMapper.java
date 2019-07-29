@@ -10,7 +10,7 @@ import com.mz.reactivedemo.shortener.view.ShortenerDocument;
 import java.util.Optional;
 import java.util.function.Function;
 
-public interface ShortenerFunctions {
+public interface ShortenerMapper {
 
   Function<ShortenerDocument, ShortenerDto> mapToDTO = document -> ShortenerDto.builder()
       .id(document.getId())

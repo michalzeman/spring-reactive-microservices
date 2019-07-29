@@ -132,7 +132,7 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- Akka persistence -->
+            <!-- Akka actor -->
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
                 <artifactId>akka-persistence-query_2.12</artifactId>

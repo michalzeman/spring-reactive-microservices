@@ -27,6 +27,12 @@
             <artifactId>akka-cluster_2.12</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-testkit_2.12</artifactId>
+            <version>2.5.21</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.github.scullxbones/akka-persistence-mongo-common -->
         <dependency>
             <groupId>com.github.scullxbones</groupId>
@@ -71,6 +77,19 @@
             <groupId>com.mz</groupId>
             <artifactId>common-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Provide JUnit 5 API -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- and the engine for surefire and failsafe -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

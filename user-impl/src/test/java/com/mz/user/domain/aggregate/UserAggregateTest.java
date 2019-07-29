@@ -3,7 +3,7 @@ package com.mz.user.domain.aggregate;
 import com.mz.reactivedemo.common.ValidateResult;
 import com.mz.reactivedemo.common.api.events.Command;
 import com.mz.reactivedemo.common.util.Try;
-import com.mz.user.UserFunctions;
+import com.mz.user.UserMapper;
 import com.mz.user.domain.command.AddShortener;
 import com.mz.user.domain.event.ShortenerAdded;
 import com.mz.user.domain.event.UserCreated;
@@ -68,7 +68,7 @@ class UserAggregateTest {
   void createContactInfo() {
     UserDocument userDocument = new UserDocument(UUID.randomUUID().toString(), FIST_NAME, LAST_NAME, 1L,
         CREATED_AT, null);
-    UserDto userDto = UserFunctions.mapToDto.apply(userDocument);
+    UserDto userDto = UserMapper.mapToDto.apply(userDocument);
     UserAggregate subject = UserAggregate.of(userDto);
     Try<ValidateResult> result = subject.validate(CreateContactInfo.builder().email("test@test.com").build());
     result.get().events().forEach(subject::apply);
@@ -80,7 +80,7 @@ class UserAggregateTest {
   void ofTest() {
     UserDocument userDocument = new UserDocument(UUID.randomUUID().toString(), FIST_NAME, LAST_NAME, 1L,
         CREATED_AT, null);
-    UserDto userDto = UserFunctions.mapToDto.apply(userDocument);
+    UserDto userDto = UserMapper.mapToDto.apply(userDocument);
     UserAggregate subject = UserAggregate.of(userDto);
     Try<ValidateResult> contactInforesult =
         subject.validate(CreateContactInfo.builder().email("test@test.com").build());

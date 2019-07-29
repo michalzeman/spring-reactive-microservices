@@ -12,7 +12,7 @@ import com.mz.user.view.UserDocument;
 import java.util.Optional;
 import java.util.function.Function;
 
-public interface UserFunctions {
+public interface UserMapper {
 
   Function<UserDocument, UserDto> mapToDto = doc ->
       UserDto.builder()
@@ -34,8 +34,8 @@ public interface UserFunctions {
   Function<UserDto, UserDocument> mapToDocument = dto -> {
     UserDocument userDocument = new UserDocument(dto.id(), dto.firstName(),
         dto.lastName(), dto.version(), dto.createdAt(),
-        dto.contactInformation().map(UserFunctions.mapToContactInfoDocument).orElse(null));
-    dto.shortenerId().ifPresent(id -> userDocument.setShortenerId(id));
+        dto.contactInformation().map(UserMapper.mapToContactInfoDocument).orElse(null));
+    dto.shortenerId().ifPresent(userDocument::setShortenerId);
     return userDocument;
   };
 

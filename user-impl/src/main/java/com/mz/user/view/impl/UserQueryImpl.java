@@ -1,6 +1,6 @@
 package com.mz.user.view.impl;
 
-import com.mz.user.UserFunctions;
+import com.mz.user.UserMapper;
 import com.mz.user.dto.UserDto;
 import com.mz.user.view.UserQuery;
 import com.mz.user.view.UserRepository;
@@ -9,7 +9,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public class UserQueryImpl implements UserQuery, UserFunctions {
+public class UserQueryImpl implements UserQuery, UserMapper {
 
   private final UserRepository repository;
 

@@ -1,4 +1,4 @@
-package com.mz.reactivedemo.adapter.persistance.persistence;
+package com.mz.reactivedemo.adapter.persistance.actor;
 
 import akka.actor.Props;
 import akka.event.Logging;
@@ -6,6 +6,7 @@ import akka.event.LoggingAdapter;
 import akka.persistence.AbstractPersistentActor;
 import akka.persistence.PersistentRepr;
 import akka.persistence.RecoveryCompleted;
+import com.mz.reactivedemo.adapter.persistance.AggregateFactory;
 import com.mz.reactivedemo.common.CommandResult;
 import com.mz.reactivedemo.common.ValidateResult;
 import com.mz.reactivedemo.common.aggregate.Aggregate;
@@ -15,10 +16,10 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 import java.util.Optional;
 
-public class EntityPersistenceActor<S> extends AbstractPersistentActor {
+public class AggregatePersistenceActor<S> extends AbstractPersistentActor {
 
   public static <S> Props props(String id, AggregateFactory<S> aggregateFactory) {
-    return Props.create(EntityPersistenceActor.class, () -> new EntityPersistenceActor(id, aggregateFactory));
+    return Props.create(AggregatePersistenceActor.class, () -> new AggregatePersistenceActor(id, aggregateFactory));
   }
 
   private final LoggingAdapter log = Logging.getLogger(this);
@@ -29,7 +30,7 @@ public class EntityPersistenceActor<S> extends AbstractPersistentActor {
 
   private Optional<Aggregate<S>> aggregate;
 
-  public EntityPersistenceActor(String id, AggregateFactory<S> aggregateFactory) {
+  public AggregatePersistenceActor(String id, AggregateFactory<S> aggregateFactory) {
     this.aggregateFactory = aggregateFactory;
     this.id = id;
     this.aggregate = Optional.of(aggregateFactory.of(id));

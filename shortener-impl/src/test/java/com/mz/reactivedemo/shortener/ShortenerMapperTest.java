@@ -13,7 +13,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShortenerFunctionsTest {
+class ShortenerMapperTest {
 
   @Test
   void mapUpdateToChangedEvent() {
@@ -30,7 +30,7 @@ class ShortenerFunctionsTest {
         .url(updated.url())
         .build();
 
-    ShortenerChangedEvent changedEvent= ShortenerFunctions.mapUpdatedToChangedEvent.apply(updated);
+    ShortenerChangedEvent changedEvent= ShortenerMapper.mapUpdatedToChangedEvent.apply(updated);
     assertTrue(changedEvent.type() == ShortenerEventType.UPDATED);
     assertTrue(changedEvent.payload().id().equals(dto.id()));
     assertTrue(changedEvent.payload().version().equals(dto.version()));
@@ -49,7 +49,7 @@ class ShortenerFunctionsTest {
         .version(1L)
         .build();
 
-    ShortenerPayload payload = ShortenerFunctions.mapDtoToPayload.apply(dto);
+    ShortenerPayload payload = ShortenerMapper.mapDtoToPayload.apply(dto);
     assertEquals(payload.id(), dto.id());
     assertEquals(payload.version(), dto.version());
     assertEquals(payload.url().get(), dto.url());
