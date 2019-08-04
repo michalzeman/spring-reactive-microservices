@@ -2,14 +2,14 @@ package com.mz.statistic.impl;
 
 import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
 import com.mz.reactivedemo.shortener.api.event.ShortenerViewed;
-import com.mz.statistic.ShortenerSubscriber;
 import com.mz.statistic.StatisticRepository;
+import com.mz.statistic.adapters.shortener.ShortenerSubscriber;
+import com.mz.statistic.adapters.user.UserSubscriber;
 import com.mz.statistic.model.EventType;
 import com.mz.statistic.model.StatisticDocument;
+import com.mz.user.message.event.UserChangedEvent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
@@ -19,6 +19,7 @@ import reactor.core.publisher.ReplayProcessor;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -27,38 +28,24 @@ import static org.mockito.ArgumentMatchers.any;
  * Created by zemi on 29/05/2018.
  */
 @ExtendWith(SpringExtension.class)
-//@DataMongoTest
 public class StatisticServiceImplTest {
 
-  @Mock
-  StatisticRepository repository;
+  StatisticRepository repository = Mockito.mock(StatisticRepository.class);
 
   FluxSink<ShortenerViewed> eventSink;
 
+  FluxSink<UserChangedEvent> userChangedEventSink;
+
   ShortenerSubscriber shortenerSubscriber = new ShortenerSubscriberMockImpl((sink) -> eventSink = sink);
 
-  @InjectMocks
-  StatisticServiceImpl stub = new StatisticServiceImpl(repository, shortenerSubscriber);
+  UserSubscriber userSubscriber = new UserSubscriberMockImpl(sink -> userChangedEventSink = sink);
 
-//  @ClassRule
-//  public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, SHORTENER_CHANGED,
-//      SHORTENER_DOCUMENT, SHORTENER_VIEWED);
-//
-//  @BeforeClass
-//  public static void setup() {
-//    System.setProperty("spring.cloud.stream.kafka.binder.brokers", embeddedKafka.getBrokersAsString());
-//  }
+  StatisticServiceImpl stub = new StatisticServiceImpl(repository, shortenerSubscriber, userSubscriber);
 
-  //  @BeforeAll
-  public void beforeAll() {
-    stub.subscribeToEvents();
-  }
 
   @Test
   public void getAll() {
     StatisticDocument statisticDocument1 = new StatisticDocument();
-    statisticDocument1.setNumber(1L);
-    statisticDocument1.setUrl("qwwergr");
     statisticDocument1.setId("Stat1");
 
     Mockito.when(repository.findAll()).thenReturn(Flux.just(statisticDocument1));
@@ -72,20 +59,18 @@ public class StatisticServiceImplTest {
   @Test
   public void numberOfViews() {
     StatisticDocument statisticDocument1 = new StatisticDocument();
-    statisticDocument1.setNumber(1L);
-    statisticDocument1.setUrl("qwwergr");
     statisticDocument1.setId("Stat1");
+    statisticDocument1.setEventType(EventType.SHORTENER_VIEWED);
 
     StatisticDocument statisticDocument2 = new StatisticDocument();
-    statisticDocument2.setNumber(1L);
-    statisticDocument2.setUrl("qwwergr");
     statisticDocument2.setId("Stat2");
+    statisticDocument2.setEventType(EventType.SHORTENER_VIEWED);
 
-    Mockito.when(repository.findByUrlAndEventType(any(String.class), any(EventType.class))).thenReturn(Flux.just
+    Mockito.when(repository.findByEventType(any(EventType.class))).thenReturn(Flux.just
         (statisticDocument1,
             statisticDocument2));
 
-    Mono<Long> source = stub.numberOfViews("qwwergr");
+    Mono<Long> source = stub.eventsCount(EventType.SHORTENER_VIEWED);
     StepVerifier.create(source)
         .expectNext(2L)
         .expectComplete().verify();
@@ -96,19 +81,19 @@ public class StatisticServiceImplTest {
     String keyUrl1 = "keyUrl1";
     String eventId = "EventId";
     ShortenerViewed event1 = ShortenerViewed.builder()
+        .aggregateId(UUID.randomUUID().toString())
         .number(1L)
         .key(keyUrl1)
         .eventId(eventId)
         .build();
     ShortenerViewed event2 = ShortenerViewed.builder()
+        .aggregateId(UUID.randomUUID().toString())
         .number(1L)
         .key(keyUrl1)
         .eventId(eventId)
         .build();
 
     StatisticDocument statisticDocument = new StatisticDocument();
-    statisticDocument.setNumber(event1.number());
-    statisticDocument.setUrl(event1.key());
     statisticDocument.setCreatedAt(event1.eventCreatedAt());
     statisticDocument.setEventId(event1.eventId());
 
@@ -139,5 +124,21 @@ public class StatisticServiceImplTest {
       return Flux.empty();
     }
 
+  }
+
+  static class UserSubscriberMockImpl implements UserSubscriber {
+
+    private final ReplayProcessor<UserChangedEvent> events = ReplayProcessor.create(1);
+
+    private final FluxSink<UserChangedEvent> eventSink = events.sink();
+
+    public UserSubscriberMockImpl(Consumer<FluxSink<UserChangedEvent>> eventEmitter) {
+      eventEmitter.accept(eventSink);
+    }
+
+    @Override
+    public Flux<UserChangedEvent> userChanged() {
+      return events.publishOn(Schedulers.parallel());
+    }
   }
 }

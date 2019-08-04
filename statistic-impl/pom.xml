@@ -24,6 +24,11 @@
             <groupId>com.mz</groupId>
         </dependency>
 
+        <dependency>
+            <artifactId>user-api</artifactId>
+            <groupId>com.mz</groupId>
+        </dependency>
+
         <!--Spring dependencies-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

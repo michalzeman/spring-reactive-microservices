@@ -1,4 +1,4 @@
-package com.mz.statistic;
+package com.mz.statistic.adapters.shortener;
 
 import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
 import com.mz.reactivedemo.shortener.api.event.ShortenerViewed;

@@ -2,6 +2,7 @@ package com.mz.reactivedemo.shortener.impl;
 
 import com.mz.reactivedemo.common.api.events.DomainEvent;
 import com.mz.reactivedemo.common.util.Match;
+import com.mz.reactivedemo.shortener.ShortenerMapper;
 import com.mz.reactivedemo.shortener.ShortenerRepository;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
@@ -15,7 +16,6 @@ import reactor.core.publisher.Mono;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.mz.reactivedemo.shortener.ShortenerMapper.*;
 
 public interface ShortenerFunctions {
 
@@ -30,7 +30,7 @@ public interface ShortenerFunctions {
 
     @Override
     public Mono<ShortenerDto> apply(ShortenerDto shortenerDto) {
-      return repository.save(mapToDocument.apply(shortenerDto)).map(mapToDTO);
+      return repository.save(ShortenerMapper.FN.mapToDocument.apply(shortenerDto)).map(ShortenerMapper.FN.mapToDTO);
     }
   }
 
@@ -48,10 +48,10 @@ public interface ShortenerFunctions {
       Match.<ShortenerChangedEvent>match(event)
           .when(ShortenerCreated.class, e -> ShortenerChangedEvent.builder()
               .aggregateId(e.aggregateId())
-              .payload(mapDtoToPayload.apply(e.shortener()))
+              .payload(ShortenerMapper.FN.mapDtoToPayload.apply(e.shortener()))
               .type(ShortenerEventType.CREATED)
               .build())
-          .when(ShortenerUpdated.class, mapUpdatedToChangedEvent)
+          .when(ShortenerUpdated.class, ShortenerMapper.FN.mapUpdatedToChangedEvent)
           .get().ifPresent(applicationMessageBus::publishEvent);
     }
   }

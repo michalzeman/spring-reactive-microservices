@@ -18,6 +18,8 @@ public interface ShortenerViewed extends Event {
 
   Long number();
 
+  String aggregateId();
+
   static ImmutableShortenerViewed.Builder builder() {
     return ImmutableShortenerViewed.builder();
   }

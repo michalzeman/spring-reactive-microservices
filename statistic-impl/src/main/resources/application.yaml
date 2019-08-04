@@ -8,6 +8,7 @@ spring.cloud.stream:
       shortener-viewed.destination: shortener-viewed
       shortener-document.destination: shortener-document
       shortener-changed.destination: shortener-changed
+      user-changed.destination: user-changed
 
   kafka.streams:
     binder:

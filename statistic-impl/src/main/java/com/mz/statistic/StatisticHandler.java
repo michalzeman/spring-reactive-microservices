@@ -12,7 +12,6 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
@@ -39,14 +38,6 @@ public class StatisticHandler implements ErrorHandler {
         .onErrorResume(this::onError);
   }
 
-  Mono<ServerResponse> numberOfView(ServerRequest request) {
-    return Mono.just(request.pathVariable("key"))
-        .publishOn(Schedulers.parallel())
-        .flatMap(postId -> ok().contentType(MediaType.APPLICATION_JSON_UTF8)
-            .body(service.numberOfViews(postId), Long.class)
-        ).onErrorResume(this::onError);
-  }
-
   Mono<ServerResponse> eventsCount(ServerRequest request) {
     return Mono.just(EventType.valueOf(request.pathVariable("type")))
         .flatMap(t -> ok().contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -62,7 +53,6 @@ public class StatisticHandler implements ErrorHandler {
       System.out.println("StatisticRouter");
       return RouterFunctions
           .route(GET("/statistics").and(accept(MediaType.APPLICATION_JSON)), handler::getAll)
-          .andRoute(GET("/statistics/shorteners/{key}").and(accept(MediaType.APPLICATION_JSON)), handler::numberOfView)
           .andRoute(GET("/statistics/shorteners/events/{type}/counts").and(accept(MediaType.APPLICATION_JSON_UTF8)),
               handler::eventsCount);
     }

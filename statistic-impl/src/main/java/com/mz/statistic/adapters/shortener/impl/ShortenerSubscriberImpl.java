@@ -1,10 +1,11 @@
-package com.mz.statistic.adapters.shortener;
+package com.mz.statistic.adapters.shortener.impl;
 
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
 import com.mz.reactivedemo.shortener.api.event.ShortenerViewed;
 import com.mz.reactivedemo.shortener.api.topics.ShortenerTopics;
-import com.mz.statistic.ShortenerSubscriber;
+import com.mz.statistic.adapters.shortener.ShortenerSink;
+import com.mz.statistic.adapters.shortener.ShortenerSubscriber;
 import org.apache.kafka.streams.kstream.KStream;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.Input;
@@ -31,9 +32,9 @@ public class ShortenerSubscriberImpl implements ShortenerSubscriber {
   private final FluxSink<ShortenerChangedEvent> changedEventsSink = changedEvents.sink();
 
   @StreamListener
-  public void process(@Input(ShortenerTopics.SHORTENER_VIEWED) KStream<String, ShortenerViewed> shortenerViewed,
-                      @Input(ShortenerTopics.SHORTENER_DOCUMENT) KStream<String, ShortenerDto> shortenerDoc,
-                      @Input(ShortenerTopics.SHORTENER_CHANGED) KStream<String, ShortenerChangedEvent> shortenerChanged) {
+  public void processShortenerStream(@Input(ShortenerTopics.SHORTENER_VIEWED) KStream<String, ShortenerViewed> shortenerViewed,
+                                     @Input(ShortenerTopics.SHORTENER_DOCUMENT) KStream<String, ShortenerDto> shortenerDoc,
+                                     @Input(ShortenerTopics.SHORTENER_CHANGED) KStream<String, ShortenerChangedEvent> shortenerChanged) {
     shortenerViewed.foreach((k, v) -> eventSink.next(v));
     shortenerDoc.foreach((k, v) -> System.out.println(v));
     shortenerChanged.foreach((k, v) -> changedEventsSink.next(v));

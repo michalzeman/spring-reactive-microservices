@@ -12,7 +12,7 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface StatisticRepository extends ReactiveCrudRepository<StatisticDocument, String> {
 
-  Flux<StatisticDocument> findByUrlAndEventType(String url, EventType eventType);
+//  Flux<StatisticDocument> findByUrlAndEventType(String url, EventType eventType);
 
   Flux<StatisticDocument> findByEventType(EventType eventType);
 

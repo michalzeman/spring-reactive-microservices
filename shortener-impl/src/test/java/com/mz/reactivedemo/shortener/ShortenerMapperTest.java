@@ -30,7 +30,7 @@ class ShortenerMapperTest {
         .url(updated.url())
         .build();
 
-    ShortenerChangedEvent changedEvent= ShortenerMapper.mapUpdatedToChangedEvent.apply(updated);
+    ShortenerChangedEvent changedEvent= ShortenerMapper.FN.mapUpdatedToChangedEvent.apply(updated);
     assertTrue(changedEvent.type() == ShortenerEventType.UPDATED);
     assertTrue(changedEvent.payload().id().equals(dto.id()));
     assertTrue(changedEvent.payload().version().equals(dto.version()));
@@ -49,7 +49,7 @@ class ShortenerMapperTest {
         .version(1L)
         .build();
 
-    ShortenerPayload payload = ShortenerMapper.mapDtoToPayload.apply(dto);
+    ShortenerPayload payload = ShortenerMapper.FN.mapDtoToPayload.apply(dto);
     assertEquals(payload.id(), dto.id());
     assertEquals(payload.version(), dto.version());
     assertEquals(payload.url().get(), dto.url());

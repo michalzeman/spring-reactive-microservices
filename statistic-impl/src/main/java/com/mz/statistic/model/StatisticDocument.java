@@ -15,23 +15,20 @@ public class StatisticDocument {
   @Id
   private String id;
 
-  private String url;
-
-  private Long number;
-
   private String eventId;
 
   private Instant createdAt;
 
   private EventType eventType;
 
-  public StatisticDocument(String id, String url, Long number, String eventId, Instant createdAt, EventType eventType) {
+  private String aggregateId;
+
+  public StatisticDocument(String id, String eventId, Instant createdAt, EventType eventType, String aggregateId) {
     this.id = id;
-    this.url = url;
-    this.number = number;
     this.eventId = eventId;
     this.createdAt = createdAt;
     this.eventType = eventType;
+    this.aggregateId = aggregateId;
   }
 
   public StatisticDocument() {
@@ -54,22 +51,6 @@ public class StatisticDocument {
     this.id = id;
   }
 
-  public String getUrl() {
-    return url;
-  }
-
-  public void setUrl(String url) {
-    this.url = url;
-  }
-
-  public Long getNumber() {
-    return number;
-  }
-
-  public void setNumber(Long number) {
-    this.number = number;
-  }
-
   public Instant getCreatedAt() {
     return createdAt;
   }
@@ -86,22 +67,28 @@ public class StatisticDocument {
     this.eventType = eventType;
   }
 
+  public String getAggregateId() {
+    return aggregateId;
+  }
+
+  public void setAggregateId(String aggregateId) {
+    this.aggregateId = aggregateId;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof StatisticDocument)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
     StatisticDocument that = (StatisticDocument) o;
-    return Objects.equals(id, that.id) &&
-        Objects.equals(url, that.url) &&
-        Objects.equals(number, that.number) &&
-        Objects.equals(eventId, that.eventId) &&
-        Objects.equals(createdAt, that.createdAt) &&
-        eventType == that.eventType;
+    return id.equals(that.id) &&
+        eventId.equals(that.eventId) &&
+        createdAt.equals(that.createdAt) &&
+        eventType == that.eventType &&
+        aggregateId.equals(that.aggregateId);
   }
 
   @Override
   public int hashCode() {
-
-    return Objects.hash(id, url, number, eventId, createdAt, eventType);
+    return Objects.hash(id, eventId, createdAt, eventType, aggregateId);
   }
 }

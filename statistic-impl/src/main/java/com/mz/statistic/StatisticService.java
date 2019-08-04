@@ -9,10 +9,8 @@ import reactor.core.publisher.Mono;
  * Created by zemi on 29/05/2018.
  */
 public interface StatisticService {
+
   Flux<StatisticDocument> getAll();
-
-  Mono<Long> numberOfViews(String postId);
-
 
   Mono<Long> eventsCount(EventType type);
 

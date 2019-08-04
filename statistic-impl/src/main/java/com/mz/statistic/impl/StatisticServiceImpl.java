@@ -3,11 +3,13 @@ package com.mz.statistic.impl;
 import com.mz.reactivedemo.common.util.Logger;
 import com.mz.reactivedemo.shortener.api.event.ShortenerChangedEvent;
 import com.mz.reactivedemo.shortener.api.event.ShortenerViewed;
-import com.mz.statistic.ShortenerSubscriber;
 import com.mz.statistic.StatisticRepository;
 import com.mz.statistic.StatisticService;
+import com.mz.statistic.adapters.shortener.ShortenerSubscriber;
+import com.mz.statistic.adapters.user.UserSubscriber;
 import com.mz.statistic.model.EventType;
 import com.mz.statistic.model.StatisticDocument;
+import com.mz.user.message.event.UserChangedEvent;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,16 +24,20 @@ public class StatisticServiceImpl implements StatisticService {
 
   private static final Logger log = new Logger(LogFactory.getLog(StatisticServiceImpl.class));
 
-  private StatisticRepository repository;
+  private final StatisticRepository repository;
 
-  private ShortenerSubscriber shortenerSubscriber;
+  private final ShortenerSubscriber shortenerSubscriber;
+
+  private final UserSubscriber userSubscriber;
 
 
   @Autowired
   public StatisticServiceImpl(StatisticRepository repository,
-                              ShortenerSubscriber shortenerSubscriber) {
+                              ShortenerSubscriber shortenerSubscriber,
+                              UserSubscriber userSubscriber) {
     this.repository = repository;
     this.shortenerSubscriber = shortenerSubscriber;
+    this.userSubscriber = userSubscriber;
     subscribeToEvents();
   }
 
@@ -46,6 +52,11 @@ public class StatisticServiceImpl implements StatisticService {
         .doOnError(exp -> log.log().error("shortenerChanged event stream error", exp))
         .retry()
         .subscribe();
+    userSubscriber.userChanged()
+        .flatMap(this::processUserChangedEvent)
+        .doOnError(exp -> log.log().error("userChanged event stream error", exp))
+        .retry()
+        .subscribe();
   }
 
   private Mono<StatisticDocument> processViewedEvent(ShortenerViewed event) {
@@ -53,51 +64,62 @@ public class StatisticServiceImpl implements StatisticService {
         .next()
         .switchIfEmpty(Mono.defer(() -> {
           StatisticDocument statisticDocument = new StatisticDocument();
-          statisticDocument.setNumber(event.number());
-          statisticDocument.setUrl(event.key());
           statisticDocument.setCreatedAt(event.eventCreatedAt());
           statisticDocument.setEventId(event.eventId());
-          statisticDocument.setEventType(EventType.VIEWED);
+          statisticDocument.setEventType(EventType.SHORTENER_VIEWED);
+          statisticDocument.setAggregateId(event.aggregateId());
           return  repository.save(statisticDocument);
         }));
   }
 
   private Mono<StatisticDocument> processShortenerChangedEvent(ShortenerChangedEvent event) {
     StatisticDocument statisticDocument = new StatisticDocument();
-    statisticDocument.setNumber(1L);
-    event.payload().key().ifPresent(statisticDocument::setUrl);
     statisticDocument.setCreatedAt(event.eventCreatedAt());
     statisticDocument.setEventId(event.eventId());
+    statisticDocument.setAggregateId(event.aggregateId());
     switch (event.type()) {
       case CREATED:
-        statisticDocument.setEventType(EventType.CREATED);
+        statisticDocument.setEventType(EventType.SHORTENER_CREATED);
         break;
       case UPDATED:
-        statisticDocument.setEventType(EventType.UPDATED);
+        statisticDocument.setEventType(EventType.SHORTENER_UPDATED);
         break;
       case DELETED:
-        statisticDocument.setEventType(EventType.DELETED);
+        statisticDocument.setEventType(EventType.SHORTENER_DELETED);
         break;
     }
     return repository.save(statisticDocument);
   }
 
+  private Mono<StatisticDocument> processUserChangedEvent(UserChangedEvent event) {
+    StatisticDocument statisticDocument = new StatisticDocument();
+    statisticDocument.setCreatedAt(event.eventCreatedAt());
+    statisticDocument.setEventId(event.eventId());
+    statisticDocument.setAggregateId(event.aggregateId());
+    switch (event.type()) {
+      case USER_CREATED:
+        statisticDocument.setEventType(EventType.USER_CREATED);
+        break;
+      case USER_UPDATED:
+      case CONTACT_INFO_CREATED:
+        statisticDocument.setEventType(EventType.USER_UPDATED);
+        break;
+    }
+    return repository.save(statisticDocument);
+  }
+
+  @Override
   public Flux<StatisticDocument> getAll() {
     log.debug(() -> "getAll() ->");
     return repository.findAll()
         .takeLast(100);
   }
 
-  public Mono<Long> numberOfViews(String key) {
-    log.debug(() -> "numberOfViews() ->");
-    return repository.findByUrlAndEventType(key, EventType.VIEWED)
-        .map(StatisticDocument::getNumber)
-        .reduce(0L,(num1, num2) -> num1 + num2);
-  }
-
   @Override
   public Mono<Long> eventsCount(EventType type) {
-    return repository.findByEventType(type).map(r -> 1).reduce(0L, (n1, n2) -> n1+n2);
+    return repository.findByEventType(type)
+        .map(r -> 1)
+        .reduce(0L, Long::sum);
   }
 
 }

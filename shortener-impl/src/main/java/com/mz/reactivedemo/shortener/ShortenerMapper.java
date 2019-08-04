@@ -10,9 +10,11 @@ import com.mz.reactivedemo.shortener.view.ShortenerDocument;
 import java.util.Optional;
 import java.util.function.Function;
 
-public interface ShortenerMapper {
+public enum ShortenerMapper {
 
-  Function<ShortenerDocument, ShortenerDto> mapToDTO = document -> ShortenerDto.builder()
+  FN;
+
+  public final Function<ShortenerDocument, ShortenerDto> mapToDTO = document -> ShortenerDto.builder()
       .id(document.getId())
       .key(document.getKey())
       .url(document.getUrl())
@@ -22,7 +24,7 @@ public interface ShortenerMapper {
       .version(document.getVersion())
       .build();
 
-  Function<ShortenerDto, ShortenerDocument> mapToDocument = dto -> {
+  public final Function<ShortenerDto, ShortenerDocument> mapToDocument = dto -> {
     ShortenerDocument document =
         new ShortenerDocument(dto.key(), dto.url(), dto.shortUrl(), dto
             .createdAt(), dto.version());
@@ -31,7 +33,7 @@ public interface ShortenerMapper {
     return document;
   };
 
-  Function<ShortenerUpdated, ShortenerChangedEvent> mapUpdatedToChangedEvent = (updated) ->
+  public final Function<ShortenerUpdated, ShortenerChangedEvent> mapUpdatedToChangedEvent = (updated) ->
       ShortenerChangedEvent.builder()
           .aggregateId(updated.aggregateId())
           .payload(ShortenerPayload.builder()
@@ -42,7 +44,7 @@ public interface ShortenerMapper {
           .type(ShortenerEventType.UPDATED)
           .build();
 
-  Function<ShortenerDto, ShortenerPayload> mapDtoToPayload = dto -> ShortenerPayload.builder()
+  public final Function<ShortenerDto, ShortenerPayload> mapDtoToPayload = dto -> ShortenerPayload.builder()
       .id(dto.id())
       .key(dto.key())
       .url(dto.url())

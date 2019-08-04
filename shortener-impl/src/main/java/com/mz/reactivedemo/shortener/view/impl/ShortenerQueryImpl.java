@@ -1,5 +1,6 @@
 package com.mz.reactivedemo.shortener.view.impl;
 
+import com.mz.reactivedemo.shortener.ShortenerMapper;
 import com.mz.reactivedemo.shortener.ShortenerRepository;
 import com.mz.reactivedemo.shortener.api.event.ShortenerViewed;
 import com.mz.reactivedemo.shortener.impl.ShortenerApplicationServiceImpl;
@@ -15,8 +16,6 @@ import reactor.core.publisher.Mono;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.UUID;
-
-import static com.mz.reactivedemo.shortener.ShortenerMapper.mapToDTO;
 
 @Service
 public class ShortenerQueryImpl implements ShortenerQuery {
@@ -41,14 +40,14 @@ public class ShortenerQueryImpl implements ShortenerQuery {
   @Override
   public Flux<com.mz.reactivedemo.shortener.api.dto.ShortenerDto> getAll() {
     log.debug("getAll() ->");
-    return repository.findAll().map(mapToDTO);
+    return repository.findAll().map(ShortenerMapper.FN.mapToDTO);
   }
 
   @Override
   public Mono<com.mz.reactivedemo.shortener.api.dto.ShortenerDto> get(String id) {
     log.debug("get() ->");
     return repository.findById(id)
-        .map(mapToDTO);
+        .map(ShortenerMapper.FN.mapToDTO);
   }
 
   @Override
@@ -57,6 +56,7 @@ public class ShortenerQueryImpl implements ShortenerQuery {
     return repository.findByKey(key)
         .doOnSuccess(shortener -> Optional.ofNullable(shortener)
             .ifPresent(s -> this.shortenerMessageBus.publishEvent(ShortenerViewed.builder()
+                .aggregateId(shortener.getId())
                 .key(s.getKey())
                 .number(1L)
                 .eventId(UUID.randomUUID().toString())
