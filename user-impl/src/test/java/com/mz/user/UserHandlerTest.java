@@ -16,8 +16,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -51,9 +50,9 @@ class UserHandlerTest {
         .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
         .expectBody(UserDto.class).returnResult().getResponseBody();
 
-    assertTrue(result.firstName().equals(firstNameTest));
-    assertTrue(result.lastName().equals(lastNameTest));
-    assertTrue(!result.id().isEmpty());
+    assertEquals(result.firstName(), firstNameTest);
+    assertEquals(result.lastName(), lastNameTest);
+    assertFalse(result.id().isEmpty());
 
   }
 

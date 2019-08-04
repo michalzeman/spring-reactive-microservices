@@ -26,8 +26,6 @@ class UserAggregateTest {
 
   static final String FIST_NAME = "FistName";
   static final String LAST_NAME = "LastName";
-  static final String EMAIL_EMAIL_COM = "email@email.com";
-  static final String PHONE_NUMBER = "+421 900 999 111";
   static final Instant CREATED_AT = Instant.now();
 
   @Test
@@ -55,7 +53,7 @@ class UserAggregateTest {
   private void createUserTest(Command cmd) {
     UserAggregate subject = UserAggregate.of(UUID.randomUUID().toString());
     Try<ValidateResult> result = subject.validate(cmd);
-    Assertions.assertTrue(result.get().events().size() == 1);
+    Assertions.assertEquals(1, result.get().events().size());
     Assertions.assertTrue(result.get().events().stream().allMatch(e -> e instanceof UserCreated));
   }
 
@@ -90,13 +88,13 @@ class UserAggregateTest {
     ContactInfoDto contactInfoState = result.contactInformation().get();
 
 
-    Assertions.assertTrue(userDto.id().equals(userDocument.getId()));
-    Assertions.assertTrue(userDto.version().equals(userDocument.getVersion()));
-    Assertions.assertTrue(userDto.firstName().equals(userDocument.getFirstName()));
-    Assertions.assertTrue(userDto.lastName().equals(userDocument.getLastName()));
-    Assertions.assertTrue(userDto.createdAt().equals(userDocument.getCreatedAt()));
+    Assertions.assertEquals(userDto.id(), userDocument.getId());
+    Assertions.assertEquals(userDto.version(), userDocument.getVersion());
+    Assertions.assertEquals(userDto.firstName(), userDocument.getFirstName());
+    Assertions.assertEquals(userDto.lastName(), userDocument.getLastName());
+    Assertions.assertEquals(userDto.createdAt(), userDocument.getCreatedAt());
 
-    Assertions.assertTrue(contactInfoState.email().get().equals("test@test.com"));
+    Assertions.assertEquals("test@test.com", contactInfoState.email().get());
   }
 
   @Test
@@ -113,7 +111,7 @@ class UserAggregateTest {
     UserAggregate subject = UserAggregate.of(userDto);
 
     UserDto userDto1 = subject.state();
-    Assertions.assertFalse(userDto1.shortenerId().isPresent());
+    Assertions.assertTrue(userDto1.shortenerIds().isEmpty());
 
     AddShortener addShortener = AddShortener.builder()
         .userId(userId)
@@ -122,10 +120,10 @@ class UserAggregateTest {
     Try<ValidateResult> validateResult = subject.validate(addShortener);
     Assertions.assertEquals(1, validateResult.get().events().size());
     Assertions.assertTrue(validateResult.get().events().stream().allMatch(e -> e instanceof ShortenerAdded));
-    validateResult.get().events().forEach(event -> subject.apply(event));
+    validateResult.get().events().forEach(subject::apply);
     UserDto userDto2 = subject.state();
     Assertions.assertEquals(1L, (long) userDto2.version());
-    Assertions.assertEquals(shortenerId, userDto2.shortenerId().get());
+    Assertions.assertEquals(shortenerId, userDto2.shortenerIds().stream().findFirst().get());
   }
 
 }

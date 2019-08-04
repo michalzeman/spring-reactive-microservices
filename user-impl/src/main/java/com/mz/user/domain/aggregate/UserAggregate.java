@@ -21,6 +21,7 @@ import org.eclipse.collections.impl.factory.Lists;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by zemi on 02/01/2019.
@@ -37,7 +38,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
 
   private Long version;
 
-  private Id shortenerId;
+  private ImmutableList<Id> shortenerIds = Lists.immutable.empty();
 
   private Instant createdAt;
 
@@ -53,7 +54,10 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
     lastName = new LastName(userDto.lastName());
     version = userDto.version();
     createdAt = userDto.createdAt();
-    userDto.shortenerId().ifPresent(shortenerId -> this.shortenerId = new Id(shortenerId));
+    shortenerIds = Lists.immutable.ofAll(userDto.shortenerIds()
+        .stream()
+        .map(Id::new)
+        .collect(Collectors.toList()));
     contactInformation = userDto.contactInformation()
         .map(c ->
             ContactInfo.builder()
@@ -147,7 +151,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
   }
 
   private void applyShortnerAdded(ShortenerAdded shortenerAdded) {
-    this.shortenerId = new Id(shortenerAdded.shortenerId());
+    this.shortenerIds = this.shortenerIds.newWith(new Id(shortenerAdded.shortenerId()));
     this.version = shortenerAdded.userVersion();
   }
 
@@ -183,7 +187,7 @@ public class UserAggregate extends AbstractRootAggregate<UserDto> {
         .id(this.id.value)
         .version(this.version)
         .createdAt(this.createdAt)
-        .shortenerId(Optional.ofNullable(this.shortenerId).map(i -> i.value))
+        .shortenerIds(this.shortenerIds.collect(id -> id.value).castToList())
         .contactInformation(this.contactInformation.map(c ->
             ContactInfoDto.builder()
                 .email(c.email().map(e -> e.value))

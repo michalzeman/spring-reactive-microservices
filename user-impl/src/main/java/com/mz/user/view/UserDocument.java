@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -23,7 +24,7 @@ public class UserDocument {
 
   private Instant createdAt;
 
-  private String shortenerId;
+  private List<String> shortenerIds;
 
   private ContactInfoDocument contactInformationDocument;
 
@@ -41,12 +42,12 @@ public class UserDocument {
     this.contactInformationDocument = contactInformationDocument;
   }
 
-  public String getShortenerId() {
-    return shortenerId;
+  public List<String> getShortenerIds() {
+    return shortenerIds;
   }
 
-  public void setShortenerId(String shortenerId) {
-    this.shortenerId = shortenerId;
+  public void setShortenerIds(List<String> shortenerIds) {
+    this.shortenerIds = shortenerIds;
   }
 
   public String getFirstName() {
@@ -107,12 +108,12 @@ public class UserDocument {
         firstName.equals(that.firstName) &&
         lastName.equals(that.lastName) &&
         createdAt.equals(that.createdAt) &&
-        shortenerId.equals(that.shortenerId) &&
+        shortenerIds.equals(that.shortenerIds) &&
         contactInformationDocument.equals(that.contactInformationDocument);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, version, firstName, lastName, createdAt, shortenerId, contactInformationDocument);
+    return Objects.hash(id, version, firstName, lastName, createdAt, shortenerIds, contactInformationDocument);
   }
 }

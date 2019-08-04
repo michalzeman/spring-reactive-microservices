@@ -8,6 +8,7 @@ import com.mz.user.message.ContactInfoPayload;
 import com.mz.user.message.UserPayload;
 import com.mz.user.view.ContactInfoDocument;
 import com.mz.user.view.UserDocument;
+import org.eclipse.collections.impl.factory.Lists;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -21,7 +22,7 @@ public interface UserMapper {
           .lastName(doc.getLastName())
           .createdAt(doc.getCreatedAt())
           .version(doc.getVersion())
-          .shortenerId(Optional.ofNullable(doc.getShortenerId()))
+          .shortenerIds(Lists.immutable.ofAll(doc.getShortenerIds()))
           .contactInformation(Optional.ofNullable(doc.getContactInformationDocument())
               .map(c -> ContactInfoDto.builder()
                   .userId(doc.getId())
@@ -35,7 +36,7 @@ public interface UserMapper {
     UserDocument userDocument = new UserDocument(dto.id(), dto.firstName(),
         dto.lastName(), dto.version(), dto.createdAt(),
         dto.contactInformation().map(UserMapper.mapToContactInfoDocument).orElse(null));
-    dto.shortenerId().ifPresent(userDocument::setShortenerId);
+    userDocument.setShortenerIds(dto.shortenerIds());
     return userDocument;
   };
 

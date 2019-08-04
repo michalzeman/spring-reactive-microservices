@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -20,7 +21,7 @@ public interface UserDto extends BasicDto {
   String firstName();
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  Optional<String> shortenerId();
+  List<String> shortenerIds();
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   Optional<ContactInfoDto> contactInformation();
