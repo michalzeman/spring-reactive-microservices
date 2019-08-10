@@ -30,7 +30,7 @@ public class AggregatePersistenceActor<S> extends AbstractPersistentActor {
 
   private Optional<Aggregate<S>> aggregate;
 
-  public AggregatePersistenceActor(String id, AggregateFactory<S> aggregateFactory) {
+  private AggregatePersistenceActor(String id, AggregateFactory<S> aggregateFactory) {
     this.aggregateFactory = aggregateFactory;
     this.id = id;
     this.aggregate = Optional.of(aggregateFactory.of(id));
@@ -42,8 +42,8 @@ public class AggregatePersistenceActor<S> extends AbstractPersistentActor {
         .match(PersistentRepr.class, m -> log.info(m.toString()))
         .match(DomainEvent.class, event -> {
           log.info("Event to apply in recovery -> ", event);
-            this.aggregate = Optional.of
-                (this.aggregate.orElseGet(() -> aggregateFactory.<S>of(this.id)).apply(event));
+          this.aggregate = Optional.of
+              (this.aggregate.orElseGet(() -> aggregateFactory.of(this.id)).apply(event));
         })
         .match(RecoveryCompleted.class, evt -> log.info("Recovery completed. Current sequence: {}", lastSequenceNr()))
         .build();
@@ -62,22 +62,23 @@ public class AggregatePersistenceActor<S> extends AbstractPersistentActor {
   }
 
   private void processUpdate(Command cmd) {
-    if (aggregate.isPresent()) {
-      boolean updated = aggregate.get().validate(cmd)
-          .map(ValidateResult::events)
-          .onSuccess(events -> onSuccess(aggregate.get(), events))
-          .onFailure(this::onFailure)
-          .toOptional()
-          .isPresent();
-      if (!updated) {
-        sender().tell(CommandResult.none(), self());
-      }
-    } else {
-      sender().tell(CommandResult.error(new RuntimeException("Wrong actor state")), self());
-    }
+    aggregate.ifPresentOrElse(
+        a -> a.validate(cmd)
+            .map(ValidateResult::events)
+            .onFailure(this::onFailure)
+            .toOptional()
+            .filter(domainEvents -> !domainEvents.isEmpty())
+            .ifPresentOrElse(
+                domainEvents -> onSuccess(a, domainEvents),
+                () -> {
+                  log.debug("No changes on {} aggregate", a.getClass());
+                  sender().tell(CommandResult.none(), self());
+                }),
+        () -> sender().tell(CommandResult.error(new RuntimeException("Wrong actor state")), self())
+    );
   }
 
-  protected void onSuccess(Aggregate<S> aggregate, ImmutableList<DomainEvent> events) {
+  private void onSuccess(Aggregate<S> aggregate, ImmutableList<DomainEvent> events) {
     persistAll(events, (evt) -> {
       log.debug("persistAllAsync for event: {}", evt);
       aggregate.apply(evt);
@@ -85,12 +86,14 @@ public class AggregatePersistenceActor<S> extends AbstractPersistentActor {
 
     deferAsync(events, (evt) -> {
       log.debug("Defer for event: {}", evt);
-      CommandResult<S> commandResult = CommandResult.of(this.aggregate.get().state(), events);
-      sender().tell(commandResult, self());
+      this.aggregate.ifPresent(a -> {
+        CommandResult<S> commandResult = CommandResult.of(a.state(), events);
+        sender().tell(commandResult, self());
+      });
     });
   }
 
-  protected void onFailure(Throwable error) {
+  private void onFailure(Throwable error) {
     CommandResult<S> commandResult = CommandResult.error(error);
     sender().tell(commandResult, self());
   }
