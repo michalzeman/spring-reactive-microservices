@@ -25,7 +25,7 @@ public enum ShortenerMapper {
       .build();
 
   public final Function<ShortenerDto, ShortenerDocument> mapToDocument = dto -> {
-    ShortenerDocument document =
+    var document =
         new ShortenerDocument(dto.key(), dto.url(), dto.shortUrl(), dto
             .createdAt(), dto.version());
     document.setId(dto.id());

@@ -117,7 +117,7 @@ class UserAggregateServiceImplTest {
     ContactInfoDocument contactInfoDocument = new ContactInfoDocument(email, phoneNumber, nowContactInfo);
     UserDocument userDocumentUpdated = new UserDocument(id, firstName, lastName, 2L, createdAt, contactInfoDocument);
 
-    var userDto = UserMapper.mapToDto.apply(userDocumentUpdated);
+    var userDto = UserMapper.FN.mapToDto.apply(userDocumentUpdated);
     when(aggregateService.execute(any(String.class), any(Command.class))).thenReturn(Mono.just(userDto));
 
     Mono<UserDto> result = stub.createContactInfo(id,

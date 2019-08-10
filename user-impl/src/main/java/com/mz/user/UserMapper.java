@@ -13,9 +13,11 @@ import org.eclipse.collections.impl.factory.Lists;
 import java.util.Optional;
 import java.util.function.Function;
 
-public interface UserMapper {
+public enum UserMapper {
 
-  Function<UserDocument, UserDto> mapToDto = doc ->
+  FN;
+
+  public final Function<UserDocument, UserDto> mapToDto = doc ->
       UserDto.builder()
           .id(doc.getId())
           .firstName(doc.getFirstName())
@@ -32,19 +34,19 @@ public interface UserMapper {
                   .build()))
           .build();
 
-  Function<UserDto, UserDocument> mapToDocument = dto -> {
+  public final Function<UserDto, UserDocument> mapToDocument = dto -> {
     UserDocument userDocument = new UserDocument(dto.id(), dto.firstName(),
         dto.lastName(), dto.version(), dto.createdAt(),
-        dto.contactInformation().map(UserMapper.mapToContactInfoDocument).orElse(null));
+        dto.contactInformation().map(this.mapToContactInfoDocument).orElse(null));
     userDocument.setShortenerIds(dto.shortenerIds());
     return userDocument;
   };
 
-  Function<ContactInfoDto, ContactInfoDocument> mapToContactInfoDocument = dto ->
+  public final Function<ContactInfoDto, ContactInfoDocument> mapToContactInfoDocument = dto ->
       new ContactInfoDocument(dto.email().orElse(null),
           dto.phoneNumber().orElse(null), dto.createdAt());
 
-  Function<UserCreated, UserPayload> mapCreatedToPayload = (e) -> {
+  public final Function<UserCreated, UserPayload> mapCreatedToPayload = (e) -> {
     ContactInfoPayload infoPayload = ContactInfoPayload.builder()
         .userId(e.aggregateId())
         .email(e.email())
@@ -61,7 +63,7 @@ public interface UserMapper {
         .build();
   };
 
-  Function<ContactInfoCreated, ContactInfoPayload> mapContactCreatedToPayload = e ->
+  public final Function<ContactInfoCreated, ContactInfoPayload> mapContactCreatedToPayload = e ->
       ContactInfoPayload.builder()
           .userId(e.aggregateId())
           .phoneNumber(e.phoneNumber())

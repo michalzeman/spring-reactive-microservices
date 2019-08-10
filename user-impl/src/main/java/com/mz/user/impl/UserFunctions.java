@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.mz.user.UserMapper.*;
+import static com.mz.user.UserMapper.FN;
 
 public interface UserFunctions {
 
@@ -35,7 +35,7 @@ public interface UserFunctions {
       Match.<UserChangedEvent>match(event)
           .when(UserCreated.class, e -> UserChangedEvent.builder()
               .aggregateId(e.aggregateId())
-              .payload(mapCreatedToPayload.apply(e))
+              .payload(FN.mapCreatedToPayload.apply(e))
               .type(UserEventType.USER_CREATED)
               .build())
           .when(ContactInfoCreated.class, e -> UserChangedEvent.builder()
@@ -45,7 +45,7 @@ public interface UserFunctions {
                   .id(e.aggregateId())
                   .version(e.userVersion())
                   .createdAt(e.createdAt())
-                  .contactInfo(mapContactCreatedToPayload.apply(e))
+                  .contactInfo(FN.mapContactCreatedToPayload.apply(e))
                   .build())
               .build())
           .when(ShortenerAdded.class, e -> UserChangedEvent.builder()
@@ -72,7 +72,7 @@ public interface UserFunctions {
 
     @Override
     public Mono<UserDto> apply(UserDto userDto) {
-      return repository.save(mapToDocument.apply(userDto)).map(mapToDto);
+      return repository.save(FN.mapToDocument.apply(userDto)).map(FN.mapToDto);
     }
   }
 

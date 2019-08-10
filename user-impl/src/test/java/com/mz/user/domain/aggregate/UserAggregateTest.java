@@ -66,7 +66,7 @@ class UserAggregateTest {
   void createContactInfo() {
     UserDocument userDocument = new UserDocument(UUID.randomUUID().toString(), FIST_NAME, LAST_NAME, 1L,
         CREATED_AT, null);
-    UserDto userDto = UserMapper.mapToDto.apply(userDocument);
+    UserDto userDto = UserMapper.FN.mapToDto.apply(userDocument);
     UserAggregate subject = UserAggregate.of(userDto);
     Try<ValidateResult> result = subject.validate(CreateContactInfo.builder().email("test@test.com").build());
     result.get().events().forEach(subject::apply);
@@ -78,7 +78,7 @@ class UserAggregateTest {
   void ofTest() {
     UserDocument userDocument = new UserDocument(UUID.randomUUID().toString(), FIST_NAME, LAST_NAME, 1L,
         CREATED_AT, null);
-    UserDto userDto = UserMapper.mapToDto.apply(userDocument);
+    UserDto userDto = UserMapper.FN.mapToDto.apply(userDocument);
     UserAggregate subject = UserAggregate.of(userDto);
     Try<ValidateResult> contactInforesult =
         subject.validate(CreateContactInfo.builder().email("test@test.com").build());
