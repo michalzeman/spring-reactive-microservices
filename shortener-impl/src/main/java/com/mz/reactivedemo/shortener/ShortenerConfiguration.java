@@ -4,12 +4,17 @@ import com.mz.reactivedemo.adapter.persistance.AggregateFactory;
 import com.mz.reactivedemo.adapter.persistance.AggregatePersistenceConfiguration;
 import com.mz.reactivedemo.adapter.persistance.AggregateRepository;
 import com.mz.reactivedemo.adapter.persistance.AggregateService;
+import com.mz.reactivedemo.common.http.HttpErrorHandler;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;
 import com.mz.reactivedemo.shortener.domain.aggregate.ShortenerAggregate;
 import com.mz.reactivedemo.shortener.impl.ShortenerFunctions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.reactive.function.server.RequestPredicates;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
 @Import(AggregatePersistenceConfiguration.class)
@@ -25,6 +30,14 @@ public class ShortenerConfiguration {
         AggregateFactory.build(ShortenerAggregate::of, ShortenerAggregate::of),
         updateView, publishChanged,
         publishDocumentMessage);
+  }
+
+  @Bean
+  public RouterFunction<ServerResponse> shortenerRoute(ShortenerHandler handler) {
+    return RouterFunctions.route()
+        .add(RouterFunctions.nest(RequestPredicates.path("/shorteners"),handler.route()))
+        .onError(Throwable.class, HttpErrorHandler.FN::onError)
+        .build();
   }
 
 }

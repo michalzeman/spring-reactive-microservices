@@ -1,6 +1,6 @@
 package com.mz.reactivedemo.shortener;
 
-import com.mz.reactivedemo.common.errors.ErrorMessage;
+import com.mz.reactivedemo.common.http.ErrorMessage;
 import com.mz.reactivedemo.shortener.api.command.CreateShortener;
 import com.mz.reactivedemo.shortener.api.command.UpdateShortener;
 import com.mz.reactivedemo.shortener.api.dto.ShortenerDto;

@@ -1,10 +1,8 @@
 package com.mz.statistic;
 
-import com.mz.reactivedemo.common.errors.ErrorHandler;
+import com.mz.reactivedemo.common.http.HttpHandler;
 import com.mz.statistic.model.EventType;
 import com.mz.statistic.model.StatisticDocument;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -22,7 +20,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
  * Created by zemi on 26/09/2018.
  */
 @Component
-public class StatisticHandler implements ErrorHandler {
+public class StatisticHandler implements HttpHandler {
 
   private final StatisticService service;
 
@@ -34,28 +32,20 @@ public class StatisticHandler implements ErrorHandler {
   Mono<ServerResponse> getAll(ServerRequest request) {
     return ok()
         .contentType(MediaType.APPLICATION_JSON_UTF8)
-        .body(service.getAll(), StatisticDocument.class)
-        .onErrorResume(this::onError);
+        .body(service.getAll(), StatisticDocument.class);
   }
 
   Mono<ServerResponse> eventsCount(ServerRequest request) {
     return Mono.just(EventType.valueOf(request.pathVariable("type")))
         .flatMap(t -> ok().contentType(MediaType.APPLICATION_JSON_UTF8)
-            .body(service.eventsCount(t), Long.class))
-        .onErrorResume(this::onError);
+            .body(service.eventsCount(t), Long.class));
   }
 
-  @Configuration
-  static public class StatisticRouter {
-
-    @Bean
-    public RouterFunction<ServerResponse> statisticRoute(StatisticHandler handler) {
-      System.out.println("StatisticRouter");
-      return RouterFunctions
-          .route(GET("/statistics").and(accept(MediaType.APPLICATION_JSON)), handler::getAll)
-          .andRoute(GET("/statistics/shorteners/events/{type}/counts").and(accept(MediaType.APPLICATION_JSON_UTF8)),
-              handler::eventsCount);
-    }
+  @Override
+  public RouterFunction<ServerResponse> route() {
+    return RouterFunctions
+        .route(GET("/").and(accept(MediaType.APPLICATION_JSON)), this::getAll)
+        .andRoute(GET("/shorteners/events/{type}/counts").and(accept(MediaType.APPLICATION_JSON_UTF8)),
+            this::eventsCount);
   }
-
 }

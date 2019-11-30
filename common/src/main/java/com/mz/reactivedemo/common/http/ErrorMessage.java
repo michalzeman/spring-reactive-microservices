@@ -1,4 +1,4 @@
-package com.mz.reactivedemo.common.errors;
+package com.mz.reactivedemo.common.http;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
