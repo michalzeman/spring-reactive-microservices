@@ -44,7 +44,7 @@
         <reactive-demo.version>0.0.1-SNAPSHOT</reactive-demo.version>
         <eclipse-collections.version>9.2.0</eclipse-collections.version>
         <org.immutables.version>2.7.5</org.immutables.version>
-        <jackson-databind.version>2.9.8</jackson-databind.version>
+        <jackson-databind.version>2.9.10.5</jackson-databind.version>
         <mockito-junit-jupiter.version>2.23.0</mockito-junit-jupiter.version>
         <akka.version>2.5.21</akka.version>
         <akka-persistence-cassandra.version>0.23</akka-persistence-cassandra.version>
