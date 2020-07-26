@@ -15,11 +15,32 @@ public class Logger {
     this.logger = logger;
   }
 
-  public void debug(Supplier<String> sp) {
+  public void debug(Supplier<Object> sp) {
     if (logger.isDebugEnabled()) logger.debug(sp.get());
+  }
+
+  public void debug(Supplier<Object> sp, Throwable error) {
+    if (logger.isDebugEnabled()) logger.debug(sp.get(), error);
+  }
+
+  public void warning(Supplier<Object> sp) {
+    if (logger.isWarnEnabled()) logger.warn(sp.get());
+  }
+
+  public void warning(Supplier<Object> sp, Throwable error) {
+    if (logger.isWarnEnabled()) logger.warn(sp.get(), error);
+  }
+
+  public void info(Supplier<Object> sp) {
+    if (logger.isInfoEnabled()) logger.info(sp.get());
+  }
+
+  public void info(Supplier<Object> sp, Throwable error) {
+    if (logger.isInfoEnabled()) logger.info(sp.get(), error);
   }
 
   public Log log() {
     return logger;
   }
+
 }

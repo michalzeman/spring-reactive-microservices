@@ -11,8 +11,6 @@ public class CaseMatch extends AbstractMatch {
     super(o);
   }
 
-
-
   public <T> CaseMatch when(Class<T> type, Runnable statement) {
     Objects.requireNonNull(type);
     Objects.requireNonNull(statement);
