@@ -29,11 +29,11 @@ public enum ShortenerMapper {
         new ShortenerDocument(dto.key(), dto.url(), dto.shortUrl(), dto
             .createdAt(), dto.version());
     document.setId(dto.id());
-    dto.userId().ifPresent(userId -> document.setUserId(userId));
+    dto.userId().ifPresent(document::setUserId);
     return document;
   };
 
-  public final Function<ShortenerUpdated, ShortenerChangedEvent> mapUpdatedToChangedEvent = (updated) ->
+  public final Function<ShortenerUpdated, ShortenerChangedEvent> mapUpdatedToChangedEvent = updated ->
       ShortenerChangedEvent.builder()
           .aggregateId(updated.aggregateId())
           .payload(ShortenerPayload.builder()

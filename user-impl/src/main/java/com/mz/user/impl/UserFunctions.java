@@ -19,10 +19,12 @@ import java.util.function.Function;
 
 import static com.mz.user.UserMapper.FN;
 
-public interface UserFunctions {
+public final class UserFunctions {
+
+  private UserFunctions() {}
 
   @Component
-  class PublishUserChangedEvent implements Consumer<DomainEvent> {
+  public static class PublishUserChangedEvent implements Consumer<DomainEvent> {
 
     private final UserApplicationMessageBus messageBus;
 
@@ -62,7 +64,7 @@ public interface UserFunctions {
   }
 
   @Component
-  class UpdateUserView implements Function<UserDto, Mono<UserDto>> {
+  public static class UpdateUserView implements Function<UserDto, Mono<UserDto>> {
 
     private final UserRepository repository;
 
@@ -77,7 +79,7 @@ public interface UserFunctions {
   }
 
   @Component
-  class PublishUserDocumentMessage implements Consumer<UserDto> {
+  public static class PublishUserDocumentMessage implements Consumer<UserDto> {
 
     private final UserApplicationMessageBus messageBus;
 

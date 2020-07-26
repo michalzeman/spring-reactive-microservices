@@ -1,8 +1,8 @@
 package com.mz.reactivedemo.adapter.persistance.impl;
 
 import com.mz.reactivedemo.adapter.persistance.AggregateFactory;
-import com.mz.reactivedemo.adapter.persistance.AggregateService;
 import com.mz.reactivedemo.adapter.persistance.AggregateRepository;
+import com.mz.reactivedemo.adapter.persistance.AggregateService;
 import com.mz.reactivedemo.common.CommandResult;
 import com.mz.reactivedemo.common.api.events.Command;
 import com.mz.reactivedemo.common.api.events.DomainEvent;
@@ -23,11 +23,13 @@ public class AggregateServiceImpl<D> implements AggregateService<D> {
 
   protected final AggregateFactory<D> aggregateFactory;
 
-  public AggregateServiceImpl(AggregateRepository repository,
-                              AggregateFactory<D> aggregateFactory,
-                              Function<D, Mono<D>> updateView,
-                              Consumer<DomainEvent> publishChangedEvent,
-                              Consumer<D> publishDocumentMessage) {
+  public AggregateServiceImpl(
+      AggregateRepository repository,
+      AggregateFactory<D> aggregateFactory,
+      Function<D, Mono<D>> updateView,
+      Consumer<DomainEvent> publishChangedEvent,
+      Consumer<D> publishDocumentMessage
+  ) {
     this.updateView = updateView;
     this.publishChangedEvent = publishChangedEvent;
     this.publishDocumentMessage = publishDocumentMessage;
@@ -38,7 +40,7 @@ public class AggregateServiceImpl<D> implements AggregateService<D> {
   @Override
   public Mono<D> execute(String aggregateId, Command cmd) {
     return repository.execute(aggregateId, cmd, aggregateFactory)
-            .flatMap(this::processResult);
+        .flatMap(this::processResult);
   }
 
   private Mono<D> processResult(CommandResult<D> result) {

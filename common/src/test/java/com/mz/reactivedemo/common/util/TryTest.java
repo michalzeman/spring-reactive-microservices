@@ -24,10 +24,25 @@ class TryTest {
     Assertions.assertTrue(resultS.get());
     Assertions.assertTrue(resultS.toOptional().isPresent());
 
-    Try<Boolean> resultF = Try.of(() -> "Ano").map(n -> Integer.valueOf(n)).map(s -> s > 0);
+    Try<Boolean> resultF = Try.of(() -> "Ano").map(Integer::valueOf).map(s -> s > 0);
     Assertions.assertFalse(resultF.isSuccess());
     Assertions.assertTrue(resultF.isFailure());
-    Assertions.assertThrows(NoSuchElementException.class, () -> resultF.get());
+    Assertions.assertThrows(NoSuchElementException.class, resultF::get);
+    Assertions.assertFalse(resultF.toOptional().isPresent());
+    Assertions.assertTrue(resultF.getOrElse(() -> true));
+  }
+
+  @Test
+  void map_withThrowExp() {
+    Try<Boolean> resultF = Try.of(() -> "Ano").map(s -> {
+      if ("Ano".equals(s)) {
+        throw new Exception();
+      }
+      return true;
+    });
+    Assertions.assertFalse(resultF.isSuccess());
+    Assertions.assertTrue(resultF.isFailure());
+    Assertions.assertThrows(NoSuchElementException.class, resultF::get);
     Assertions.assertFalse(resultF.toOptional().isPresent());
     Assertions.assertTrue(resultF.getOrElse(() -> true));
   }

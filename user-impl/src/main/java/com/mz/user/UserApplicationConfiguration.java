@@ -7,7 +7,9 @@ import com.mz.reactivedemo.adapter.persistance.AggregateService;
 import com.mz.reactivedemo.common.http.HttpErrorHandler;
 import com.mz.user.domain.aggregate.UserAggregate;
 import com.mz.user.dto.UserDto;
-import com.mz.user.impl.UserFunctions;
+import com.mz.user.impl.UserFunctions.PublishUserChangedEvent;
+import com.mz.user.impl.UserFunctions.PublishUserDocumentMessage;
+import com.mz.user.impl.UserFunctions.UpdateUserView;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -27,9 +29,9 @@ public class UserApplicationConfiguration {
 
   @Bean
   public AggregateService<UserDto> aggregateService(
-      UserFunctions.UpdateUserView updateUserView,
-      UserFunctions.PublishUserChangedEvent publishUserChanged,
-      UserFunctions.PublishUserDocumentMessage publishDocumentMessage,
+      UpdateUserView updateUserView,
+      PublishUserChangedEvent publishUserChanged,
+      PublishUserDocumentMessage publishDocumentMessage,
       AggregateRepository aggregateRepository) {
     return AggregateService.of(aggregateRepository,
         AggregateFactory.build(UserAggregate::of, UserAggregate::of),

@@ -76,7 +76,7 @@ public class ShortenerHandler implements HttpHandler {
 
   Mono<ServerResponse> update(ServerRequest request) {
     log.info("update() -> ");
-    return Mono.just(request.pathVariable("eventId"))
+    return Mono.fromCallable(() -> request.pathVariable("eventId"))
         .publishOn(Schedulers.parallel())
         .flatMap(id -> request.bodyToMono(UpdateShortener.class)
             .flatMap(shortenerService::update)

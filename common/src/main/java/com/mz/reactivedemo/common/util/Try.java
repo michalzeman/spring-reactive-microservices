@@ -4,29 +4,12 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class Try<T> {
+public interface Try<T> {
 
-  abstract public boolean isSuccess();
-
-  abstract public boolean isFailure();
-
-  abstract public Optional<T> toOptional();
-
-  abstract public <R> Try<R> map(FunctionThrowable<T, R> f);
-
-  abstract public <R> Try<R> flatMap(FunctionThrowable<T, Try<R>> f);
-
-  abstract public Try<T> onFailure(Consumer<Throwable> f);
-
-  abstract public Try<T> onSuccess(Consumer<T> f);
-
-  abstract public T getOrElse(Supplier<T> f);
-
-  abstract public T get();
-
-  static public <T> Try<T> of(SupplierThrowable<T> f) {
+  static <T> Try<T> of(SupplierThrowable<T> f) {
     try {
       Objects.requireNonNull(f);
       return new Success<>(f.get());
@@ -35,11 +18,60 @@ public abstract class Try<T> {
     }
   }
 
-  static public <T> Try<T> error(Throwable error) {
+  static <T> Try<T> error(Throwable error) {
     return new Failure<>(error);
   }
 
-  static public class Success<T> extends Try<T> {
+  boolean isSuccess();
+
+  boolean isFailure();
+
+  Optional<T> toOptional();
+
+  <R> Try<R> map(FunctionThrowable<T, R> f);
+
+  <R> Try<R> flatMap(FunctionThrowable<T, Try<R>> f);
+
+  Try<T> onFailure(Consumer<Throwable> f);
+
+  Try<T> onSuccess(Consumer<T> f);
+
+  T getOrElse(Supplier<T> f);
+
+  T get();
+
+  @FunctionalInterface
+  interface FunctionThrowable<T, R> extends Function<T, R> {
+
+    @Override
+    default R apply(T t) {
+      try {
+        return this.applyWithThrow(t);
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    R applyWithThrow(T t) throws Throwable;
+
+  }
+
+  @FunctionalInterface
+  interface SupplierThrowable<T> extends Supplier<T> {
+
+    default T get() {
+      try {
+        return this.getThrowable();
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    T getThrowable() throws Throwable;
+
+  }
+
+  class Success<T> implements Try<T> {
 
     private final T result;
 
@@ -85,7 +117,7 @@ public abstract class Try<T> {
         Objects.requireNonNull(f);
         return f.apply(this.result);
       } catch (Throwable error) {
-        return (Try<R>) this;
+        return new Failure<>(error);
       }
     }
 
@@ -107,7 +139,7 @@ public abstract class Try<T> {
     }
   }
 
-  static public class Failure<T> extends Try<T> {
+  class Failure<T> implements Try<T> {
 
     private final Throwable error;
 
@@ -165,19 +197,5 @@ public abstract class Try<T> {
     public T get() {
       throw new NoSuchElementException(error.getMessage());
     }
-  }
-
-  @FunctionalInterface
-  public interface FunctionThrowable<T, R> {
-
-    R apply(T t) throws Throwable;
-
-  }
-
-  @FunctionalInterface
-  public interface SupplierThrowable<T> {
-
-    T get() throws Throwable;
-
   }
 }
