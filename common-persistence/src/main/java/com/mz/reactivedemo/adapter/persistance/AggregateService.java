@@ -1,8 +1,8 @@
 package com.mz.reactivedemo.adapter.persistance;
 
+import com.mz.reactivedemo.adapter.persistance.impl.AggregateServiceImpl;
 import com.mz.reactivedemo.common.api.events.Command;
 import com.mz.reactivedemo.common.api.events.DomainEvent;
-import com.mz.reactivedemo.adapter.persistance.impl.AggregateServiceImpl;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Consumer;

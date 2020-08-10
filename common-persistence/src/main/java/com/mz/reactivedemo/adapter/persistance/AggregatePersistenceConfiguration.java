@@ -3,10 +3,10 @@ package com.mz.reactivedemo.adapter.persistance;
 import akka.actor.ActorSystem;
 import com.mz.reactivedemo.adapter.persistance.impl.AggregateRepositoryImpl;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.beans.factory.config.BeanDefinition;
 
 @Configuration
 public class AggregatePersistenceConfiguration {
