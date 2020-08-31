@@ -1,10 +1,10 @@
 service:
   statistic:
-    uri: http://localhost:8081
+    uri: http://${STATISTIC_SERVICE_DOMAIN:localhost}:8091
   shortener:
-    uri: http://localhost:8082
+    uri: http://${SHORTENER_SERVICE_DOMAIN:localhost}:8092
   user:
-    uri: http://localhost:8083
+    uri: http://${USER_SERVICE_DOMAIN:localhost}:8093
 
 spring:
   cloud:

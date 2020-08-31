@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  user-service:
+    build:
+      context: ../
+      dockerfile: user-impl/Dockerfile
+    ports:
+      - 8093:8093
+    environment:
+      - BROKERS=kafka
+      - ZK_NODES=zookeeper
+      - MONGO_DB_HOST=mongo-db
+      - MONGO_URI=mongodb://mongo-db:27017/user-ms-db
+    depends_on:
+      - zookeeper
+      - kafka
+      - schema-registry
+      - kafka-connect
+      - ksqldb-server
+      - mongo-db
+

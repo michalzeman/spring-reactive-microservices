@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  statistic-service:
+    build:
+      context: ../
+      dockerfile: statistic-impl/Dockerfile
+    ports:
+      - 8091:8091
+    environment:
+      - BROKERS=kafka
+      - ZK_NODES=zookeeper
+      - MONGO_DB_HOST=mongo-db
+    depends_on:
+      - zookeeper
+      - kafka
+      - schema-registry
+      - kafka-connect
+      - ksqldb-server
+      - mongo-db

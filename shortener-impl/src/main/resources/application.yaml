@@ -1,22 +1,44 @@
 server:
-  port : 8082
+  port: 8092
 
-spring.cloud.stream:
-  bindings:
-    output:
-      contentType: application/json
-      shortener-viewed.destination: shortener-viewed
-      shortener-document.destination: shortener-document
-      shortener-changed.destination: shortener-changed
-    input:
-      contentType: application/json
-      user-changed.destination: user-changed
+spring:
+  data:
+    mongodb:
+      host: ${MONGO_DB_HOST:localhost}:27017
 
-  kafka.streams:
-    binder:
-      application-id: url-shortener
-      brokers: localhost #192.168.99.100
-      configuration:
-        commit.interval.ms: 500
-        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-        default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+  cloud:
+    stream:
+      bindings:
+        output:
+          binder: kafka
+          contentType: application/json
+          shortener-viewed.destination: shortener-viewed
+          shortener-document.destination: shortener-document
+          shortener-changed.destination: shortener-changed
+        input:
+          binder: kafka
+          contentType: application/json
+          user-changed.destination: user-changed
+
+      kafka:
+        streams:
+          binder:
+            application-id: url-shortener
+            brokers:
+              - ${BROKERS:localhost}:9092
+            zkNodes:
+              - ${ZK_NODES:locahost}
+            defaultBrokerPort: 9092
+            configuration:
+              commit.interval.ms: 500
+              default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+              default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        binder:
+          brokers:
+            - ${BROKERS:localhost}:9092
+          autoCreateTopics: ${AUTO_CREATE_TOPICS:true}
+
+      default:
+        bootstrap:
+          servers:
+            - ${BROKERS:localhost}:9092

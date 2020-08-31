@@ -1,19 +1,35 @@
 server:
-  port: 8083
+  port: 8093
 
-spring.cloud.stream:
-  bindings:
-    output:
-      contentType: application/json
-      user-document.destination: user-document
-      user-changed.destination: user-changed
-      shortener-changed.destination: shortener-changed
+spring:
+  data:
+    mongodb:
+      host: ${MONGO_DB_HOST:localhost}:27017
 
-  kafka.streams:
-    binder:
-      application-id: user-ms
-      brokers: localhost #192.168.99.100
-      configuration:
-        commit.interval.ms: 500
-        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-        default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+  cloud:
+    stream:
+      bindings:
+        output:
+          binder: kafka
+          contentType: application/json
+          user-document.destination: user-document
+          user-changed.destination: user-changed
+          shortener-changed.destination: shortener-changed
+
+      kafka:
+        streams:
+          binder:
+            application-id: user-ms
+            brokers:
+              - ${BROKERS:localhost}:9092
+            zkNodes:
+              - ${ZK_NODES:locahost}
+            configuration:
+              commit.interval.ms: 500
+              default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+              default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+
+        binder:
+          brokers:
+            - ${BROKERS:localhost}:9092
+          autoCreateTopics: ${AUTO_CREATE_TOPICS:true}

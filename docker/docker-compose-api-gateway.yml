@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  api-gateway:
+    build:
+      context: ../
+      dockerfile: api-gateway/Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      STATISTIC_SERVICE_DOMAIN: statistic-service
+      SHORTENER_SERVICE_DOMAIN: shortener-service
+      USER_SERVICE_DOMAIN: user-service
+    depends_on:
+      - zookeeper
+      - kafka
+      - schema-registry
+      - kafka-connect
+      - ksqldb-server
+      - mongo-db
+      - shortener-service

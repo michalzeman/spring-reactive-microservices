@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  shortener-service:
+    build:
+      context: ../
+      dockerfile: shortener-impl/Dockerfile
+    ports:
+      - "8092:8092"
+    environment:
+      - BROKERS=kafka
+      - ZK_NODES=zookeeper
+      - MONGO_DB_HOST=mongo-db
+      - MONGO_URI=mongodb://mongo-db:27017/shortener-ms-db
+    depends_on:
+      - zookeeper
+      - kafka
+      - schema-registry
+      - kafka-connect
+      - ksqldb-server
+      - mongo-db
+
