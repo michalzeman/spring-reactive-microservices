@@ -52,9 +52,9 @@ class ShortenerHandlerTest {
 
   @Test
   public void tick() {
-    webTestClient.get().uri("/shorteners/health/ticks").accept(MediaType.APPLICATION_JSON_UTF8).exchange()
+    webTestClient.get().uri("/shorteners/health/ticks").accept(MediaType.APPLICATION_JSON).exchange()
         .expectStatus().isOk()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody();
   }
 
@@ -67,7 +67,7 @@ class ShortenerHandlerTest {
         .build())
         .block().key();
 
-    webTestClient.get().uri("/shorteners/map/{key}", key).accept(MediaType.APPLICATION_JSON_UTF8).exchange()
+    webTestClient.get().uri("/shorteners/map/{key}", key).accept(MediaType.APPLICATION_JSON).exchange()
         .expectStatus()
         .is3xxRedirection()
         .expectBody();
@@ -82,9 +82,9 @@ class ShortenerHandlerTest {
         .build())
         .block().key();
 
-    webTestClient.get().uri("/shorteners").accept(MediaType.APPLICATION_JSON_UTF8).exchange()
+    webTestClient.get().uri("/shorteners").accept(MediaType.APPLICATION_JSON).exchange()
         .expectStatus().isOk()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody();
   }
 
@@ -100,9 +100,9 @@ class ShortenerHandlerTest {
 
     ShortenerDto result = webTestClient.post().uri("/shorteners")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(request))
+        .body(BodyInserters.fromValue(request))
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(ShortenerDto.class).returnResult().getResponseBody();
 
     assertTrue(result.url().equals(url));
@@ -120,9 +120,9 @@ class ShortenerHandlerTest {
 
     String id = webTestClient.post().uri("/shorteners")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(createRequest))
+        .body(BodyInserters.fromValue(createRequest))
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(ShortenerDto.class).returnResult().getResponseBody().id();
 
     String url = "www.testLongUpdate.org";
@@ -130,19 +130,19 @@ class ShortenerHandlerTest {
         .id(id)
         .url(url).build();
 
-    webTestClient.put().uri("/shorteners/{eventId}", id).accept(MediaType.APPLICATION_JSON_UTF8)
+    webTestClient.put().uri("/shorteners/{eventId}", id).accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(request))
+        .body(BodyInserters.fromValue(request))
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectStatus().is2xxSuccessful();
 
     ShortenerDto validateResult = webTestClient.get().uri("/shorteners/{eventId}", id).accept(MediaType
-        .APPLICATION_JSON_UTF8)
+        .APPLICATION_JSON)
         .exchange()
         .expectStatus()
         .isOk()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(ShortenerDto.class).returnResult().getResponseBody();
 
     assertTrue(validateResult.url().equals(url));
@@ -151,7 +151,7 @@ class ShortenerHandlerTest {
   @Test
   public void getError() {
     ErrorMessage errorResult = webTestClient.get().uri("/shorteners/errors")
-        .accept(MediaType.APPLICATION_JSON_UTF8)
+        .accept(MediaType.APPLICATION_JSON)
         .exchange()
         .expectStatus()
         .is4xxClientError()

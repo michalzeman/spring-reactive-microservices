@@ -19,7 +19,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.net.URI;
 
-import static org.springframework.web.reactive.function.BodyInserters.fromObject;
+import static org.springframework.web.reactive.function.BodyInserters.fromValue;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 
 /**
@@ -42,7 +42,7 @@ public class ShortenerHandler implements HttpHandler {
   Mono<ServerResponse> tick(ServerRequest req) {
     log.info("tick() ->");
     return ServerResponse.ok()
-        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(Mono.just("Tick"), String.class);
   }
 
@@ -63,7 +63,7 @@ public class ShortenerHandler implements HttpHandler {
   Mono<ServerResponse> getAll(ServerRequest request) {
     log.info("getAll() -> ");
     return ServerResponse.ok()
-        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(shortenerQuery.getAll(), ShortenerDto.class);
   }
 
@@ -87,20 +87,20 @@ public class ShortenerHandler implements HttpHandler {
     log.info("getError() -> ");
     return Mono.error(new RuntimeException("Error")).flatMap(r -> ServerResponse.ok()
         .contentType(MediaType
-            .APPLICATION_JSON_UTF8).body(fromObject(r)));
+            .APPLICATION_JSON).body(fromValue(r)));
   }
 
   @Override
   public RouterFunction<ServerResponse> route() {
     return RouterFunctions
-        .route(GET("/").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::getAll)
-        .andRoute(GET("/errors").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::getError)
-        .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::create)
-        .andRoute(PUT("/{eventId}").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::update)
-        .andRoute(GET("/{eventId}").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::getById)
+        .route(GET("/").and(accept(MediaType.APPLICATION_JSON)), this::getAll)
+        .andRoute(GET("/errors").and(accept(MediaType.APPLICATION_JSON)), this::getError)
+        .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON)), this::create)
+        .andRoute(PUT("/{eventId}").and(accept(MediaType.APPLICATION_JSON)), this::update)
+        .andRoute(GET("/{eventId}").and(accept(MediaType.APPLICATION_JSON)), this::getById)
         .andRoute(GET("/map/{key}")
-            .and(accept(MediaType.APPLICATION_JSON_UTF8)), this::map)
+            .and(accept(MediaType.APPLICATION_JSON)), this::map)
         .andRoute(GET("/health/ticks")
-            .and(accept(MediaType.APPLICATION_JSON_UTF8)), this::tick);
+            .and(accept(MediaType.APPLICATION_JSON)), this::tick);
   }
 }

@@ -1,22 +1,26 @@
 package com.mz.reactivedemo.shortener.adapter.user;
 
-import com.mz.user.message.event.UserChangedEvent;
-import com.mz.user.topics.UserTopics;
-import org.apache.kafka.streams.kstream.KStream;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.Input;
-import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Component;
+import reactor.kafka.receiver.KafkaReceiver;
+import reactor.kafka.receiver.ReceiverOptions;
+
+import static java.util.Objects.requireNonNull;
 
 @Component
-@EnableBinding(UserSink.class)
 public class UserAdapterImpl {
 
-  @StreamListener
-  public void process(
-      @Input(UserTopics.USER_CHANGED) KStream<String, UserChangedEvent> userChanged) {
-    //TODO: add impl.
-    userChanged.foreach((k, v) -> System.out.println(v));
+  private final ReceiverOptions<String, String> userChangedReceiverOptions;
+
+  public UserAdapterImpl(ReceiverOptions<String, String> userChangedReceiverOptions) {
+    this.userChangedReceiverOptions = requireNonNull(userChangedReceiverOptions, "userChangedReceiverOptions is required");
+    init();
+  }
+
+  private void init() {
+    KafkaReceiver.create(userChangedReceiverOptions).receive()
+        .retry()
+        .subscribe(record -> System.out.println(record.value()));
+
   }
 
 }

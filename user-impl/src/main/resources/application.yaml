@@ -6,30 +6,9 @@ spring:
     mongodb:
       host: ${MONGO_DB_HOST:localhost}:27017
 
-  cloud:
-    stream:
-      bindings:
-        output:
-          binder: kafka
-          contentType: application/json
-          user-document.destination: user-document
-          user-changed.destination: user-changed
-          shortener-changed.destination: shortener-changed
+kafka:
+  bootstrap:
+    servers: ${BROKERS:localhost:9092}
 
-      kafka:
-        streams:
-          binder:
-            application-id: user-ms
-            brokers:
-              - ${BROKERS:localhost}:9092
-            zkNodes:
-              - ${ZK_NODES:locahost}
-            configuration:
-              commit.interval.ms: 500
-              default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-              default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-
-        binder:
-          brokers:
-            - ${BROKERS:localhost}:9092
-          autoCreateTopics: ${AUTO_CREATE_TOPICS:true}
+  consumer:
+    group-id: user-ms

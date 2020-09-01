@@ -11,12 +11,6 @@
 
     <artifactId>shortener-api</artifactId>
     <dependencies>
-
-        <!--<dependency>-->
-            <!--<artifactId>common</artifactId>-->
-            <!--<groupId>com.mz</groupId>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>com.mz</groupId>
             <artifactId>common-api</artifactId>

@@ -31,13 +31,13 @@ public class StatisticHandler implements HttpHandler {
 
   Mono<ServerResponse> getAll(ServerRequest request) {
     return ok()
-        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(service.getAll(), StatisticDocument.class);
   }
 
   Mono<ServerResponse> eventsCount(ServerRequest request) {
     return Mono.just(EventType.valueOf(request.pathVariable("type")))
-        .flatMap(t -> ok().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .flatMap(t -> ok().contentType(MediaType.APPLICATION_JSON)
             .body(service.eventsCount(t), Long.class));
   }
 
@@ -45,7 +45,7 @@ public class StatisticHandler implements HttpHandler {
   public RouterFunction<ServerResponse> route() {
     return RouterFunctions
         .route(GET("/").and(accept(MediaType.APPLICATION_JSON)), this::getAll)
-        .andRoute(GET("/shorteners/events/{type}/counts").and(accept(MediaType.APPLICATION_JSON_UTF8)),
+        .andRoute(GET("/shorteners/events/{type}/counts").and(accept(MediaType.APPLICATION_JSON)),
             this::eventsCount);
   }
 }

@@ -14,14 +14,11 @@ services:
 
   kafka:
 #    image: "confluentinc/cp-enterprise-kafka:${CONF_VER}"
-    image: "confluentinc/cp-enterprise-kafka:5.5.1"
+    image: confluentinc/cp-kafka:5.5.1
     container_name: kafka
     depends_on:
       - zookeeper
     ports:
-      # Exposes 9092 for external connections to the broker
-      # Use kafka:29092 for connections internal on the docker network
-      # See https://rmoff.net/2018/08/02/kafka-listeners-explained/ for details
       - '9092:9092'
     environment:
       TZ: ${TZ_SET}
@@ -146,12 +143,10 @@ services:
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_CONFLUENT_TOPIC_REPLICATION_FACTOR: 1
-    # volumes:
-    #   - ./confluentinc-kafka-connect-mqtt:/usr/share/java/confluentinc-kafka-connect-mqtt
 
   mongo-db:
     image: mongo:3.2
-    #    restart: always
+    container_name: mongo-db
 
     volumes:
       - mongo-data-db:/data/db

@@ -45,9 +45,9 @@ class UserHandlerTest {
 
     UserDto result = webTestClient.post().uri("/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(request))
+        .body(BodyInserters.fromValue(request))
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(UserDto.class).returnResult().getResponseBody();
 
     assertEquals(result.firstName(), firstNameTest);
@@ -67,9 +67,9 @@ class UserHandlerTest {
 
     UserDto result = webTestClient.post().uri("/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(request))
+        .body(BodyInserters.fromValue(request))
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(UserDto.class).returnResult().getResponseBody();
 
     assertTrue(result.firstName().equals(firstNameTest));
@@ -80,9 +80,9 @@ class UserHandlerTest {
 
     UserDto result2 = webTestClient.put().uri("/users/{userId}/contactinformation", result.id())
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(createContactInfo))
+        .body(BodyInserters.fromValue(createContactInfo))
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(UserDto.class).returnResult().getResponseBody();
 
     assertFalse(result2.version().equals(result.version()));
@@ -101,33 +101,38 @@ class UserHandlerTest {
 
     UserDto result = webTestClient.post().uri("/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(request))
+        .body(BodyInserters.fromValue(request))
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(UserDto.class).returnResult().getResponseBody();
 
     CreateContactInfo createContactInfo = CreateContactInfo.builder().email("test@test.com").build();
 
     webTestClient.put().uri("/users/{userId}/contactinformation", result.id())
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(createContactInfo))
+        .body(BodyInserters.fromValue(createContactInfo))
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(UserDto.class).returnResult().getResponseBody();
 
     UserDto resultGet = webTestClient.get().uri("/users/{id}", result.id())
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(UserDto.class).returnResult().getResponseBody();
 
-    assertTrue(resultGet.firstName().equals(firstNameTest));
-    assertTrue(resultGet.lastName().equals(lastNameTest));
+    assertEquals(firstNameTest, resultGet.firstName());
+    assertEquals(lastNameTest, resultGet.lastName());
     assertTrue(resultGet.contactInformation().isPresent());
-    assertTrue(resultGet.contactInformation().get().email().get().equals("test@test.com"));
+    assertEquals(resultGet.contactInformation().get().email().get(), "test@test.com");
   }
 
   @Test
   void getAll() {
+    List<UserDto> resultGetBefore = webTestClient.get().uri("/users")
+        .exchange()
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody(List.class).returnResult().getResponseBody();
+
     String firstNameTest = "FirstNameTest";
     String lastNameTest = "LastNameTest";
     CreateUser request = CreateUser.builder()
@@ -137,23 +142,23 @@ class UserHandlerTest {
 
     webTestClient.post().uri("/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(request))
+        .body(BodyInserters.fromValue(request))
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(UserDto.class).returnResult().getResponseBody();
 
     webTestClient.post().uri("/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(request))
+        .body(BodyInserters.fromValue(request))
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(UserDto.class).returnResult().getResponseBody();
 
-    List<UserDto> resultGet = webTestClient.get().uri("/users")
+    List<UserDto> resultGetAfter = webTestClient.get().uri("/users")
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(List.class).returnResult().getResponseBody();
 
-    assertTrue(resultGet.size() == 2);
+    assertEquals(resultGetAfter.size() - resultGetBefore.size(), 2);
   }
 }

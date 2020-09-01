@@ -13,7 +13,7 @@ public class AggregatePersistenceConfiguration {
 
   @Bean
   @Scope(BeanDefinition.SCOPE_SINGLETON)
-  public ActorSystem actorSystem(@Value("${spring.cloud.stream.kafka.streams.binder.application-id}") String actorySystemName) {
+  public ActorSystem actorSystem(@Value("${kafka.consumer.group-id}") String actorySystemName) {
     return ActorSystem.create(actorySystemName);
   }
 

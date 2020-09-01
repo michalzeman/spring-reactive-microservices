@@ -55,7 +55,7 @@ public class UserHandler implements HttpHandler {
   Mono<ServerResponse> getAll(ServerRequest request) {
     log.info("getAll() -> ");
     return ServerResponse.ok()
-        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(userQuery.getAll(), UserDto.class)
         .doOnError(this::logOnError);
   }
@@ -69,10 +69,10 @@ public class UserHandler implements HttpHandler {
 
   public RouterFunction<ServerResponse> route() {
     return RouterFunctions
-        .route(POST("").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::createUser)
-        .andRoute(PUT("/{userId}/contactinformation").and(accept(MediaType.APPLICATION_JSON_UTF8)),
+        .route(POST("").and(accept(MediaType.APPLICATION_JSON)), this::createUser)
+        .andRoute(PUT("/{userId}/contactinformation").and(accept(MediaType.APPLICATION_JSON)),
             this::createContactInfo)
-        .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::getAll)
-        .andRoute(GET("/{id}").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::getById);
+        .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), this::getAll)
+        .andRoute(GET("/{id}").and(accept(MediaType.APPLICATION_JSON)), this::getById);
   }
 }

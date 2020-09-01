@@ -26,9 +26,6 @@ public class StatisticHandlerTest {
   WebTestClient webTestClient;
 
   @Autowired
-  StatisticService service;
-
-  @Autowired
   StatisticRepository repository;
 
   @AfterEach
@@ -46,35 +43,26 @@ public class StatisticHandlerTest {
     repository.save(statisticDocument2).subscribe();
 
     webTestClient.get().uri("/statistics").accept(MediaType
-        .APPLICATION_JSON_UTF8).exchange()
+        .APPLICATION_JSON).exchange()
         .expectStatus().isOk()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody();
   }
-
-//  @Test
-//  public void numberOfViewTest() {
-//    StatisticDocument statisticDocument1 = new StatisticDocument(UUID.randomUUID().toString(),
-//        UUID.randomUUID().toString(), Instant.now(), EventType.SHORTENER_VIEWED);
-//    repository.save(statisticDocument1).subscribe();
-//    StatisticDocument statisticDocument2 = new StatisticDocument(UUID.randomUUID().toString(),
-//        UUID.randomUUID().toString(), Instant.now(), EventType.SHORTENER_VIEWED);
-//    repository.save(statisticDocument2).subscribe();
-//
-//    Long result =
-//        webTestClient.get().uri("/statistics/shorteners/{key}", urlKey).accept(MediaType
-//            .APPLICATION_JSON_UTF8).exchange()
-//            .expectStatus().isOk()
-//            .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
-//            .expectBody(Long.class).returnResult().getResponseBody();
-//    Assertions.assertEquals(result.longValue(), 2L);
-//  }
 
   @Test
   public void countsTest() {
     EventType eventType = EventType.SHORTENER_UPDATED;
     StatisticDocument statisticDocument1 = new StatisticDocument(UUID.randomUUID().toString(), UUID
         .randomUUID().toString(), Instant.now(), EventType.SHORTENER_UPDATED, UUID.randomUUID().toString());
+
+    Long resultBefore =
+        webTestClient.get().uri("/statistics/shorteners/events/{eventType}/counts", eventType).accept(MediaType
+            .APPLICATION_JSON).exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            .expectBody(Long.class).returnResult().getResponseBody();
+    Assertions.assertNotNull(resultBefore);
+
     repository.save(statisticDocument1).subscribe();
     StatisticDocument statisticDocument2 = new StatisticDocument(UUID.randomUUID().toString(), UUID
         .randomUUID().toString(), Instant.now(), EventType.SHORTENER_UPDATED, UUID.randomUUID().toString());
@@ -84,13 +72,14 @@ public class StatisticHandlerTest {
         .randomUUID().toString(), Instant.now(), EventType.SHORTENER_CREATED, UUID.randomUUID().toString());
     repository.save(statisticDocument3).subscribe();
 
-    Long result =
+    Long resultAfter =
         webTestClient.get().uri("/statistics/shorteners/events/{eventType}/counts", eventType).accept(MediaType
-            .APPLICATION_JSON_UTF8).exchange()
+            .APPLICATION_JSON).exchange()
             .expectStatus().isOk()
-            .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
             .expectBody(Long.class).returnResult().getResponseBody();
-    Assertions.assertEquals(result.longValue(), 2L);
+    Assertions.assertNotNull(resultAfter);
+    Assertions.assertNotEquals(resultBefore, resultAfter);
   }
 
 

@@ -6,37 +6,11 @@ spring:
     mongodb:
       host: ${MONGO_DB_HOST:localhost}:27017
 
-  cloud:
-    stream:
-      bindings:
-        output:
-          binder: kafka
-          contentType: application/json
-          shortener-viewed.destination: shortener-viewed
-          shortener-document.destination: shortener-document
-          shortener-changed.destination: shortener-changed
-          user-changed.destination: user-changed
+kafka:
+  bootstrap:
+    servers: ${BROKERS:localhost:9092}
 
-      kafka:
-        streams:
-          binder:
-            application-id: statisti-ms
-            brokers: ${BROKERS:localhost}
-            configuration:
-              commit.interval.ms: 500
-              default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-              default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-
-        binder:
-          brokers:
-            - ${BROKERS:localhost}:9092
-          autoCreateTopics: ${AUTO_CREATE_TOPICS:true}
-
-
-      default:
-        bootstrap:
-          servers:
-            - ${BROKERS:localhost}:9092
-
+  consumer:
+    group-id: statistic-service
 
 #spring.cloud.stream.bindings.input1.binder: kafka

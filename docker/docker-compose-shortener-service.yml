@@ -5,10 +5,11 @@ services:
     build:
       context: ../
       dockerfile: shortener-impl/Dockerfile
+    container_name: shortener-service
     ports:
       - "8092:8092"
     environment:
-      - BROKERS=kafka
+      - BROKERS=kafka:29092
       - ZK_NODES=zookeeper
       - MONGO_DB_HOST=mongo-db
       - MONGO_URI=mongodb://mongo-db:27017/shortener-ms-db

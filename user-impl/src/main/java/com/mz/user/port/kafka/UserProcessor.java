@@ -1,68 +1,85 @@
 package com.mz.user.port.kafka;
 
 
-import com.mz.reactivedemo.common.api.events.Event;
-import com.mz.reactivedemo.common.util.CaseMatch;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mz.reactivedemo.common.util.Logger;
 import com.mz.user.UserApplicationMessageBus;
 import com.mz.user.dto.UserDto;
 import com.mz.user.message.event.UserChangedEvent;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.support.MessageBuilder;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Service;
 import reactor.core.scheduler.Schedulers;
+import reactor.kafka.sender.KafkaSender;
+import reactor.kafka.sender.SenderRecord;
 
 import javax.annotation.PostConstruct;
 
-@EnableBinding(UserBinding.class)
+import static com.mz.reactivedemo.common.KafkaMapper.FN;
+import static com.mz.user.topics.UserTopics.USER_CHANGED;
+import static com.mz.user.topics.UserTopics.USER_DOCUMENT;
+import static java.util.Objects.requireNonNull;
+
 @Service
 public class UserProcessor {
 
-  private Logger logger = new Logger(LogFactory.getLog(UserProcessor.class));
-
-  private final UserBinding userBinding;
+  private final Logger logger = new Logger(LogFactory.getLog(UserProcessor.class));
 
   private final UserApplicationMessageBus messageBus;
 
-  public UserProcessor(UserBinding userBinding, UserApplicationMessageBus messageBus) {
-    this.userBinding = userBinding;
-    this.messageBus = messageBus;
+  private final KafkaSender<String, String> kafkaSender;
+
+  private final ObjectMapper objectMapper;
+
+  public UserProcessor(
+      UserApplicationMessageBus messageBus,
+      KafkaSender<String, String> kafkaSender,
+      ObjectMapper objectMapper
+  ) {
+    this.messageBus = requireNonNull(messageBus, "messageBus is required");
+    this.kafkaSender = requireNonNull(kafkaSender, "kafkaSender is required");
+    this.objectMapper = requireNonNull(objectMapper, "objectMapper is required");
   }
 
   @PostConstruct
   void onInit() {
     logger.debug(() -> "UserProcessor.onInit() ->");
-    messageBus.events()
+    var userChangedStream = messageBus.events()
         .subscribeOn(Schedulers.parallel())
-        .subscribe(this::processEvent, this::processError);
-    messageBus.documents()
-        .subscribeOn(Schedulers.parallel())
-        .subscribe(this::processDocument, this::processError);
-  }
+        .filter(event -> event instanceof UserChangedEvent)
+        .cast(UserChangedEvent.class)
+        .map(FN.mapToRecord(USER_CHANGED, objectMapper, UserChangedEvent::aggregateId));
 
-  private void processDocument(UserDto doc) {
-    userBinding.userDocumentOut()
-        .send(MessageBuilder
-            .withPayload(doc)
-            .setHeader(KafkaHeaders.MESSAGE_KEY, doc.id().getBytes())
-            .build());
+    var userDocumentStream = messageBus.documents()
+        .subscribeOn(Schedulers.parallel())
+        .map(this::mapUserDocumentSenderRecord);
+
+    kafkaSender.send(userChangedStream)
+        .doOnError(this::processError)
+        .retry()
+        .subscribe();
+
+    kafkaSender.send(userDocumentStream)
+        .doOnError(this::processError)
+        .retry()
+        .subscribe();
   }
 
   private void processError(Throwable throwable) {
     logger.log().error(throwable);
   }
 
-  private void processEvent(Event event) {
-    CaseMatch.match(event)
-        .when(UserChangedEvent.class, e -> {
-          MessageChannel messageChannel = userBinding.userChangedOut();
-          messageChannel.send(MessageBuilder
-              .withPayload(e)
-              .setHeader(KafkaHeaders.MESSAGE_KEY, e.aggregateId().getBytes())
-              .build());
-        });
+  private SenderRecord<String, String, UserDto> mapUserDocumentSenderRecord(UserDto document) {
+    try {
+      final var producerRecord = new ProducerRecord<>(
+          USER_DOCUMENT, document.id(),
+          objectMapper.writeValueAsString(document)
+      );
+      return SenderRecord.create(producerRecord, document);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
   }
+
 }

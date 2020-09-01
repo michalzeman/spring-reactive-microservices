@@ -1,7 +1,7 @@
 FROM openjdk:11-jdk
 VOLUME /tmp
 
-ENV BROKERS=localhost
+ENV BROKERS=localhost:9092
 ENV ZK_NODES=localhost
 ENV MONGO_URI=mongodb://localhost:27017/shortener-ms-db
 ENV AUTO_CREATE_TOPICS=false
