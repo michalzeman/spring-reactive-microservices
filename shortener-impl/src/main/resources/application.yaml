@@ -6,10 +6,29 @@ spring:
     mongodb:
       host: ${MONGO_DB_HOST:localhost}:27017
 
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: ${BROKERS:localhost:9092}
 kafka:
   bootstrap:
     servers: ${BROKERS:localhost:9092}
 
   consumer:
-    group-id: shortener-ms
+    group-id: shortener-ms-reactive
 
+#spring.cloud.stream.kafka.streams.binder.configuration.application.server: localhost:8080
+spring.application.name: shortener-ms
+spring.cloud.stream.bindings.aggregate-in-0:
+  destination: user-document
+spring.cloud.stream.kafka.streams.binder:
+  brokers: ${BROKERS:localhost}
+  configuration:
+    commit.interval.ms: 1000
+
+spring.cloud.stream.function.definition: aggregate
+
+
+
+#spring.cloud.stream.kafka.streams.binder.configuration.commit.interval.ms: 1000

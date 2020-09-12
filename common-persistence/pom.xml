@@ -12,6 +12,22 @@
     <artifactId>common-persistence</artifactId>
 
     <dependencies>
+        <!--Apache Kafka-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-stream-binder-kafka-streams</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-stream-binder-kafka</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams</artifactId>
+        </dependency>
+
         <!-- Akka persistence -->
         <dependency>
             <groupId>com.typesafe.akka</groupId>
