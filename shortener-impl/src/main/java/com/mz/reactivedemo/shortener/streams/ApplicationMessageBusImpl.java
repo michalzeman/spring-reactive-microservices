@@ -27,12 +27,12 @@ public class ApplicationMessageBusImpl implements ApplicationMessageBus {
 
   @Override
   public void publishEvent(Event event) {
-    Optional.ofNullable(event).ifPresent(e -> eventSink.next(e));
+    Optional.ofNullable(event).ifPresent(eventSink::next);
   }
 
   @Override
   public void publishShortenerDto(ShortenerDto dto) {
-    Optional.ofNullable(dto).ifPresent(d -> documentsSink.next(d));
+    Optional.ofNullable(dto).ifPresent(documentsSink::next);
   }
 
   @Override
