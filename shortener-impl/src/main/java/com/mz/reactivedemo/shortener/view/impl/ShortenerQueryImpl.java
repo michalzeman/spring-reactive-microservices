@@ -28,7 +28,7 @@ public class ShortenerQueryImpl implements ShortenerQuery {
 
   private String mapShortenerToValue(@NotNull ShortenerDocument shortenerDocument) {
     log.debug("mapShortenerToValue() ->");
-    return "http://" + shortenerDocument.getUrl();
+    return "https://" + shortenerDocument.getUrl();
   }
 
   public ShortenerQueryImpl(ShortenerRepository repository, ApplicationMessageBus shortenerMessageBus) {

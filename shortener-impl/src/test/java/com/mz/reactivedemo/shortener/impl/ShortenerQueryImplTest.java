@@ -40,7 +40,7 @@ class ShortenerQueryImplTest {
     Mockito.when(repository.findByKey(key)).thenReturn(Mono.just(shortenerDocument));
     Mono<String> source = shortenerQuery.map(key);
     StepVerifier.create(source)
-        .expectNext("http://www.url.tst")
+        .expectNext("https://www.url.tst")
         .expectComplete().verify();
   }
 }
