@@ -1,3 +1,10 @@
+Copyright 2023 Michal Zeman, zeman.michal@yahoo.com
+
+Licensed under the Creative Commons Attribution (CC BY) license. You are free to share, copy, distribute, 
+and adapt this work, provided you give appropriate credit to the original author Michal Zeman, zeman.michal@yahoo.com.
+
+To view a copy of the license, visit https://creativecommons.org/licenses/by/4.0/
+
 # spring-reactive-microservices
 
 This demo is based on:
@@ -15,12 +22,12 @@ There are services:
 
 ## Shortener MS
 - responsible by creating of short url
-- when user is loading some url based on some key representing shortened url, MS is generaring event ShortenerViewed and publishing it into the Kafka topic "shortener-viewed"
+- when user is loading some url based on some key representing shortened url, MS is generating event ShortenerViewed and publishing it into the Kafka topic "shortener-viewed"
 - this MS is designed or trying to be designed in DDD style and is representing Shortener Bounded Context.
 - Changes of Shortener aggregate like it was created, updated ... are captured by ShortenerChangedEvent and published into the Kafka topic "shortener-changed"
 - Result of changes done on aggregate is also published as a document event into the Kafka topic "shortener-document". 
-This document event representing current state of Shortener aggregate and it could be used for others services for 
-building of local views in order to avoid direct communication between service. This document event is also possible to use for creating of views e.g. comused by ElaticSearch. Maybe it would be implemented later like CQRS.
+This document event representing current state of Shortener aggregate, and it could be used for others services for 
+building of local views in order to avoid direct communication between service. This document event is also possible to use for creating of views e.g. consumed by ElasticSearch. Maybe it would be implemented later like CQRS.
 
 ## Statistic MS
 - this MS is downstream of Shortener MS
